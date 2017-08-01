@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  weight: 1
+  length: 1
+  height: 1
+  width: 1
+  sku: MyString
+  desc: MyText
+  price: 1.5
+  compare_at_price: 1.5
+
+two:
+  name: MyString
+  weight: 1
+  length: 1
+  height: 1
+  width: 1
+  sku: MyString
+  desc: MyText
+  price: 1.5
+  compare_at_price: 1.5
