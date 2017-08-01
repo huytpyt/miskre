@@ -53,3 +53,5 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'shopify_app', '~> 7.0.0'
+gem 'slim'
+gem 'simple_form'

@@ -1,0 +1,5 @@
+#current-shop
+  h1 Current shop
+  = form_tag controller: "home", action: "selectShop" do
+    = select_tag :shop_id, options_for_select(available_shops)
+    = submit_tag "Select"
