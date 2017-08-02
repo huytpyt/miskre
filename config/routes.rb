@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   #   get 'sign_in', to: 'devise/sessions#new'
   # end
    
+  resources :shops
   resources :products
   root to: 'home#index'
   post 'selectShop', to: 'home#selectShop'
