@@ -1,0 +1,5 @@
+h1 Welcome to Shop Center
+
+/ul
+  - @products.each do |product|
+    li = link_to product.title, "https://#{@shop_session.url}/admin/products/#{product.id}", target: "_top"

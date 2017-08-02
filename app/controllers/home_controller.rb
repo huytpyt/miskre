@@ -1,7 +1,11 @@
-class HomeController < ShopifyApp::AuthenticatedController
+# class HomeController < ShopifyApp::AuthenticatedController
+class HomeController < ApplicationController
   def index
-    @products = ShopifyAPI::Product.find(:all, :params => {:limit => 10})
   end
+
+  # def index
+  #   @products = ShopifyAPI::Product.find(:all, :params => {:limit => 10})
+  # end
 
   def selectShop
     session[:shopify] = params[:shop_id]
