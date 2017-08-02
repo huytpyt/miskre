@@ -80,6 +80,7 @@ test:
 #
 production:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: shopCenter_production
   username: shopCenter
   password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>

@@ -9,7 +9,6 @@ class HomeController < ApplicationController
 
   def selectShop
     session[:shopify] = params[:shop_id]
-
     redirect_to action: :index
   end
 end
