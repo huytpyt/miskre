@@ -1,13 +1,17 @@
 doctype html
-html
+html lang="en"
   head
-    title ShopCenter
-    = csrf_meta_tags
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
 
-    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
-    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+    title == content_for?(:title) ? yield(:title) : "Shop Center"
+
+    = stylesheet_link_tag "application"
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = csrf_meta_tag
   body
-    = render 'layouts/header'
+
+    = render 'layouts/top_bar'
     /= render 'layouts/shop_selection'
     = render 'layouts/flash_messages'
     = yield

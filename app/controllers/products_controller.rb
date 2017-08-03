@@ -1,4 +1,5 @@
-class ProductsController < ShopifyApp::AuthenticatedController
+# class ProductsController < ShopifyApp::AuthenticatedController
+class ProductsController < ApplicationController
   # TODO
   # sync products from shop
   before_action :set_product, only: [:show, :edit, :update, :destroy]
