@@ -57,3 +57,4 @@ gem 'slim'
 gem 'simple_form'
 gem 'devise'
 gem 'foundation-rails'
+gem "font-awesome-rails"

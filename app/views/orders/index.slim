@@ -1,0 +1,25 @@
+h1 #{@orders_number} Unfulfilled Orders
+
+#orders-query
+  = form_tag(main_app.fetch_orders_path) do
+    .row
+      .columns.large-4
+        label
+          | Shop
+          = select_tag :shop_id, options_for_select(available_shops, @current_shop)
+      .columns.large-3
+        label 
+          | Start Date
+          = date_field_tag :start_date, @start_date
+      .columns.large-3
+        label 
+          | End Date 
+          = date_field_tag :end_date, @end_date
+      .columns.large-2
+        = submit_tag "View"
+        = submit_tag "Download"
+
+h2 Preview data
+
+#orders-data
+  = render partial: "orders/list", locals: {orders: @orders}

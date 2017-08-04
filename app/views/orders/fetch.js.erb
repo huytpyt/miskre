@@ -1,0 +1,2 @@
+$("#orders-data").html("<%= render partial: "orders/list", locals: {orders: @orders} %>");
+$('#orders-numbers').text('<%= "Total #{@orders.count}" %>');

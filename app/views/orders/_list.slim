@@ -1,0 +1,16 @@
+table
+  thead
+    tr 
+      th OrderId
+      th Customer
+      th Email
+      th Date
+      th Total
+  tbody
+    - orders.each do |order|
+      tr
+        td = order.id
+        td = "#{order.customer.first_name} #{order.customer.last_name}"
+        td = order.customer.email
+        td = order.created_at
+        td = order.total_price
