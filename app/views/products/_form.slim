@@ -1,0 +1,75 @@
+- content_for :css
+  = stylesheet_link_tag "slick-carousel/slick/slick.css"
+  = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
+
+- content_for :script
+  = javascript_include_tag "slick-carousel/slick/slick.min.js"
+
+/= form_for product do |f|
+/= form_for product, html: {class: "dropzone"} do |f|
+= form_for product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
+  - if product.errors.any?
+    .row
+      #error_explanation
+        h2 #{pluralize(product.errors.count, "error")} prohibited this product from being saved:
+        ul
+          - product.errors.full_messages.each do |message|
+            li = message
+  - if product.persisted? && product.images.size > 0
+    .row
+      .columns
+        #images-preview
+          - product.images.each do |pi|
+            div
+              = image_tag pi.file.url(:medium)
+            = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
+  .row
+    .columns
+      .div.dz-message data-dz-message=""
+        span Select files to upload
+  .row
+    .columns
+      .dropzone-previews
+  .row
+    .columns.medium-4
+      .field
+        = f.label :name
+        = f.text_field :name
+    .columns.medium-4
+      .field
+        = f.label :sku
+        = f.text_field :sku
+    .columns.medium-4
+      .field
+        = f.label :price
+        = f.text_field :price
+    .columns
+      .field
+        = f.label :desc
+        = f.text_area :desc
+  /.row
+    .columns.medium-6
+      .field
+        = f.label :compare_at_price
+        = f.text_field :compare_at_price
+  .row
+    .columns.medium-3
+      .field
+        = f.label :weight
+        = f.number_field :weight
+    .columns.medium-3
+      .field
+        = f.label :length
+        = f.number_field :length
+    .columns.medium-3
+      .field
+        = f.label :height
+        = f.number_field :height
+    .columns.medium-3
+      .field
+        = f.label :width
+        = f.number_field :width
+
+  .row
+    .actions
+      = f.submit "Save", id: "submit-product"

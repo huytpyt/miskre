@@ -1,9 +1,11 @@
 class Product < ApplicationRecord
   include ShopifyApp::SessionStorage
 
-  after_create :shopify_create
-  after_update :shopify_update
-  after_destroy :shopify_destroy
+  # after_create :shopify_create
+  # after_update :shopify_update
+  # after_destroy :shopify_destroy
+
+  has_many :images, dependent: :destroy
 
   def shopify_create
     new_product = ShopifyAPI::Product.new

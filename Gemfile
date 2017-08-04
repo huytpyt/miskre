@@ -52,9 +52,11 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'shopify_app', '~> 7.0.0'
-gem 'slim'
-gem 'simple_form'
-gem 'devise'
-gem 'foundation-rails'
-gem "font-awesome-rails"
+gem 'shopify_app', '~> 7.3'
+gem 'slim', '~> 3.0', '>= 3.0.8'
+gem 'simple_form', '~> 3.5'
+gem 'devise', '~> 4.3'
+gem 'foundation-rails', '~> 6.4', '>= 6.4.1.2'
+gem 'font-awesome-rails', '~> 4.7', '>= 4.7.0.2'
+gem 'paperclip', '~> 5.1'
+gem 'bower-rails', '~> 0.11.0'

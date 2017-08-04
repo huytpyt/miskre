@@ -31,8 +31,13 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
+        params[:images].each do |key, value|
+          @product.images.create(file: value)
+        end
+
         format.html { redirect_to @product, notice: 'Product was successfully created.' }
-        format.json { render :show, status: :created, location: @product }
+        # format.json { render :show, status: :created, location: @product }
+        format.json { render json: @product, status: :created }
       else
         format.html { render :new }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -45,8 +50,12 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
+        params[:images].each do |key, value|
+          @product.images.create(file: value)
+        end
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }
-        format.json { render :show, status: :ok, location: @product }
+        # format.json { render :show, status: :ok, location: @product }
+        format.json { render json: @product, status: :created }
       else
         format.html { render :edit }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -72,6 +81,13 @@ class ProductsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
-      params.require(:product).permit(:name, :weight, :length, :height, :width, :sku, :desc, :price, :compare_at_price)
+      params.require(:product).permit(:name, :weight, :length, 
+                                      :height, :width, :sku, :desc, 
+                                      :price, :compare_at_price)
+      # params.permit(images: {})
+      # params.require(:product).tap do |whitelisted|
+      #   whitelisted[:name] = params[:product][:name]
+      #   whitelisted[:images] = params[:product][:images]
+      # end
     end
 end

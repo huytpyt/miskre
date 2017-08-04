@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   root to: 'home#index'
   devise_for :users
+  resources :images, only: :destroy 
   resources :shops
   resources :products
   resources :orders, only: :index do
