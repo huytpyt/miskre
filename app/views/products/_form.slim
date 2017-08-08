@@ -5,9 +5,10 @@
 - content_for :script
   = javascript_include_tag "slick-carousel/slick/slick.min.js"
 
-/= form_for product do |f|
 /= form_for product, html: {class: "dropzone"} do |f|
-= form_for @product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
+/= form_for @product, html: {id: "productForm", multipart: true} do |f|
+/= form_for @product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
+= form_for product do |f|
   - if product.errors.any?
     .row
       #error_explanation
@@ -23,13 +24,27 @@
             div
               = image_tag pi.file.url(:medium)
             = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
-  .row
+  /.row
     .columns
       .div.dz-message data-dz-message=""
         span Select files to upload
-  .row
+  /.row
     .columns
       .dropzone-previews
+  /.row
+    .columns
+      #dropzone-hidden-input
+  .row
+    .columns
+      ul#dvPreview
+  /.row
+    .columns
+      #dz.dropzone
+  .row
+    .columns
+      .field
+        = f.label :images
+        = f.file_field :images, multiple: true
   .row
     .columns.medium-4
       .field

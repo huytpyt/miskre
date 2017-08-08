@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   root to: 'home#index'
   devise_for :users
   resources :images, only: :destroy 
-  resources :shops
+  resources :shops do
+    get 'add_product', on: :member
+  end
   resources :products
   resources :orders, only: :index do
     post 'fetch', on: :collection

@@ -31,8 +31,10 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        params[:images].each do |key, value|
-          @product.images.create(file: value)
+        if params[:product][:images]
+          params[:product][:images].each do |img|
+            @product.images.create(file: img)
+          end
         end
 
         format.html { redirect_to @product, notice: 'Product was successfully created.' }
@@ -50,8 +52,11 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        params[:images].each do |key, value|
-          @product.images.create(file: value)
+        if params[:product][:images]
+          params[:product][:images].each do |img|
+        #params[:images].each do |key, value|
+            @product.images.create(file: img)
+          end
         end
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }
         # format.json { render :show, status: :ok, location: @product }
@@ -83,11 +88,6 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, 
                                       :height, :width, :sku, :desc, 
-                                      :price, :compare_at_price)
-      # params.permit(images: {})
-      # params.require(:product).tap do |whitelisted|
-      #   whitelisted[:name] = params[:product][:name]
-      #   whitelisted[:images] = params[:product][:images]
-      # end
+                                      :price, :cost, :shipping_price)
     end
 end

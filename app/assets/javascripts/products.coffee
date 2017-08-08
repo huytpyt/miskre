@@ -2,41 +2,24 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-Dropzone.options.productForm =
-  paramName: 'images'
-  autoProcessQueue: false
-  uploadMultiple: true
-  parallelUploads: 100
-  maxFiles: 100
-  addRemoveLinks: true
-  previewsContainer: '.dropzone-previews'
-
-  init: ->
-    myDropzone = this
-    # First change the button to actually tell Dropzone to process the queue.
-    @element.querySelector('#submit-product').addEventListener 'click', (e) ->
-      # Make sure that the form isn't actually being sent.
-      e.preventDefault()
-      e.stopPropagation()
-      myDropzone.processQueue()
-      return
-    # Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
-    # of the sending event because uploadMultiple is set to true.
-    @on 'sendingmultiple', ->
-      # Gets triggered when the form is actually being sent.
-      # Hide the success button or the complete form.
-      return
-    @on 'successmultiple', (files, response) ->
-      # Gets triggered when the files have successfully been sent.
-      # Redirect user or notify of success.
-      window.location.href = '/products/' + response.id
-      return
-    @on 'errormultiple', (files, response) ->
-      # Gets triggered when there was an error sending the files.
-      # Maybe show form again, and notify user of error
-
-
+Dropzone.autoDiscover = false
+   
 $(document).ready ->
+  
+  """
+  myDropzone = new Dropzone('#dz',
+    url: '/products'
+    paramName: 'pict'
+    autoProcessQueue: false
+    uploadMultiple: true
+    parallelUploads: 100
+    maxFiles: 100
+    addRemoveLinks: true
+    hiddenInputContainer: '#dropzone-hidden-input'
+    previewsContainer: '.dropzone-previews'
+  )
+  """
+
   calculatePrices = ->
     weight  = Number($('#product_weight').val());
     ship_cost = 0
@@ -81,6 +64,29 @@ $(document).ready ->
     centerPadding: '60px'
     variableWidth: true
 
+  $('#product_images').on 'change', ->
+    if typeof FileReader != 'undefined'
+      dvPreview = $('#dvPreview')
+      dvPreview.html ''
+      regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/
+      $($(this)[0].files).each ->
+        file = $(this)
+        if regex.test(file[0].name.toLowerCase())
+          reader = new FileReader
+
+          reader.onload = (e) ->
+            img_container = $("<li class='img-container'><img src= '" + e.target.result + "'/></li>")
+            dvPreview.append img_container
+            return
+
+          reader.readAsDataURL file[0]
+        else
+          alert file[0].name + ' is not a valid image file.'
+          dvPreview.html ''
+          return false
+        return
+    else
+      alert 'This browser does not support HTML5 FileReader.'
+    return
+
   return
-
-
