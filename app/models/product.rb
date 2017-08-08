@@ -7,6 +7,8 @@ class Product < ApplicationRecord
 
   has_many :images, dependent: :destroy
 
+  validates :name, presence: true
+
   def shopify_create
     new_product = ShopifyAPI::Product.new
     new_product.title = self.name

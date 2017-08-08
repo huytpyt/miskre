@@ -7,7 +7,7 @@
 
 /= form_for product do |f|
 /= form_for product, html: {class: "dropzone"} do |f|
-= form_for product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
+= form_for @product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
   - if product.errors.any?
     .row
       #error_explanation
@@ -41,12 +41,21 @@
         = f.text_field :sku
     .columns.medium-4
       .field
-        = f.label :price
-        = f.text_field :price
+        = f.label :cost, "Cost ($)"
+        = f.text_field :cost
     .columns
       .field
         = f.label :desc
         = f.text_area :desc
+  .row
+    .columns.medium-6
+      .field
+        = f.label :shipping_price
+        = f.text_field :shipping_price, disabled: true
+    .columns.medium-6
+      .field
+        = f.label :price
+        = f.text_field :price, disabled: true
   /.row
     .columns.medium-6
       .field
@@ -55,19 +64,19 @@
   .row
     .columns.medium-3
       .field
-        = f.label :weight
+        = f.label :weight, "Weight (g)"
         = f.number_field :weight
     .columns.medium-3
       .field
-        = f.label :length
+        = f.label :length, "Length (cm)"
         = f.number_field :length
     .columns.medium-3
       .field
-        = f.label :height
+        = f.label :height, "Height (cm)"
         = f.number_field :height
     .columns.medium-3
       .field
-        = f.label :width
+        = f.label :width, "Height (cm)"
         = f.number_field :width
 
   .row
