@@ -1,0 +1,25 @@
+
+.row.large-up-3
+  .column
+    .card
+      .card-divider 
+        .row
+          .columns.small-1
+            h4 = @product.name
+          .columns.small-1
+            h4.right $#{@product.price}
+      .card-section
+        - unless @product.images.empty?
+          = image_tag @product.images.first.file.url(:medium)
+        - else
+          img src="#"
+      .card-section
+        p = @product.desc
+      /.card-section
+        ul.menu
+          li
+            = link_to "Edit", edit_product_path(product)
+          li
+            = link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' }
+          li
+            = link_to "Add To Shop", add_to_shop_product_path(product)

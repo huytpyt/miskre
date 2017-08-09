@@ -53,7 +53,6 @@ $(document).ready ->
 
   $('#product_weight,#product_cost').on 'change', calculatePrices
 
-
   $('#images-preview').slick
     dots: true
     infinite: false
