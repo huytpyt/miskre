@@ -1,25 +1,80 @@
+- content_for :css
+  = stylesheet_link_tag "slick-carousel/slick/slick.css"
+  = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
 
-.row.large-up-3
+- content_for :script
+  = javascript_include_tag "slick-carousel/slick/slick.min.js"
+
+.row
   .column
     .card
       .card-divider 
         .row
           .columns.small-1
             h4 = @product.name
-          .columns.small-1
-            h4.right $#{@product.price}
-      .card-section
-        - unless @product.images.empty?
-          = image_tag @product.images.first.file.url(:medium)
-        - else
-          img src="#"
-      .card-section
-        p = @product.desc
-      /.card-section
-        ul.menu
+      .row
+        .columns.small-6
+          .card-section
+            - unless @product.images.empty?
+              #images-preview
+                - @product.images.each do |pi|
+                  div
+                    = image_tag pi.file.url(:medium)
+            - else
+              img src="#"
+        .columns.small-6
+          .card-section
+            p = @product.desc
+            p Price: $#{@product.price}
+            p Weight: #{@product.weight}g
+            p Size (L*H*W): #{@product.length}cm x #{@product.height}cm x #{@product.width}cm
+  /.column.large-6
+    p Desc
+    /.card-section
+      ul.menu
+        li
+          = link_to "Edit", edit_product_path(product)
+        li
+          = link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' }
+        li
+          = link_to "Add To Shop", add_to_shop_product_path(product)
+
+.row
+  .column.large-6
+    - unless @available_shops.empty?
+      h3 Add to these shops
+      = form_for @product, url: assign_product_path(@product) do |f|
+        .row
+          .columns
+            .field
+              = f.label :shops
+              - @available_shops.each do |shop|
+                = f.check_box :shops, { multiple: true}, shop.id, false
+                label = shop.name
+        .row
+          .actions
+            = f.submit "Add", class: "button small primary"
+    - else
+      h3 Wow, this product is avaible on all your shops
+  .column.large-6
+    - unless @product.shops.empty?
+      h3 Already available in these shops
+      ul.available-shops
+        - @product.shops.each do |shop|
           li
-            = link_to "Edit", edit_product_path(product)
-          li
-            = link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' }
-          li
-            = link_to "Add To Shop", add_to_shop_product_path(product)
+            p = shop.name
+            = link_to "Remove", remove_shop_product_path(@product, shop_id: shop.id), 
+              method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert small'
+
+
+      /= form_for @product, url: assign_product_path(@product) do |f|
+        .row
+          .columns
+            .field
+              = f.label :shops
+              - @product.shops.each do |shop|
+                = f.check_box :shops, { multiple: true}, shop.id, false
+                label = shop.name
+        .row
+          .actions
+            = f.submit "Remove"

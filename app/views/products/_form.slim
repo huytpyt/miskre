@@ -66,11 +66,12 @@
     .columns.medium-6
       .field
         = f.label :shipping_price
-        = f.text_field :shipping_price, disabled: true
+        = f.text_field :shipping_price
     .columns.medium-6
       .field
         = f.label :price
-        = f.text_field :price, disabled: true
+        /= f.text_field :price, disabled: true
+        = f.text_field :price
   /.row
     .columns.medium-6
       .field
@@ -91,7 +92,7 @@
         = f.number_field :height
     .columns.medium-3
       .field
-        = f.label :width, "Height (cm)"
+        = f.label :width, "Width (cm)"
         = f.number_field :width
 
   .row

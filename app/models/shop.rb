@@ -4,6 +4,9 @@ class Shop < ActiveRecord::Base
 
   belongs_to :user
 
+  has_many :supplies
+  has_many :products, through: :supplies
+
   before_create :get_shop_infor
 
   def self.store_with_user(session, current_user)

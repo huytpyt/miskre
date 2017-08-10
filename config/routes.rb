@@ -4,8 +4,11 @@ Rails.application.routes.draw do
   resources :images, only: :destroy 
   resources :shops
   resources :products do
-    get 'add_to_shop', on: :member
-    post 'assign', on: :member
+    member do
+      get 'add_to_shop'
+      patch 'assign'
+      delete 'remove_shop'
+    end
   end
   resources :orders, only: :index do
     post 'fetch', on: :collection

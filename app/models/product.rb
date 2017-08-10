@@ -6,6 +6,8 @@ class Product < ApplicationRecord
   # after_destroy :shopify_destroy
 
   has_many :images, dependent: :destroy
+  has_many :supplies
+  has_many :shops, through: :supplies
 
   validates :name, presence: true
 

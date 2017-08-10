@@ -1,8 +1,9 @@
-# class ProductsController < ShopifyApp::AuthenticatedController
-class ProductsController < ApplicationController
+class ProductsController < ShopifyApp::AuthenticatedController
+# class ProductsController < ApplicationController
   # TODO
   # sync products from shop
-  before_action :set_product, only: [:show, :edit, :update, :destroy, :add_to_shop]
+  before_action :set_product, only: [:show, :edit, :update, :destroy, 
+                                     :add_to_shop, :assign, :remove_shop]
 
   # GET /products
   # GET /products.json
@@ -79,6 +80,41 @@ class ProductsController < ApplicationController
   end
 
   def add_to_shop
+    @available_shops = current_user.shops - @product.shops
+  end
+
+  def assign
+    shop_ids = params[:product][:shops]
+    unless shop_ids.empty?
+      shop_ids.each do |id|
+        shop = Shop.find(id)
+
+        session[:shopify] = shop.id
+        new_product = ShopifyAPI::Product.new
+        new_product.title = @product.name
+        new_product.vendor = "Miskre"
+        new_product.body_html = @product.desc
+        new_product.images = @product.images.collect { |i| { 'src': i.file.url(:medium) } }
+        specs = {
+          'weight': @product.weight,
+          'weight_unit': 'g',
+          'price': @product.price
+        }
+        new_product.variants = [specs]
+        new_product.save
+
+        Supply.create(shop_id: shop.id, product_id: @product.id, shopify_product_id: new_product.id)
+      end
+    end
+    redirect_to add_to_shop_product_path(@product), notice: 'Product has been added to shops.'
+  end
+
+  def remove_shop
+    supply = Supply.find_by(shop_id: params[:shop_id], product_id: @product.id)
+    session[:shopify] = supply.shop_id
+    ShopifyAPI::Product.delete(supply.shopify_product_id)
+    supply.destroy
+    redirect_to add_to_shop_product_url, notice: 'Product was successfully remove from shop.'
   end
 
   private

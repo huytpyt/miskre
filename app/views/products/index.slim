@@ -22,14 +22,17 @@ h1 Products
             img src="#"
         .card-section
           p = product.desc
+          p Price: $#{product.price}
+          p Weight: #{product.weight}g
+          p Size (L*H*W): #{product.length}cm x #{product.height}cm x #{product.width}cm
         .card-section
           ul.menu
+            li
+              = link_to "Connect With Your Shop", add_to_shop_product_path(product)
             li
               = link_to "Edit", edit_product_path(product)
             li
               = link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' }
-            li
-              = link_to "Add To Shop", add_to_shop_product_path(product)
 
       /.product-card
         - unless product.images.empty?
