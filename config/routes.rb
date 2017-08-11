@@ -16,6 +16,12 @@ Rails.application.routes.draw do
 
   post 'selectShop', to: 'home#selectShop'
 
+  post 'shipping_rates', to: 'carrier_service#shipping_rates'
+
+  get 'carrier_service', to: 'carrier_service#index'
+  get 'activate_carrier_service', to: 'carrier_service#activate'
+  get 'deactivate_carrier_service', to: 'carrier_service#deactivate'
+
   mount ShopifyApp::Engine, at: '/shopify'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

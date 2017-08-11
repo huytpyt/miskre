@@ -17,3 +17,8 @@
  *= require foundation
  *= require dropzone
  */
+
+.page-header
+  h1 {
+    text-align: center;
+  }

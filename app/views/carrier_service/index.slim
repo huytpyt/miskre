@@ -1,0 +1,23 @@
+.page-header
+  h1 Shipping Rate Provider
+
+.row
+  .column
+    table
+      thead
+        th Shop
+      tbody
+        - @shops.each do |shop|
+          tr
+            - if shop.use_carrier_service?
+              td = shop.name
+              td = link_to 'Deactivate', deactivate_carrier_service_path(shop_id: shop.id)
+            - else
+              td = shop.name
+              td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
+
+.row
+  .columns.large-6
+    h3 ePUB
+  .columns.large-6
+    h3 DHL

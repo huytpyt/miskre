@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170810022733) do
+ActiveRecord::Schema.define(version: 20170811022527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,13 +44,15 @@ ActiveRecord::Schema.define(version: 20170810022733) do
   end
 
   create_table "shops", force: :cascade do |t|
-    t.string   "shopify_domain", null: false
-    t.string   "shopify_token",  null: false
+    t.string   "shopify_domain",      null: false
+    t.string   "shopify_token",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
     t.string   "domain"
     t.integer  "user_id"
+    t.boolean  "use_carrier_service"
+    t.string   "carrier_service_id"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree
   end

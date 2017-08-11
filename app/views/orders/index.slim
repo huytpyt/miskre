@@ -1,4 +1,5 @@
-h1 #{@orders_number} Unfulfilled Orders
+.page-header
+  h1 #{@orders_number} Unfulfilled Orders
 
 #orders-query
   = form_tag(main_app.fetch_orders_path) do
