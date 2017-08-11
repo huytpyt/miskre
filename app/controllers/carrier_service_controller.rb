@@ -26,19 +26,34 @@ class CarrierServiceController < ApplicationController
     items = rate['items']
 
     epub_price = 0
+    dhl_price = 0
     items.each do |i|
-      epub_price += CarrierService.get_epub_price(country, i['quantity'] * i['grams'])
+      epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
+      dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * i['grams'])
+
+      # BECAUSE we are already add 80% epub US cost to product price
+      epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
+      epub_price += epub_cost - epub_us_cost * 0.8
+      dhl_price += dhl_cost - epub_us_cost * 0.8
+      # p i['quantity'], i['grams'], epub_price
     end
 
-    rates = []
-    rates[0] = {
-      'service_name': 'ePUB', 
-      'description': '9-12 working days',
-      'service_code': 'ePacket',
-      'currency': 'USD',
-      'total_price': epub_price
-    }
-    
+    rates = [
+      {
+        'service_name': 'ePUB', 
+        'description': '9-12 working days',
+        'service_code': 'ePacket',
+        'currency': 'USD',
+        'total_price': epub_price.to_s
+      }, 
+      {
+        'service_name': 'DHL', 
+        'description': '5-8 working days',
+        'service_code': 'dhl',
+        'currency': 'USD',
+        'total_price': dhl_price.to_s
+      }
+    ]
     render :json => {"rates": rates}
   end
 end

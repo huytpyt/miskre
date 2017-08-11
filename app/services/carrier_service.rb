@@ -1,15 +1,21 @@
 class CarrierService
+  def self.get_epub_cost(country_code, weight)
+    country_cost = (EPUB.key? country_code) ? EPUB[country_code] : EPUB['US']
 
-  WEIGHTS = [60, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 1000]
+    country_cost.each do |weight_limit, price|
+      return price * 100 if weight <= weight_limit
+    end
 
-  def self.get_epub_price(country, weight)
-    EPUB[country][get_weight(weight)]
+    return 2000
   end
 
-  def self.get_weight(weight)
-    WEIGHTS.each do |w|
-      return w if weight <= w
+  def self.get_dhl_cost(country_code, weight)
+    country_cost = (DHL.key? country_code) ? DHL[country_code] : DHL['US']
+
+    country_cost.each do |weight_limit, price|
+      return price * 100 if weight <= weight_limit
     end
-    return 1000
+
+    return 50000
   end
 end
