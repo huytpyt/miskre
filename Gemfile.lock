@@ -57,6 +57,7 @@ GEM
     bower-rails (0.11.0)
     builder (3.2.3)
     byebug (9.0.6)
+    cancancan (1.16.0)
     climate_control (0.2.0)
     cocaine (0.5.8)
       climate_control (>= 0.0.3, < 1.0)
@@ -74,6 +75,8 @@ GEM
       railties (>= 4.1.0, < 5.2)
       responders
       warden (~> 1.2.3)
+    enumerize (2.1.2)
+      activesupport (>= 3.2)
     erubis (2.7.0)
     execjs (2.7.0)
     faraday (0.12.2)
@@ -272,8 +275,10 @@ PLATFORMS
 DEPENDENCIES
   bower-rails (~> 0.11.0)
   byebug
+  cancancan (~> 1.13, >= 1.13.1)
   coffee-rails (~> 4.2)
   devise (~> 4.3)
+  enumerize (~> 2.1, >= 2.1.2)
   font-awesome-rails (~> 4.7, >= 4.7.0.2)
   foundation-rails (~> 6.4, >= 6.4.1.2)
   jbuilder (~> 2.5)
