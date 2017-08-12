@@ -24,77 +24,59 @@
             div
               = image_tag pi.file.url(:medium)
             = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
-  /.row
-    .columns
-      .div.dz-message data-dz-message=""
-        span Select files to upload
-  /.row
-    .columns
-      .dropzone-previews
-  /.row
-    .columns
-      #dropzone-hidden-input
   .row
     .columns
       ul#dvPreview
-  /.row
-    .columns
-      #dz.dropzone
   .row
     .columns
       .field
         = f.label :images
         = f.file_field :images, multiple: true
   .row
-    .columns.medium-4
+    .columns.medium-6
       .field
         = f.label :name
         = f.text_field :name
-    .columns.medium-4
+    .columns.medium-6
       .field
         = f.label :sku
         = f.text_field :sku
-    .columns.medium-4
-      .field
-        = f.label :cost, "Cost ($)"
-        = f.text_field :cost
     .columns
       .field
         = f.label :desc
-        = f.text_area :desc
+        = f.text_area :desc, rows: 6
   .row
-    .columns.medium-6
+    .columns.medium-3
       .field
+        = f.label :cost, "Cost ($)"
+        = f.text_field :cost
+    .columns.medium-9
+      .row
+        .columns.medium-3
+          .field
+            = f.label :weight, "Weight (g)"
+            = f.number_field :weight
+        .columns.medium-3
+          .field
+            = f.label :length, "Length (cm)"
+            = f.number_field :length
+        .columns.medium-3
+          .field
+            = f.label :height, "Height (cm)"
+            = f.number_field :height
+        .columns.medium-3
+          .field
+            = f.label :width, "Width (cm)"
+            = f.number_field :width
+    .columns
+      h4 Prices
+      p Price: $#{@product_price}
+      p ePUB: $#{@epub_price}
+      p DHL: $#{@dhl_price}
+      /.field
         = f.label :shipping_price
         = f.text_field :shipping_price
-    .columns.medium-6
-      .field
-        = f.label :price
-        /= f.text_field :price, disabled: true
-        = f.text_field :price
-  /.row
-    .columns.medium-6
-      .field
-        = f.label :compare_at_price
-        = f.text_field :compare_at_price
   .row
-    .columns.medium-3
-      .field
-        = f.label :weight, "Weight (g)"
-        = f.number_field :weight
-    .columns.medium-3
-      .field
-        = f.label :length, "Length (cm)"
-        = f.number_field :length
-    .columns.medium-3
-      .field
-        = f.label :height, "Height (cm)"
-        = f.number_field :height
-    .columns.medium-3
-      .field
-        = f.label :width, "Width (cm)"
-        = f.number_field :width
-
   .row
     .actions
       = f.submit "Save", id: "submit-product"

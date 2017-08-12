@@ -5,6 +5,8 @@ class ProductsController < ShopifyApp::AuthenticatedController
   before_action :set_product, only: [:show, :edit, :update, :destroy, 
                                      :add_to_shop, :assign, :remove_shop]
 
+  before_action :calculate_price, only: [:edit, :update]
+
   # GET /products
   # GET /products.json
   def index
@@ -59,7 +61,7 @@ class ProductsController < ShopifyApp::AuthenticatedController
             @product.images.create(file: img)
           end
         end
-        format.html { redirect_to @product, notice: 'Product was successfully updated.' }
+        format.html { redirect_to edit_product_path(@product), notice: 'Product was successfully updated.' }
         # format.json { render :show, status: :ok, location: @product }
         format.json { render json: @product, status: :created }
       else
@@ -121,6 +123,16 @@ class ProductsController < ShopifyApp::AuthenticatedController
     # Use callbacks to share common setup or constraints between actions.
     def set_product
       @product = Product.find(params[:id])
+    end
+    
+    def calculate_price
+      epub_cost = CarrierService.get_epub_cost('US', @product.weight) / 100
+      dhl_cost = CarrierService.get_dhl_cost('US', [@product.weight, @product.width * @product.height * @product.length / 5].max) / 100
+
+      # BECAUSE we are already add 80% epub US cost to product price
+      @product_price = (@product.cost + epub_cost * 0.8).round(2)
+      @epub_price = (epub_cost * 0.2).round(2)
+      @dhl_price = (dhl_cost - epub_cost * 0.8).round(2)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
