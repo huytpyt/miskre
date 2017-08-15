@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   has_many :images, dependent: :destroy
   has_many :supplies
   has_many :shops, through: :supplies
+  has_many :options
 
   validates :name, presence: true
 

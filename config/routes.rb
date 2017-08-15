@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       patch 'assign'
       delete 'remove_shop'
     end
+    resources :options
   end
   resources :orders, only: :index do
     post 'fetch', on: :collection

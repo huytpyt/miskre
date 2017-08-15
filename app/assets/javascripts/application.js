@@ -12,7 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
+//= require vue/dist/vue
+//= require vue-resource/dist/vue-resource
 //= require dropzone
 //= require foundation
 //= require_tree .

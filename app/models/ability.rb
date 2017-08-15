@@ -35,6 +35,8 @@ class Ability
       can :dashboard                  # allow access to dashboard
     else
       can :read, :all
+      can :manage, Product, user_id: user.id
+      can :manage, Option, user_id: user.id
     end
   end
 end

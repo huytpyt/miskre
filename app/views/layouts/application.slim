@@ -5,10 +5,8 @@ html lang="en"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
 
     title == content_for?(:title) ? yield(:title) : "Shop Center"
-
     = stylesheet_link_tag "application"
-    = javascript_include_tag "application", "data-turbolinks-track" => true
-    = csrf_meta_tag
+    = csrf_meta_tags
     = yield :css
   body
 
@@ -16,4 +14,6 @@ html lang="en"
     /= render 'layouts/shop_selection'
     = render 'layouts/flash_messages'
     = yield
+
+    = javascript_include_tag "application"
     = yield :script
