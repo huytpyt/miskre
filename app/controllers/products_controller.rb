@@ -10,9 +10,9 @@ class ProductsController < ShopifyApp::AuthenticatedController
   # GET /products
   # GET /products.json
   def index
+    @products = Product.all
     respond_to do |format|
       format.json do
-        @products = Product.all
         render json: @products
       end
       format.html {}
@@ -136,7 +136,7 @@ class ProductsController < ShopifyApp::AuthenticatedController
       dhl_cost = CarrierService.get_dhl_cost('US', [@product.weight, @product.width * @product.height * @product.length / 5].max) / 100
 
       # BECAUSE we are already add 80% epub US cost to product price
-      @product_price = (@product.cost + epub_cost * 0.8).round(2)
+      @product_price = (@product.cost * 3 + epub_cost * 0.8).round(2)
       @epub_price = (epub_cost * 0.2).round(2)
       @dhl_price = (dhl_cost - epub_cost * 0.8).round(2)
     end

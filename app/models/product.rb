@@ -8,10 +8,19 @@ class Product < ApplicationRecord
   has_many :images, dependent: :destroy
   has_many :supplies
   has_many :shops, through: :supplies
-  has_many :options
-  has_many :variants
+  has_many :options, dependent: :destroy
+  has_many :variants, dependent: :destroy
 
   validates :name, presence: true
+
+  after_create :calculate_price
+
+  def calculate_price
+    epub_cost = CarrierService.get_epub_cost('US', self.weight)
+    self.shipping_price = (epub_cost * 0.2).to_f / 100
+    self.price = self.cost * 3 + (epub_cost * 0.8).to_f / 100
+    self.save
+  end
 
   def shopify_create
     new_product = ShopifyAPI::Product.new

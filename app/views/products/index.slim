@@ -36,8 +36,38 @@ p#notice = notice
               = link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' }
 
 input#productsResource value="#{products_path()}" type="hidden"
-
 #products
+  .row
+    .column
+      table
+        thead
+          tr
+            th Name
+            th Cost
+            th Weight (g)
+            th Size (L*W*H)
+            th Price ($)
+            th Shipping Cost ($)
+            th
+        tbody
+          - @products.each do |p|
+            tr
+              th = p.name
+              td $#{ p.cost }
+              td = p.weight
+              td #{p.length}cm * #{p.width}cm * #{p.height}cm
+              td = p.price
+              td $#{p.shipping_price}
+              td
+                ul.menu
+                  li
+                    = link_to "Add To Shops", add_to_shop_product_path(p)
+                  li
+                    = link_to "Edit", edit_product_path(p)
+                  li
+                    = link_to 'Destroy', p, method: :delete, data: { confirm: 'Are you sure?' }
+
+/#products
   .row
     .column
       table

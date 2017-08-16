@@ -32,8 +32,9 @@ namespace :product do
       0.0
     end
 
+    Product.destroy_all
     xlsx = Roo::Excelx.new("lib/tasks/product_list.xlsx")
-    (xlsx.first_row..xlsx.last_row).each do |i|
+    (xlsx.first_row + 1..xlsx.last_row).each do |i|
       name = xlsx.row(i)[1]
 
       # cost = /([\d\.]+)/.match(xlsx.row(i)[2]).to_a
@@ -43,14 +44,23 @@ namespace :product do
 
       length, width, height = get_dimension(xlsx.row(i)[4])
 
-      Product.create(name: name, cost: cost, length: length, width: width, height: height)
+      weight = 0.0
 
-      p '*' * 20
-      p 'name', name
-      p 'cost', cost
-      p 'color', color
-      p 'size', length, width, height
-      p '*' * 20
+      p = Product.create(name: name, cost: cost, length: length, width: width, height: height, weight: weight)
+
+      unless color.empty?
+        option = p.options.create(name: 'color', values: color)
+        p.regen_variants
+        p.variants.update_all(price: p.price)
+        p 'name', name
+      end
+
+      # p '*' * 20
+      # p 'name', name
+      # p 'cost', cost
+      # p 'color', color
+      # p 'size', length, width, height
+      # p '*' * 20
     end
   end
 end
