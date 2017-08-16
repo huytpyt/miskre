@@ -10,7 +10,13 @@ class ProductsController < ShopifyApp::AuthenticatedController
   # GET /products
   # GET /products.json
   def index
-    @products = Product.all
+    respond_to do |format|
+      format.json do
+        @products = Product.all
+        render json: @products
+      end
+      format.html {}
+    end
   end
 
   # GET /products/1
