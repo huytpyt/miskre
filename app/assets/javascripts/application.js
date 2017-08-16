@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require vue/dist/vue
 //= require vue-resource/dist/vue-resource
+//= require axios
 //= require dropzone
 //= require foundation
 //= require_tree .

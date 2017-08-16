@@ -6,7 +6,7 @@ Vue.http.interceptors.push(function(request, next) {
   next();
 });
 
-var optionResource = Vue.resource( $('#productId').val() + '{/id}.json')
+var optionResource = Vue.resource( $('#optionsResource').val() + '{/id}.json')
 
 var options = new Vue({
   el: '#options',
@@ -20,7 +20,7 @@ var options = new Vue({
     errors: {}
   },
   methods: {
-    createOption: function () {
+    createOption() {
       var that = this;
       optionResource.save({option: this.newOption}).then(
         function(response) {
@@ -36,7 +36,7 @@ var options = new Vue({
         }
       )
     },
-    updateOption: function (option) {
+    updateOption(option) {
       var that = this;
       optionResource.update({id: option.id}, {option: option}).then(
         function (response) {
@@ -55,7 +55,7 @@ var options = new Vue({
         */
       )
     },
-    removeOption: function(option) {
+    removeOption(option) {
       // var that = this; 
       // .options.splice(option.id, 1);
       this.options.splice(this.options.indexOf(option), 1)

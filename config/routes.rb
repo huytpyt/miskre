@@ -11,6 +11,9 @@ Rails.application.routes.draw do
       delete 'remove_shop'
     end
     resources :options
+    resources :variants do
+      get 'reload', on: :collection
+    end
   end
   resources :orders, only: :index do
     post 'fetch', on: :collection

@@ -1,0 +1,44 @@
+.page-header
+  h1 Options
+input#optionsResource value="#{product_options_path(@product.id)}" type="hidden"
+#options
+  .row
+    .column
+      table
+        thead
+          tr
+            th Name
+            th Values
+            th
+        tbody
+          tr.option v-for="option in options"
+            td
+              div v-if="editMode"
+                input type="text" v-model="option.name"
+                span style="color:red" {{ errors.name }}
+              div v-else="" {{ option.name }}
+            td
+              div v-if="editMode"
+                input type="text" v-model="option.values"
+                span style="color:red" {{ errors.email }}
+              div v-else="" {{ option.values }}
+            td
+              button v-if="editMode" @click="updateOption(option)" Save
+              button v-else="" @click="editMode = true" Edit
+              button v-if="!editMode" @click="removeOption(option)" style="color:red" Remove
+            /td
+              input type="text" v-model="option.name" 
+            /td
+              input type="text" v-model="option.values" 
+            /td
+              button @click="updateOption(option)" Save
+              button.destroy @click="removeOption(option)" Delete
+          tr
+            td
+              input type="text" v-model="newOption.name"
+              /span style="color:red" {{ errors.name }}
+            td
+              input type="text" v-model="newOption.values"
+              /span style="color:red" {{ errors.values }}
+            td
+              button @click="createOption" Create

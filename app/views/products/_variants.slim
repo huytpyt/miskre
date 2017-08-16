@@ -1,0 +1,44 @@
+.page-header
+  h1 Variants
+
+input#variantsResource value="#{product_variants_path(@product.id)}" type="hidden"
+input#variantsReload value="#{reload_product_variants_path(@product.id, format: 'json')}" type="hidden"
+
+#variants
+  .row
+    .column
+      button.button.small @click="reloadVariants()" Reset variants based on Option
+      table
+        thead
+          tr
+            th Option 1
+            th Option 2
+            th Option 3
+            th Quantity
+            th Price
+            th SKU
+            th
+        tbody
+          tr.option v-for="variant in variants"
+            td v-text="variant.option1"
+            td v-text="variant.option2"
+            td v-text="variant.option4"
+            td
+              div v-if="editMode"
+                input type="text" v-model="variant.quantity"
+                span style="color:red" {{ errors.quantity }}
+              div v-else="" {{ variant.quantity }}
+            td
+              div v-if="editMode"
+                input type="text" v-model="variant.price"
+                span style="color:red" {{ errors.price }}
+              div v-else="" {{ variant.price }}
+            td
+              div v-if="editMode"
+                input type="text" v-model="variant.sku"
+                span style="color:red" {{ errors.sku}}
+              div v-else="" {{ variant.sku }}
+            td
+              button v-if="editMode" @click="updateVariant(variant)" Save
+              button v-else="" @click="editMode = true" Edit
+              button v-if="!editMode" @click="removeVariant(variant)" style="color:red" Remove
