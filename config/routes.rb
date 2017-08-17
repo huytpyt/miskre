@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   post 'shipping_rates', to: 'carrier_service#shipping_rates'
 
   get 'carrier_service', to: 'carrier_service#index'
+  get 'find_ship_cost', to: 'carrier_service#lookup'
   get 'activate_carrier_service', to: 'carrier_service#activate'
   get 'deactivate_carrier_service', to: 'carrier_service#deactivate'
 

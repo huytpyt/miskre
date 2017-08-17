@@ -16,8 +16,32 @@
               td = shop.name
               td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
 
-.row
-  .columns.large-6
-    h3 ePUB
-  .columns.large-6
-    h3 DHL
+#shipping_prices
+  .row
+    .medium-5.columns
+      .input-group
+        span.input-group-label Country
+
+        select.input-group-field v-model="country"
+          - ISO3166::Country.all.each do |c|
+            option value="#{c.alpha2}" #{c.name}
+          /option disabled="" value="" Please select one
+          /option value="US" United States
+          /option value="UK" United Kingdom
+    .medium-5.columns
+      .input-group
+        span.input-group-label Weight (g)
+        input.input-group-field v-model="weight" type="text" placeholder="enter weight"
+    .medium-2.columns
+      button.button.small @click="lookup_for_price()" Look up
+  .row
+    .columns
+      p ePUB: ${{ epub }}
+      p DHL: ${{ dhl }}
+
+  /p Selected: {{ country }}
+  /.row
+    .columns.large-6
+      h3 ePUB
+    /.columns.large-6
+      h3 DHL
