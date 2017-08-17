@@ -28,6 +28,13 @@
             p Price: $#{@product.price}
             p Weight: #{@product.weight}g
             p Size (L*H*W): #{@product.length}cm x #{@product.height}cm x #{@product.width}cm
+          .card-section
+            - unless @product.variants.empty?
+              h3 Variants
+              ul
+                - @product.variants.each do |v|
+                  li
+                    p #{v.option1} - #{v.option2} - #{v.option3} - #{v.price}
   /.column.large-6
     p Desc
     /.card-section
