@@ -20,7 +20,9 @@
         = submit_tag "View"
         = submit_tag "Download"
 
-h2 Preview data
 
 #orders-data
-  = render partial: "orders/list", locals: {orders: @orders}
+  .row
+    .column
+      h3 Preview data
+      = render partial: "orders/list", locals: {orders: @orders}

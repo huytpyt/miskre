@@ -3,23 +3,23 @@
 .page-header
   h1 Shops
 
-table
-  thead
-    tr
-      th Name
-      th Domain
-      th Shopify Domain
-
-  tbody
-    - @shops.each do |shop|
-      tr
-        td = shop.name
-        td = shop.domain
-        td = shop.shopify_domain
-        td = link_to 'Show', shop 
-        td = link_to 'Edit', edit_shop_path(shop)
-        td = link_to 'Destroy', shop, method: :delete, data: { confirm: 'Are you sure?' }
-
-br
-
-= link_to 'New Shop', shopify_app.login_path
+#shops
+  .row
+    .column
+      = link_to 'New Shop', shopify_app.login_path, class: 'button primary small'
+      table
+        thead
+          tr
+            th Name
+            th Domain
+            th Shopify Domain
+            th
+        tbody
+          - @shops.each do |shop|
+            tr
+              td = shop.name
+              td = shop.domain
+              td = shop.shopify_domain
+              /td = link_to 'Show', shop 
+              /td = link_to 'Edit', edit_shop_path(shop)
+              td = link_to 'Disconnect', shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
