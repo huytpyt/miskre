@@ -51,7 +51,7 @@ namespace :product do
       row = xlsx.row(i)
 
       length, width, height = get_dimension(row[9])
-      color = row[7] ? row[7].split('\n') : []
+      color = row[7] ? row[7].split("\n") : []
       params = {
         'name' => row[1],
         'link' =>  row[2],
@@ -66,6 +66,8 @@ namespace :product do
       p = Product.create(params)
 
       unless color.empty?
+        # p params["name"]
+        # p color
         option = p.options.create(name: 'color', values: color)
         p.regen_variants
         p.variants.update_all(price: p.price)
