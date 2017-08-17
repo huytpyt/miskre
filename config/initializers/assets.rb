@@ -12,4 +12,9 @@ Rails.application.config.assets.precompile += %w(
   slick-carousel/slick/slick.css
   slick-carousel/slick/slick-theme.css
   slick-carousel/slick/slick.min.js
+
+  products
+  shipping_rates
+  options
+  variants
 )

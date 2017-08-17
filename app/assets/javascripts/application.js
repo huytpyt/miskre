@@ -17,6 +17,7 @@
 //= require axios
 //= require dropzone
 //= require foundation
-//= require_tree .
+
+//require_tree .
 
 $(function(){ $(document).foundation(); });

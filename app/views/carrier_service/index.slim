@@ -1,3 +1,6 @@
+- content_for :script
+  = javascript_include_tag "shipping_rates"
+
 .page-header
   h1 Shipping Rate Provider
 
@@ -25,9 +28,6 @@
         select.input-group-field v-model="country"
           - ISO3166::Country.all.each do |c|
             option value="#{c.alpha2}" #{c.name}
-          /option disabled="" value="" Please select one
-          /option value="US" United States
-          /option value="UK" United Kingdom
     .medium-5.columns
       .input-group
         span.input-group-label Weight (g)
@@ -38,10 +38,3 @@
     .columns
       p ePUB: ${{ epub }}
       p DHL: ${{ dhl }}
-
-  /p Selected: {{ country }}
-  /.row
-    .columns.large-6
-      h3 ePUB
-    /.columns.large-6
-      h3 DHL

@@ -1,3 +1,6 @@
+- content_for :script
+  = javascript_include_tag "options"
+
 .page-header
   h1 Options
 input#optionsResource value="#{product_options_path(@product.id)}" type="hidden"
