@@ -3,7 +3,6 @@ p#notice = notice
 .page-header
   h1 Products
 
-= link_to 'New Product', new_product_path, class: 'button primary small'
 
 /.products.large-up-4
 /.row.large-up-3
@@ -39,6 +38,7 @@ input#productsResource value="#{products_path()}" type="hidden"
 #products
   .row
     .column
+      = link_to 'New Product', new_product_path, class: 'button primary small'
       table
         thead
           tr

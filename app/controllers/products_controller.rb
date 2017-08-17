@@ -103,12 +103,30 @@ class ProductsController < ShopifyApp::AuthenticatedController
         new_product.vendor = "Miskre"
         new_product.body_html = @product.desc
         new_product.images = @product.images.collect { |i| { 'src': i.file.url(:medium) } }
-        specs = {
-          'weight': @product.weight,
-          'weight_unit': 'g',
-          'price': @product.price
-        }
-        new_product.variants = [specs]
+
+        variants = []
+
+        unless @product.variants.empty?
+          variants = @product.variants.collect do |v|
+            {
+              'option1': v.option1,
+              'option2': v.option2,
+              'option3': v.option3,
+              'weight': @product.weight,
+              'weight_unit': 'g',
+              'price': v.price,
+              'sku': v.sku
+            }
+          end
+        else
+          variants = [{
+            'weight': @product.weight,
+            'weight_unit': 'g',
+            'price': @product.price
+          }]
+        end
+
+        new_product.variants = variants
         new_product.save
 
         Supply.create(shop_id: shop.id, product_id: @product.id, shopify_product_id: new_product.id)
