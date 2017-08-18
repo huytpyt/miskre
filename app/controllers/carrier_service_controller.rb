@@ -19,8 +19,8 @@ class CarrierServiceController < ApplicationController
     dhl_price = dhl_cost - epub_us_cost * 0.8
 
     data = {
-      'epub': epub_price / 100,
-      'dhl': dhl_price / 100
+      'epub': epub_price.round(2),
+      'dhl': dhl_price.round(2)
     }
     respond_to do |format|
       format.json do
