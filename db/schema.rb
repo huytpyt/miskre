@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170817142440) do
+ActiveRecord::Schema.define(version: 20170818063251) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,9 +40,9 @@ ActiveRecord::Schema.define(version: 20170817142440) do
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "weight"
-    t.integer  "length"
-    t.integer  "height"
-    t.integer  "width"
+    t.float    "length"
+    t.float    "height"
+    t.float    "width"
     t.string   "sku"
     t.text     "desc"
     t.float    "price"
@@ -51,8 +51,9 @@ ActiveRecord::Schema.define(version: 20170817142440) do
     t.datetime "updated_at",       null: false
     t.string   "shopify_id"
     t.float    "cost"
-    t.float    "shipping_price"
     t.text     "link"
+    t.float    "epub"
+    t.float    "dhl"
   end
 
   create_table "shops", force: :cascade do |t|

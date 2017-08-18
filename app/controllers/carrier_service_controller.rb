@@ -57,8 +57,9 @@ class CarrierServiceController < ApplicationController
 
       # BECAUSE we are already add 80% epub US cost to product price
       epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
-      epub_price += epub_cost - epub_us_cost * 0.8
-      dhl_price += dhl_cost - epub_us_cost * 0.8
+
+      epub_price += (epub_cost - epub_us_cost * 0.8).round(2)
+      dhl_price += (dhl_cost - epub_us_cost * 0.8).round(2)
       # p i['quantity'], i['grams'], epub_price
     end
 
@@ -68,14 +69,14 @@ class CarrierServiceController < ApplicationController
         'description': '9-12 working days',
         'service_code': 'ePacket',
         'currency': 'USD',
-        'total_price': epub_price.to_s
+        'total_price': (epub_price * 100).round.to_s
       }, 
       {
         'service_name': 'DHL', 
         'description': '5-8 working days',
         'service_code': 'dhl',
         'currency': 'USD',
-        'total_price': dhl_price.to_s
+        'total_price': (dhl_price * 100).round.to_s
       }
     ]
     render :json => {"rates": rates}

@@ -51,7 +51,11 @@ namespace :product do
       row = xlsx.row(i)
 
       length, width, height = get_dimension(row[9])
+      if (length == 0 && width == 0 && height == 0)
+        length, width, height = get_dimension(row[8])
+      end
       color = row[7] ? row[7].split("\n") : []
+
       params = {
         'name' => row[1],
         'link' =>  row[2],
@@ -61,9 +65,8 @@ namespace :product do
         'height' => height,
         'weight' => get_weight(row[10])
       }
-
-      # p params
       p = Product.create(params)
+      # p params
 
       unless color.empty?
         # p params["name"]
@@ -72,35 +75,6 @@ namespace :product do
         p.regen_variants
         p.variants.update_all(price: p.price)
       end
-
-      """
-      name = xlsx.row(i)[1]
-
-      # cost = /([\d\.]+)/.match(xlsx.row(i)[2]).to_a
-      cost = get_cost(xlsx.row(i)[2])
-
-      color =  xlsx.row(i)[3] ? xlsx.row(i)[3].split('\n') : []
-
-      length, width, height = get_dimension(xlsx.row(i)[4])
-
-      weight = 0.0
-
-      p = Product.create(name: name, cost: cost, length: length, width: width, height: height, weight: weight)
-
-      unless color.empty?
-        option = p.options.create(name: 'color', values: color)
-        p.regen_variants
-        p.variants.update_all(price: p.price)
-        p 'name', name
-      end
-
-      # p '*' * 20
-      # p 'name', name
-      # p 'cost', cost
-      # p 'color', color
-      # p 'size', length, width, height
-      # p '*' * 20
-      """
     end
   end
 end

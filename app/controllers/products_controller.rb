@@ -163,6 +163,6 @@ class ProductsController < ShopifyApp::AuthenticatedController
     def product_params
       params.require(:product).permit(:name, :weight, :length, 
                                       :height, :width, :sku, :desc, 
-                                      :price, :cost, :shipping_price)
+                                      :price, :cost)
     end
 end

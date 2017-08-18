@@ -44,20 +44,20 @@ input#productsResource value="#{products_path()}" type="hidden"
           tr
             th Name
             th Cost
-            th Weight (g)
+            th Weight
             th Size (L*W*H)
-            th Price ($)
-            th Shipping Cost ($)
+            th Price
+            th Shipping Cost (ePUB | DHL)
             th
         tbody
           - @products.each do |p|
             tr
-              th = p.name
+              th = link_to p.name, p.link
               td $#{ p.cost }
-              td = p.weight
+              td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm
-              td = p.price
-              td $#{p.shipping_price}
+              td $#{p.price}
+              td $#{p.epub} | $#{p.dhl}
               td
                 ul.menu
                   li

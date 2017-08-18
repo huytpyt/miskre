@@ -16,9 +16,21 @@ class Product < ApplicationRecord
   after_create :calculate_price
 
   def calculate_price
-    epub_cost = CarrierService.get_epub_cost('US', self.weight)
-    self.shipping_price = (epub_cost * 0.2).to_f / 100
-    self.price = self.cost * 3 + (epub_cost * 0.8).to_f / 100
+    # epub_cost = CarrierService.get_epub_cost('US', self.weight)
+    # self.shipping_price = (epub_cost * 0.2).to_f / 100
+    # self.price = self.cost * 3 + (epub_cost * 0.8).to_f / 100
+    # self.save
+
+
+    epub_us_cost = CarrierService.get_epub_cost('US', self.weight)
+    dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
+
+    self.price = (self.cost * 3 + epub_us_cost * 0.8).round
+    # patch is the portion of shipping_cost which is added to product price
+    patch = (self.price - self.cost * 3).round(2)
+    self.epub = (epub_us_cost - patch).round(2)
+    self.dhl = (dhl_us_cost - patch).round(2)
+
     self.save
   end
 
