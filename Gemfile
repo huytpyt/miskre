@@ -65,3 +65,5 @@ gem 'cancancan', '~> 1.13', '>= 1.13.1'
 gem 'enumerize', '~> 2.1', '>= 2.1.2'
 gem 'roo', '~> 2.7', '>= 2.7.1'
 gem 'countries', '~> 2.1', '>= 2.1.2'
+gem 'ckeditor', '~> 4.2', '>= 4.2.4'
+

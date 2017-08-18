@@ -8,6 +8,7 @@ html lang="en"
     = stylesheet_link_tag "application"
     = csrf_meta_tags
     = yield :css
+    = javascript_include_tag "application"
   body
 
     = render 'layouts/top_bar'
@@ -15,5 +16,4 @@ html lang="en"
     = render 'layouts/flash_messages'
     = yield
 
-    = javascript_include_tag "application"
     = yield :script

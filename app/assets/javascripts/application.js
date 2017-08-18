@@ -17,6 +17,7 @@
 //= require axios
 //= require dropzone
 //= require foundation
+//= require ckeditor/init
 
 //require_tree .
 
