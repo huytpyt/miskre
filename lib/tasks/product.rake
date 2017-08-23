@@ -77,4 +77,28 @@ namespace :product do
       end
     end
   end
+
+  task :generate_purchase_list => :environment do
+    CSV.open("purchase_list.csv", "wb") do |csv|
+      csv << ["ProductName", "SKU", "Quantity", "Link"]
+
+      Product.order(sku: :asc).each do |p|
+        if p.variants.count <= 1
+          csv << [p.name, p.sku, 5, p.link]
+        else
+          first = true
+          p.variants.each do |v|
+            if first
+              csv << [p.name, v.sku + " - " + v.option1, 3, p.link]
+              first = false
+            else
+              csv << ["", v.sku + " - " + v.option1, 3, ""]
+            end
+          end
+        end
+
+        csv << []
+      end
+    end
+  end
 end

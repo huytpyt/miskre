@@ -10,7 +10,7 @@ class ProductsController < ShopifyApp::AuthenticatedController
   # GET /products
   # GET /products.json
   def index
-    @products = Product.all
+    @products = Product.order(sku: :asc)
     respond_to do |format|
       format.json do
         render json: @products

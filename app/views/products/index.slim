@@ -43,6 +43,7 @@ input#productsResource value="#{products_path()}" type="hidden"
         thead
           tr
             th Name
+            th SKU
             th Cost
             th Weight
             th Size (L*W*H)
@@ -53,6 +54,7 @@ input#productsResource value="#{products_path()}" type="hidden"
           - @products.each do |p|
             tr
               th = link_to p.name, p.link
+              th = p.sku
               td $#{ p.cost }
               td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm
