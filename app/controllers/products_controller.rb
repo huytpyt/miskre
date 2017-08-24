@@ -10,7 +10,8 @@ class ProductsController < ShopifyApp::AuthenticatedController
   # GET /products
   # GET /products.json
   def index
-    @products = Product.order(sku: :asc)
+    # @users = User.order(:name).page params[:page]
+    @products = Product.order(sku: :asc).page params[:page]
     respond_to do |format|
       format.json do
         render json: @products

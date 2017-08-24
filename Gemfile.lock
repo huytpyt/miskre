@@ -302,6 +302,7 @@ DEPENDENCIES
   foundation-rails (~> 6.4, >= 6.4.1.2)
   jbuilder (~> 2.5)
   jquery-rails
+  kaminari (~> 1.0, >= 1.0.1)
   listen (~> 3.0.5)
   paperclip (~> 5.1)
   pg (~> 0.18)

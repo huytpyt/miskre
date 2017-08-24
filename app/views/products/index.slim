@@ -38,7 +38,12 @@ input#productsResource value="#{products_path()}" type="hidden"
 #products
   .row
     .column
-      = link_to 'New Product', new_product_path, class: 'button primary small'
+      .row
+        .column.medium-3
+          = link_to 'New Product', new_product_path, class: 'button primary small'
+        .column.medium-9
+          = paginate @products
+    .column
       table
         thead
           tr
