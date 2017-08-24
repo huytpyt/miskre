@@ -47,4 +47,5 @@ input#productId value="#{@product.id}" type="hidden"
               /button v-else="" @click="editMode = true" Edit
               /= link_to "Edit", edit_product_variant(@product, variant), class: 'button'
               a.clear.button.small :href="'/products/'+ productId + '/variants/' + variant.id + '/edit'" Edit
+              br
               button.clear.button.alert.small v-if="!editMode" @click="removeVariant(variant)" Remove

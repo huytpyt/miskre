@@ -33,6 +33,19 @@
   .row
     .columns.medium-4
       .field
+        = f.label :option1
+        = f.text_field :option1, disabled: true
+    .columns.medium-4
+      .field
+        = f.label :option2
+        = f.text_field :option2, disabled: true
+    .columns.medium-4
+      .field
+        = f.label :option3
+        = f.text_field :option3, disabled: true
+  .row
+    .columns.medium-4
+      .field
         = f.label :quantity
         = f.number_field :quantity
     .columns.medium-4
