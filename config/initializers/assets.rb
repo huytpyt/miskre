@@ -18,4 +18,5 @@ Rails.application.config.assets.precompile += %w(
   shipping_rates
   options
   variants
+  edit_variants
 )

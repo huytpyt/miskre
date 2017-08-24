@@ -6,6 +6,7 @@
 
 input#variantsResource value="#{product_variants_path(@product.id)}" type="hidden"
 input#variantsReload value="#{reload_product_variants_path(@product.id, format: 'json')}" type="hidden"
+input#productId value="#{@product.id}" type="hidden"
 
 #variants
   .row
@@ -42,6 +43,8 @@ input#variantsReload value="#{reload_product_variants_path(@product.id, format: 
                 span style="color:red" {{ errors.sku}}
               div v-else="" {{ variant.sku }}
             td
-              button v-if="editMode" @click="updateVariant(variant)" Save
-              button v-else="" @click="editMode = true" Edit
-              button v-if="!editMode" @click="removeVariant(variant)" style="color:red" Remove
+              /button v-if="editMode" @click="updateVariant(variant)" Save
+              /button v-else="" @click="editMode = true" Edit
+              /= link_to "Edit", edit_product_variant(@product, variant), class: 'button'
+              a.clear.button.small :href="'/products/'+ productId + '/variants/' + variant.id + '/edit'" Edit
+              button.clear.button.alert.small v-if="!editMode" @click="removeVariant(variant)" Remove

@@ -1,0 +1,48 @@
+- content_for :css
+  = stylesheet_link_tag "slick-carousel/slick/slick.css"
+  = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
+
+- content_for :script
+  = javascript_include_tag "edit_variants"
+  = javascript_include_tag "slick-carousel/slick/slick.min.js"
+
+= form_for variant, url: product_variant_path(product, variant) do |f|
+  - if variant.errors.any?
+    .row
+      #error_explanation
+        h2 #{pluralize(variant.errors.count, "error")} prohibited this variant from being saved:
+        ul
+          - variant.errors.full_messages.each do |message|
+            li = message
+  - if variant.persisted? && variant.images.size > 0
+    .row
+      .columns
+        #images-preview
+          - variant.images.each do |pi|
+            div
+              = image_tag pi.file.url(:medium)
+            = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
+  .row
+    .columns
+      ul#dvPreview
+  .row
+    .columns
+      .field
+        = f.label :images
+        = f.file_field :images, multiple: true
+  .row
+    .columns.medium-4
+      .field
+        = f.label :quantity
+        = f.number_field :quantity
+    .columns.medium-4
+      .field
+        = f.label :price
+        = f.number_field :price
+    .columns.medium-4
+      .field
+        = f.label :sku
+        = f.text_field :sku
+  .row
+    .actions
+      = f.submit "Save", id: "submit-variant"

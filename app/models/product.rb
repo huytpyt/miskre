@@ -1,7 +1,9 @@
 class Product < ApplicationRecord
   include ShopifyApp::SessionStorage
 
-  has_many :images, dependent: :destroy
+  # has_many :images, dependent: :destroy
+  has_many :images, as: :imageable, dependent: :destroy
+
   has_many :supplies
   has_many :shops, through: :supplies
   has_many :options, dependent: :destroy

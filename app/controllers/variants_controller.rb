@@ -31,18 +31,37 @@ class VariantsController < ApplicationController
     end
   end
 
+  def edit
+  end
+
   # PATCH/PUT /variants/1
   # PATCH/PUT /variants/1.json
   def update
     respond_to do |format|
-      format.json do 
-        if @variant.update(variant_params)
-          render json: @variant
-        else
-          render json: { :errors => @variant.errors.messages }, status: :unprocessable_entity
+      if @variant.update(variant_params)
+        if params[:variant][:images]
+          params[:variant][:images].each do |img|
+            @variant.images.create(file: img)
+          end
         end
+
+        format.html { redirect_to edit_product_variant_path(@product, @variant), notice: 'Variant was successfully updated.' }
+        format.json { render json: @variant}
+      else
+        format.html { render :edit }
+        format.json { render json: { :errors => @variant.errors.messages }, status: :unprocessable_entity }
       end
     end
+
+    # respond_to do |format|
+    #   format.json do 
+    #     if @variant.update(variant_params)
+    #       render json: @variant
+    #     else
+    #       render json: { :errors => @variant.errors.messages }, status: :unprocessable_entity
+    #     end
+    #   end
+    # end
   end
 
   # DELETE /variants/1
