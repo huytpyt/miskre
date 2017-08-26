@@ -145,6 +145,31 @@ class ProductsController < ShopifyApp::AuthenticatedController
     redirect_to add_to_shop_product_url, notice: 'Product was successfully remove from shop.'
   end
 
+  def purchases
+    csv = CSV.generate do |csv|
+      csv << ["ProductName", "SKU", "Quantity", "Link"]
+      Product.order(sku: :asc).each do |p|
+        if p.variants.count <= 1
+          csv << [p.name, p.sku, 5, p.link]
+        else
+          first = true
+          p.variants.each do |v|
+            if first
+              csv << [p.name, v.sku + " - " + v.option1, 3, p.link]
+              first = false
+            else
+              csv << ["", v.sku + " - " + v.option1, 3, ""]
+            end
+          end
+        end
+
+        csv << []
+      end
+    end
+
+    send_data csv, filename: "purchase_list.csv"
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :variants do
       get 'reload', on: :collection
     end
+    get 'purchases', on: :collection
   end
   resources :orders, only: :index do
     post 'fetch', on: :collection
