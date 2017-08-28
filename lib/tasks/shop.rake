@@ -8,6 +8,7 @@ namespace :shop do
       Product.order(sku: :asc).each do |product|
         p 'Importing product ' + product.name
         c.add_product(product.id)
+        sleep 0.5
       end
     else
       p 'Shop Not Found'
@@ -21,6 +22,7 @@ namespace :shop do
       Product.order(sku: :asc).each do |product|
         p 'Remove product ' + product.name
         c.remove_product(product.id)
+        sleep 0.5
       end
     else
       p 'Shop Not Found'
