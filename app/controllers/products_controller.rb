@@ -99,60 +99,16 @@ class ProductsController < ShopifyApp::AuthenticatedController
     shop_ids = params[:product][:shops]
     unless shop_ids.empty?
       shop_ids.each do |id|
-        shop = Shop.find(id)
-
-        session[:shopify] = shop.id
-        new_product = ShopifyAPI::Product.new
-        new_product.title = @product.name
-        new_product.vendor = "Miskre"
-        new_product.body_html = @product.desc
-        new_product.images = @product.images.collect do |i|
-          # p URI.join(request.url, i.file.url(:original)).to_s
-          # { "src" => URI.join(request.url, i.file.url(:original)) }
-          raw_content = Paperclip.io_adapters.for(i.file).read
-          encoded_content = Base64.encode64(raw_content)
-          { "attachment" => encoded_content }
-        end
-
-        variants = []
-
-        unless @product.variants.empty?
-          variants = @product.variants.collect do |v|
-            {
-              'option1': v.option1,
-              'option2': v.option2,
-              'option3': v.option3,
-              'weight': @product.weight,
-              'weight_unit': 'g',
-              'price': v.price,
-              'sku': v.sku
-            }
-          end
-        else
-          variants = [{
-            'weight': @product.weight,
-            'weight_unit': 'g',
-            'price': @product.price
-          }]
-        end
-
-        new_product.variants = variants
-        new_product.save
-
-        Supply.create(shop_id: shop.id, product_id: @product.id, shopify_product_id: new_product.id)
+        c = ShopifyCommunicator.new(id)
+        c.add_product(@product.id)
       end
     end
     redirect_to add_to_shop_product_path(@product), notice: 'Product has been added to shops.'
   end
 
   def remove_shop
-    supply = Supply.find_by(shop_id: params[:shop_id], product_id: @product.id)
-    session[:shopify] = supply.shop_id
-    begin
-      ShopifyAPI::Product.delete(supply.shopify_product_id)
-    rescue ActiveResource::ResourceNotFound
-    end
-    supply.destroy
+    c = ShopifyCommunicator.new(params[:shop_id])
+    c.remove_product(@product.id)
     redirect_to add_to_shop_product_url, notice: 'Product was successfully remove from shop.'
   end
 
