@@ -1,3 +1,5 @@
+# rake shop:add_all_products["xfanStore"]
+
 namespace :shop do
   task :add_all_products, [:name] => :environment do |t, args|
     shop = Shop.where(name: args[:name]).first
