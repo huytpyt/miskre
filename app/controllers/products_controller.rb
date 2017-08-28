@@ -1,3 +1,5 @@
+require 'base64'
+
 class ProductsController < ShopifyApp::AuthenticatedController
 # class ProductsController < ApplicationController
   # TODO
@@ -104,7 +106,13 @@ class ProductsController < ShopifyApp::AuthenticatedController
         new_product.title = @product.name
         new_product.vendor = "Miskre"
         new_product.body_html = @product.desc
-        new_product.images = @product.images.collect { |i| { 'src': i.file.url(:medium) } }
+        new_product.images = @product.images.collect do |i|
+          # p URI.join(request.url, i.file.url(:original)).to_s
+          # { "src" => URI.join(request.url, i.file.url(:original)) }
+          raw_content = Paperclip.io_adapters.for(i.file).read
+          encoded_content = Base64.encode64(raw_content)
+          { "attachment" => encoded_content }
+        end
 
         variants = []
 
@@ -140,7 +148,10 @@ class ProductsController < ShopifyApp::AuthenticatedController
   def remove_shop
     supply = Supply.find_by(shop_id: params[:shop_id], product_id: @product.id)
     session[:shopify] = supply.shop_id
-    ShopifyAPI::Product.delete(supply.shopify_product_id)
+    begin
+      ShopifyAPI::Product.delete(supply.shopify_product_id)
+    rescue ActiveResource::ResourceNotFound
+    end
     supply.destroy
     redirect_to add_to_shop_product_url, notice: 'Product was successfully remove from shop.'
   end
