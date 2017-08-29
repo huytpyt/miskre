@@ -1,3 +1,6 @@
+- content_for :script
+  = javascript_include_tag "products/index"
+
 p#notice = notice
 
 .page-header
@@ -41,10 +44,10 @@ input#productsResource value="#{products_path()}" type="hidden"
       .row
         .column.medium-3
           = link_to 'New Product', new_product_path, class: 'button primary small'
-        .column.medium-9
+        /.column.medium-9
           = paginate @products
     .column
-      table
+      table#product-table
         thead
           tr
             th Name

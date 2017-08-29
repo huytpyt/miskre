@@ -15,6 +15,7 @@ Rails.application.config.assets.precompile += %w(
   ckeditor/*
 
   products
+  products/index
   shipping_rates
   options
   variants
