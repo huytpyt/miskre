@@ -51,6 +51,7 @@ input#productsResource value="#{products_path()}" type="hidden"
         thead
           tr
             th Name
+            th Vendor
             th SKU
             th Cost
             th Weight
@@ -63,6 +64,7 @@ input#productsResource value="#{products_path()}" type="hidden"
             tr
               th = link_to p.name, p.link
               th = p.sku
+              th = p.vendor
               td $#{ p.cost }
               td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm

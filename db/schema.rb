@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170824014941) do
+ActiveRecord::Schema.define(version: 20170829132430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,13 +48,14 @@ ActiveRecord::Schema.define(version: 20170824014941) do
     t.text     "desc"
     t.float    "price"
     t.float    "compare_at_price"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.string   "shopify_id"
     t.float    "cost"
     t.text     "link"
     t.float    "epub"
     t.float    "dhl"
+    t.string   "vendor",           default: "Miskre"
   end
 
   create_table "shops", force: :cascade do |t|

@@ -1,16 +1,28 @@
 require 'csv'
 
-class OrdersController < ShopifyApp::AuthenticatedController
+# class OrdersController < ShopifyApp::AuthenticatedController
+class OrdersController < ApplicationController
   before_action :set_query
 
   def index
-    shopify_params = {
-      financial_status: 'paid', 
-      fulfillment_status: ['partial', 'unshipped'],
-      limit: 10
-    }
-    @orders_number = ShopifyAPI::Order.find(:count, params: shopify_params).count
-    @orders = ShopifyAPI::Order.find(:all, params: shopify_params)
+    # shopify_params = {
+    #   financial_status: 'paid', 
+    #   fulfillment_status: ['partial', 'unshipped'],
+    #   limit: 10
+    # }
+    # @orders_number = ShopifyAPI::Order.find(:count, params: shopify_params).count
+    # @orders = ShopifyAPI::Order.find(:all, params: shopify_params)
+    #
+    if current_user.shops.empty?
+      @orders_number = 0
+      @orders = []
+    else
+      # session[:shopify] ||= current_user.shops.first.id
+      c = ShopifyCommunicator.new(current_user.shops.first.id)
+      c.add_product(@product.id)
+      @orders_number = c.count_order()
+      @orders = c.sample_order()
+    end
   end
 
   def fetch
