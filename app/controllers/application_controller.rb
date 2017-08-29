@@ -12,6 +12,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def after_sign_in_path_for(resource)
+    if resource.instance_of?(User)
+      return rails_admin_path if resource.admin?
+      return root_path
+    end
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     # render :file => "#{Rails.root}/public/404.html", :status => 404, :layout => false
 

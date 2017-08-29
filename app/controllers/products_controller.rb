@@ -1,7 +1,7 @@
 require 'base64'
 
-class ProductsController < ShopifyApp::AuthenticatedController
-# class ProductsController < ApplicationController
+# class ProductsController < ShopifyApp::AuthenticatedController
+class ProductsController < ApplicationController
   # TODO
   # sync products from shop
   before_action :set_product, only: [:show, :edit, :update, :destroy, 
