@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170829132430) do
+ActiveRecord::Schema.define(version: 20170830033711) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,22 +40,25 @@ ActiveRecord::Schema.define(version: 20170829132430) do
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
-    t.integer  "weight"
-    t.float    "length"
-    t.float    "height"
-    t.float    "width"
+    t.integer  "weight",           default: 0
+    t.float    "length",           default: 0.0
+    t.float    "height",           default: 0.0
+    t.float    "width",            default: 0.0
     t.string   "sku"
     t.text     "desc"
-    t.float    "price"
+    t.float    "price",            default: 0.0
     t.float    "compare_at_price"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
     t.string   "shopify_id"
-    t.float    "cost"
+    t.float    "cost",             default: 0.0
     t.text     "link"
     t.float    "epub"
     t.float    "dhl"
     t.string   "vendor",           default: "Miskre"
+    t.integer  "bundle_id"
+    t.boolean  "is_bundle",        default: false
+    t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
   end
 
   create_table "shops", force: :cascade do |t|

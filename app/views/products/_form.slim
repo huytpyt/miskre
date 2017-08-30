@@ -3,11 +3,9 @@
   = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
 
 - content_for :script
+  = javascript_include_tag "products/form"
   = javascript_include_tag "slick-carousel/slick/slick.min.js"
 
-/= form_for product, html: {class: "dropzone"} do |f|
-/= form_for @product, html: {id: "productForm", multipart: true} do |f|
-/= form_for @product, html: {class: "dropzone", id: "productForm", multipart: true} do |f|
 = form_for product do |f|
   - if product.errors.any?
     .row
@@ -45,6 +43,18 @@
       .field
         = f.label :vendor
         = f.text_field :vendor
+  .row
+    .columns.medium-3
+      .field
+        = f.label :is_bundle
+        = f.check_box :is_bundle
+    .columns.medium-9
+      #bundle_products style=(@product.is_bundle ? '' : 'visibility:hidden;')
+        .field
+          = f.label :products
+          = f.select :product_ids, Product.all.map { |p| [p.name, p.id] }, { }, { :multiple => true }
+
+  .row
     .columns
       .field
         = f.label :desc
@@ -53,7 +63,7 @@
     .columns.medium-3
       .field
         = f.label :cost, "Cost ($)"
-        = f.text_field :cost
+        = f.number_field :cost, step: 0.1
     .columns.medium-9
       .row
         .columns.medium-3
@@ -73,14 +83,19 @@
             = f.label :width, "Width (cm)"
             = f.number_field :width
     .columns
-      h4 Prices
-      p Price: $#{@product_price}
-      p ePUB: $#{@epub_price}
-      p DHL: $#{@dhl_price}
+      .row
+        .columns
+          h4 Prices
+        .columns.medium-4
+          p Price: $#{@product.price}
+        .columns.medium-4
+          p ePUB: $#{@product.epub}
+        .columns.medium-4
+          p DHL: $#{@product.dhl}
       /.field
         = f.label :shipping_price
         = f.text_field :shipping_price
   .row
-  .row
-    .actions
-      = f.submit "Save", id: "submit-product"
+    .columns.small-1.small-centered
+      .actions
+        = f.submit "Save", id: "submit-product", class: 'button alert small'

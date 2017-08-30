@@ -9,28 +9,41 @@ class Product < ApplicationRecord
   has_many :options, dependent: :destroy
   has_many :variants, dependent: :destroy
 
+  has_many :products, class_name: "Product", foreign_key: "bundle_id"
+  belongs_to :bundle, class_name: "Product"
+
   validates :name, presence: true
 
   before_create :generate_sku
-  after_create :calculate_price
+  # after_create :calculate_price
+  before_save :pack_bundle, if: :is_bundle
+  before_save :calculate_price
+
+  def pack_bundle
+    unless self.products.empty?
+      self.cost = 0
+      self.weight = 0
+      self.length = 0
+      self.width = 0
+      self.height = 0
+
+      self.products.each do |p|
+        self.cost += p.cost
+        self.weight += p.weight
+      end
+    end
+  end
 
   def calculate_price
-    # epub_cost = CarrierService.get_epub_cost('US', self.weight)
-    # self.shipping_price = (epub_cost * 0.2).to_f / 100
-    # self.price = self.cost * 3 + (epub_cost * 0.8).to_f / 100
-    # self.save
-
-
     epub_us_cost = CarrierService.get_epub_cost('US', self.weight)
     dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
 
-    self.price = (self.cost * 3 + epub_us_cost * 0.8).round
+    self.price = (self.cost * 3 + epub_us_cost * 0.8).round(0)
     # patch is the portion of shipping_cost which is added to product price
     patch = (self.price - self.cost * 3).round(2)
     self.epub = (epub_us_cost - patch).round(2)
     self.dhl = (dhl_us_cost - patch).round(2)
-
-    self.save
+    # self.save
   end
 
   def generate_sku

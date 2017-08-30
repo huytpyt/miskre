@@ -1,13 +1,8 @@
-require 'base64'
-
-# class ProductsController < ShopifyApp::AuthenticatedController
 class ProductsController < ApplicationController
   # TODO
   # sync products from shop
   before_action :set_product, only: [:show, :edit, :update, :destroy, 
                                      :add_to_shop, :assign, :remove_shop]
-
-  before_action :calculate_price, only: [:edit, :update]
 
   # GET /products
   # GET /products.json
@@ -142,21 +137,11 @@ class ProductsController < ApplicationController
     def set_product
       @product = Product.find(params[:id])
     end
-    
-    def calculate_price
-      epub_cost = CarrierService.get_epub_cost('US', @product.weight) / 100
-      dhl_cost = CarrierService.get_dhl_cost('US', [@product.weight, @product.width * @product.height * @product.length / 5].max) / 100
-
-      # BECAUSE we are already add 80% epub US cost to product price
-      @product_price = (@product.cost * 3 + epub_cost * 0.8).round(2)
-      @epub_price = (epub_cost * 0.2).round(2)
-      @dhl_price = (dhl_cost - epub_cost * 0.8).round(2)
-    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
-      params.require(:product).permit(:name, :weight, :length, :vendor,
-                                      :height, :width, :sku, :desc, 
-                                      :price, :cost)
+      params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
+                                      :height, :width, :sku, :desc,
+                                      :price, :cost, product_ids: [])
     end
 end

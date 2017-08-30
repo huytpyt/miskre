@@ -17,6 +17,7 @@
  *= require font-awesome
  *= require foundation
  *= require dropzone
+ *= require chosen
  */
 
 .page-header
