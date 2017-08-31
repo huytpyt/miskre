@@ -112,15 +112,15 @@ class ProductsController < ApplicationController
       csv << ["ProductName", "SKU", "Quantity", "Link"]
       Product.order(sku: :asc).each do |p|
         if p.variants.count <= 1
-          csv << [p.name, p.sku, 5, p.link]
+          csv << [p.name, p.sku, 6, p.link]
         else
           first = true
           p.variants.each do |v|
             if first
-              csv << [p.name, v.sku + " - " + v.option1, 3, p.link]
+              csv << [p.name, v.sku + " - " + v.option1, 4, p.link]
               first = false
             else
-              csv << ["", v.sku + " - " + v.option1, 3, ""]
+              csv << ["", v.sku + " - " + v.option1, 4, ""]
             end
           end
         end
