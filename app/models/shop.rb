@@ -6,6 +6,7 @@ class Shop < ActiveRecord::Base
 
   has_many :supplies
   has_many :products, through: :supplies
+  has_many :orders
 
   before_create :get_shop_infor
 

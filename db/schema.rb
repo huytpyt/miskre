@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170831023546) do
+ActiveRecord::Schema.define(version: 20170831030344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,34 @@ ActiveRecord::Schema.define(version: 20170831023546) do
     t.integer  "user_id"
     t.index ["product_id"], name: "index_options_on_product_id", using: :btree
     t.index ["user_id"], name: "index_options_on_user_id", using: :btree
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "ship_address1"
+    t.string   "ship_address2"
+    t.string   "ship_city"
+    t.string   "ship_state"
+    t.string   "ship_zip"
+    t.string   "ship_country"
+    t.string   "ship_phone"
+    t.string   "email"
+    t.integer  "quantity"
+    t.text     "skus"
+    t.text     "unit_price"
+    t.datetime "date"
+    t.string   "remark"
+    t.string   "shipping_method"
+    t.string   "tracking_no"
+    t.float    "fulfill_fee"
+    t.text     "product_name"
+    t.string   "color"
+    t.string   "size"
+    t.integer  "shop_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["shop_id"], name: "index_orders_on_shop_id", using: :btree
   end
 
   create_table "products", force: :cascade do |t|
@@ -121,6 +149,7 @@ ActiveRecord::Schema.define(version: 20170831023546) do
 
   add_foreign_key "options", "products"
   add_foreign_key "options", "users"
+  add_foreign_key "orders", "shops"
   add_foreign_key "shops", "users"
   add_foreign_key "variants", "products"
   add_foreign_key "variants", "users"
