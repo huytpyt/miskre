@@ -31,15 +31,19 @@
         = f.label :images
         = f.file_field :images, multiple: true
   .row
-    .columns.medium-4
+    .columns.medium-3
       .field
         = f.label :name
         = f.text_field :name
-    .columns.medium-4
+    .columns.medium-3
       .field
         = f.label :sku
         = f.text_field :sku
-    .columns.medium-4
+    .columns.medium-3
+      .field
+        = f.label :quantity
+        = f.number_field :quantity
+    .columns.medium-3
       .field
         = f.label :vendor
         = f.text_field :vendor

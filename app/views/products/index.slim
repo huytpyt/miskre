@@ -57,6 +57,7 @@ input#productsResource value="#{products_path()}" type="hidden"
             th Weight
             th Size (L*W*H)
             th Price
+            th Quantity
             th Shipping Cost (ePUB | DHL)
             th
         tbody
@@ -72,6 +73,7 @@ input#productsResource value="#{products_path()}" type="hidden"
               td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm
               td $#{p.price}
+              td = p.quantity
               td $#{p.epub} | $#{p.dhl}
               td
                 ul.menu
