@@ -28,4 +28,12 @@ namespace :shop do
       p 'Shop Not Found'
     end
   end
+
+  task :sync_orders => :environment do
+    Shop.all.each do |s|
+      # p s.name
+      c = ShopifyCommunicator.new(s.id)
+      c.sync_orders
+    end
+  end
 end

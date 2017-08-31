@@ -19,7 +19,7 @@ class OrdersController < ApplicationController
     else
       # session[:shopify] ||= current_user.shops.first.id
       c = ShopifyCommunicator.new(current_user.shops.first.id)
-      c.add_product(@product.id)
+      # c.add_product(@product.id)
       @orders_number = c.count_order()
       @orders = c.sample_order()
     end

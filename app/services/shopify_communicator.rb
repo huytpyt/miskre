@@ -2,6 +2,86 @@ class ShopifyCommunicator
   def initialize(shop_id)
     @shop = Shop.find(shop_id)
     @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
+    ShopifyAPI::Base.activate_session(@session)
+  end
+
+  def get_order_params(o)
+    quantity = 0
+    skus = []
+    unit_prices = []
+    shipping_methods = []
+    products = []
+
+    o.line_items.each do |item|
+      quantity += item.quantity
+      skus.append("#{item.sku} * #{item.quantity}")
+      unit_prices.append(item.price)
+      products.append(item.title)
+    end
+
+    o.shipping_lines.each do |s|
+      shipping_methods.append(s.title)
+    end
+
+    {
+      shopify_id: o.id,
+      first_name: o.customer.first_name,
+      last_name: o.customer.last_name,
+      ship_address1: o.shipping_address.address1,
+      ship_address2: o.shipping_address.address2,
+      ship_city: o.shipping_address.city,
+      ship_state: o.shipping_address.province,
+      ship_zip: o.shipping_address.zip,
+      ship_country: o.shipping_address.country,
+      ship_phone: o.shipping_address.phone,
+      email: o.customer.email,
+      financial_status: o.financial_status,
+      fulfillment_status: o.fulfillment_status,
+      quantity: quantity,
+      skus: skus.join(","),
+      unit_price: unit_prices.join(","),
+      date: o.created_at,
+      remark: "",
+      shipping_method: shipping_methods.join(","),
+      product_name: products.join(",")
+    }
+  end
+
+  def sync_orders(start_date=1.day.ago, end_date=DateTime.now)
+    params = {
+      status: 'any',
+      created_at_min: start_date.strftime("%FT%T%:z"),
+      created_at_max: end_date.strftime("%FT%T%:z")
+    }
+
+    count = ShopifyAPI::Order.find(:count, params: params).count
+    total_pages = count / 50 + 1
+    fetched_pages = 0
+    current_page = 0
+
+    while fetched_pages < total_pages
+      current_page = fetched_pages + 1
+      p "Fetching #{current_page} / #{total_pages} pages"
+      begin
+        params["page"] = current_page
+        orders = ShopifyAPI::Order.find(:all, params: params )
+        fetched_pages += 1
+
+        orders.each do |o|
+          begin
+            order_params = get_order_params(o)
+            @shop.orders.create(order_params)
+          rescue NoMethodError => e
+            p 'invalid order'
+          end
+        end
+
+        sleep 0.5
+      #rescue
+      #  p "Error Connection. Try again ..."
+      #  next 
+      end
+    end
   end
 
   def count_order
