@@ -8,20 +8,24 @@ var ship = new Vue({
     errors: {}
   },
   methods: {
-    lookup_for_price() {
+    lookup_for_price: function() {
       var vm = this;
+
+      var success = function(res) {
+        vm.epub = response.data.epub;
+        vm.dhl = response.data.dhl;
+      }
+
+      var error = function(res) {
+        // error callback
+      }
 
       this.$http.get('/find_ship_cost', {
         params: {
           country: vm.country,
           weight: vm.weight
         }
-      }).then(response => {
-        vm.epub = response.data.epub
-        vm.dhl = response.data.dhl
-      }, response => {
-        // error callback
-      });
+      }).then(success, error);
     }
   }
 });

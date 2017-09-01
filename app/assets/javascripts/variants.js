@@ -17,7 +17,7 @@ var variants = new Vue({
     errors: {}
   },
   methods: {
-    reloadVariants() {
+    reloadVariants: function() {
       var vm = this;
       axios.get($('#variantsReload').val()).then(function (response) {
         vm.variants = response.data;
@@ -26,7 +26,7 @@ var variants = new Vue({
       });
 
     },
-    updateVariant(variant) {
+    updateVariant: function(variant) {
       var vm = this;
       variantResource.update({id: variant.id}, {variant: variant}).then(
         function (response) {
@@ -35,7 +35,7 @@ var variants = new Vue({
         }
       )
     },
-    removeVariant(variant) {
+    removeVariant: function(variant) {
       var vm = this;
       this.variants.splice(this.variants.indexOf(variant), 1)
       variantResource.delete({id: variant.id}).then(

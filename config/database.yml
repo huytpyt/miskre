@@ -80,7 +80,11 @@ test:
 #
 production:
   <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
-  database: shopCenter_production
-  username: shopCenter
-  password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
+  # url: <%= ENV['DATABASE_URL'] %>
+  # database: shopCenter_production
+  # username: shopCenter
+  host: localhost
+  database: miskre
+  # username: miskre
+  # password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
+  # password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>

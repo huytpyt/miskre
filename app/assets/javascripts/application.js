@@ -14,8 +14,8 @@
 //= require jquery_ujs
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.foundation
-//= require vue/dist/vue
-//= require vue-resource/dist/vue-resource
+//= require vue
+//= require vue-resource
 //= require axios
 //= require dropzone
 //= require foundation

@@ -70,3 +70,11 @@ gem 'kaminari', '~> 1.0', '>= 1.0.1'
 gem 'jquery-datatables-rails', '~> 3.4'
 gem 'chosen-rails', '~> 1.5', '>= 1.5.2'
 gem 'whenever', '~> 0.9.7'
+gem 'vuejs-rails', '~> 2.4', '>= 2.4.2'
+
+group :development do
+  gem 'capistrano', '~> 3.9'
+  gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.1'
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano3-puma',   require: false
+end
