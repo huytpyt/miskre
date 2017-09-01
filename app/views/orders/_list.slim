@@ -1,16 +1,19 @@
-table
+- content_for :script
+  = javascript_include_tag "orders/index"
+
+table#order-table
   thead
     tr 
       th OrderId
       th Customer
       th Email
       th Date
-      th Total
+      /th Total
   tbody
     - orders.each do |order|
       tr
-        td = order.id
-        td = "#{order.customer.first_name} #{order.customer.last_name}"
-        td = order.customer.email
-        td = order.created_at
-        td = order.total_price
+        td = order.shopify_id
+        td = "#{order.first_name} #{order.last_name}"
+        td = order.email
+        td = order.date.strftime("%F")
+        /td = order.total_price

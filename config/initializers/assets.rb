@@ -17,6 +17,7 @@ Rails.application.config.assets.precompile += %w(
 
   products/index
   products/form
+  orders/index
   shipping_rates
   options
   variants
