@@ -85,7 +85,7 @@ production:
   # username: shopCenter
   # database: miskre
   host: localhost
-  username: misre
+  username: miskre
   # password: pguser_password
   password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
   # username: miskre
