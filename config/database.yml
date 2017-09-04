@@ -81,13 +81,9 @@ test:
 production:
   <<: *default
   # url: <%= ENV['DATABASE_URL'] %>
-  # database: shopCenter_production
+  database: shopCenter_production
   # username: shopCenter
   # database: miskre
   host: localhost
   username: miskre
-  # password: pguser_password
   password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
-  # username: miskre
-  # password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
-  # password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>
