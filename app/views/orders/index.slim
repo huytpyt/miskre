@@ -1,14 +1,16 @@
 .page-header
-  /h1 #{@orders_number} Orders
   h1 Orders
 
-/#orders-query
-  = form_tag(main_app.fetch_orders_path) do
+#orders-query
+  = form_tag(main_app.orders_path, method: :get) do
     .row
       .columns.large-4
         label
           | Shop
-          = select_tag :shop_id, options_for_select(available_shops, @current_shop)
+          - if @current_shop
+            = select_tag :shop_id, options_for_select(available_shops, @current_shop.id)
+          - else
+            = select_tag :shop_id, options_for_select(available_shops)
       .columns.large-3
         label 
           | Start Date
@@ -17,10 +19,10 @@
         label 
           | End Date 
           = date_field_tag :end_date, @end_date
-      .columns.large-2
-        = submit_tag "View"
-        = submit_tag "Download"
-
+      .columns.large-1
+        button.button.tiny View
+      .columns.large-1
+        button.button.tiny.success formaction="#{main_app.fetch_orders_path}.csv" Download
 
 #orders-data
   .row

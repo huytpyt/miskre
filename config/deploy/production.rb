@@ -6,4 +6,4 @@ set :ssh_options, {
   keys: %w(~/.ssh/miskre.pem)
 }
 
-set :stage, :production
+set :stage,           :production

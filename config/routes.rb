@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     get 'purchases', on: :collection
   end
   resources :orders, only: :index do
-    post 'fetch', on: :collection
+    get 'fetch', on: :collection
   end
 
   post 'selectShop', to: 'home#selectShop'
