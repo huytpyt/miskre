@@ -37,6 +37,7 @@ set :rbenv_ruby, '2.4.0'
 # set :linked_dirs,  %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
 set :default_env, {
+  secret_key_base: ENV["SECRET_KEY_BASE"],
   shopcenter_database_password: ENV["SHOPCENTER_DATABASE_PASSWORD"]
 }
 
