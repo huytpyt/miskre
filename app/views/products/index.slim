@@ -67,8 +67,8 @@ input#productsResource value="#{products_path()}" type="hidden"
                 th = link_to p.name + " [Bundle]", p.link
               - else
                 th = link_to p.name, p.link
-              th = p.sku
               th = p.vendor
+              th = p.sku
               td $#{ p.cost }
               td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm
