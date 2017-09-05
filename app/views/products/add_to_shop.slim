@@ -62,7 +62,7 @@
           .actions
             = f.submit "Add", class: "button small primary"
     - else
-      h3 Wow, this product is avaible on all your shops
+      h3 This product is avaible on all your shops
   .column.large-6
     - unless @product.shops.empty?
       h3 Already available in these shops
@@ -72,7 +72,6 @@
             p = shop.name
             = link_to "Remove", remove_shop_product_path(@product, shop_id: shop.id), 
               method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert small'
-
 
       /= form_for @product, url: assign_product_path(@product) do |f|
         .row
