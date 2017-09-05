@@ -156,10 +156,25 @@ class ShopifyCommunicator
     product = Product.find(product_id)
 
     new_product = ShopifyAPI::Product.new
-    new_product.title = product.name
-    new_product.vendor = product.vendor
-    new_product.body_html = product.desc
-    new_product.images = product.images.collect do |i|
+    assign(new_product, product)
+
+    Supply.create(shop_id: @shop.id, product_id: product.id, shopify_product_id: new_product.id)
+  end
+
+  def sync_product(product_id)
+    product = Product.find(product_id)
+    supplies = Supply.where(product_id: product.id, shop_id: @shop.id)
+    supplies.each do |s|
+      shopify_product = ShopifyAPI::Product.find(s.shopify_product_id)
+      assign(shopify_product, product)
+    end
+  end
+
+  def assign(shopify_product, product)
+    shopify_product.title = product.name
+    shopify_product.vendor = product.vendor
+    shopify_product.body_html = product.desc
+    shopify_product.images = product.images.collect do |i|
       # p URI.join(request.url, i.file.url(:original)).to_s
       # { "src" => URI.join(request.url, i.file.url(:original)) }
       raw_content = Paperclip.io_adapters.for(i.file).read
@@ -168,7 +183,6 @@ class ShopifyCommunicator
     end
 
     variants = []
-
     unless product.variants.empty?
       variants = product.variants.collect do |v|
         {
@@ -188,11 +202,8 @@ class ShopifyCommunicator
         'price': product.price
       }]
     end
-
-    new_product.variants = variants
-    new_product.save
-
-    Supply.create(shop_id: @shop.id, product_id: product.id, shopify_product_id: new_product.id)
+    shopify_product.variants = variants
+    shopify_product.save
   end
 
   def remove_product(product_id)

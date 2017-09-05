@@ -19,6 +19,12 @@ class Product < ApplicationRecord
   before_save :pack_bundle, if: :is_bundle
   before_save :calculate_price
 
+  after_save :sync_job
+
+  def sync_job
+    ProductsSyncJob.perform_later(self.id)
+  end
+
   def pack_bundle
     unless self.products.empty?
       self.cost = 0
