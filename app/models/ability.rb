@@ -34,7 +34,7 @@ class Ability
       can :access, :rails_admin       # only allow admin users to access Rails Admin
       can :dashboard                  # allow access to dashboard
     else
-      can :read, :all
+      can :manage, Shop, user_id: user.id
       can :manage, Product
       can :manage, Option
       can :manage, Variant
