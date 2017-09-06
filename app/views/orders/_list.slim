@@ -8,6 +8,7 @@ table#order-table
       th Customer
       th Email
       th Date
+      th Status
       /th Total
   tbody
     - orders.each do |order|
@@ -16,4 +17,5 @@ table#order-table
         td = "#{order.first_name} #{order.last_name}"
         td = order.email
         td = order.date.strftime("%F")
+        td #{order.financial_status} | #{order.fulfillment_status}
         /td = order.total_price

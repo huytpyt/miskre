@@ -4,21 +4,33 @@
 #orders-query
   = form_tag(main_app.orders_path, method: :get) do
     .row
-      .columns.large-4
+      .columns.large-2
         label
           | Shop
           - if @current_shop
             = select_tag :shop_id, options_for_select(available_shops, @current_shop.id)
           - else
             = select_tag :shop_id, options_for_select(available_shops)
-      .columns.large-3
-        label 
+      .columns.large-2
+        label
           | Start Date
           = date_field_tag :start_date, @start_date
-      .columns.large-3
-        label 
-          | End Date 
+      .columns.large-2
+        label
+          | End Date
           = date_field_tag :end_date, @end_date
+      .columns.large-2
+        label
+          | Financial Status
+          = select_tag :financial_status,
+            options_for_select(financial_options, @financial_status),
+            include_blank: true
+      .columns.large-2
+        label
+          | Fulfillment Status
+          = select_tag :fulfillment_status,
+            options_for_select(fulfillment_options, @fulfillment_status),
+            include_blank: true
       .columns.large-1
         button.button.tiny View
       .columns.large-1
