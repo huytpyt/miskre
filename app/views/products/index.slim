@@ -64,13 +64,13 @@ input#productsResource value="#{products_path()}" type="hidden"
         tbody
           - @products.each do |p|
             tr
-              th = p.id
+              td = p.id
               - if p.is_bundle
                 th = link_to p.name + " [Bundle]", p.link
               - else
                 th = link_to p.name, p.link
-              th = p.vendor
-              th = p.sku
+              td = p.vendor
+              td = p.sku
               td $#{ p.cost }
               td #{p.weight}g
               td #{p.length}cm * #{p.width}cm * #{p.height}cm

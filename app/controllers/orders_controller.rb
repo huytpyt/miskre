@@ -4,6 +4,10 @@ class OrdersController < ApplicationController
   def index
   end
 
+  def show
+    @order = Order.find(params[:id])
+  end
+
   def fetch
     respond_to do |format|
       format.csv { send_data @orders.to_csv, filename: "orders-#{@start_date}-#{@end_date}.csv" }

@@ -1,0 +1,29 @@
+.row
+  .column.medium-5
+    .card
+      .card-divider
+        h4 Customer
+      .card-section
+        h5 Order contact
+        p #{@order.first_name} #{@order.last_name}
+        p #{@order.email}
+      .card-section
+        h6 Shipping address
+        p #{@order.first_name} #{@order.last_name}
+        p #{@order.ship_address1}
+        p #{@order.ship_address2}
+        p #{@order.ship_city} #{@order.ship_state} #{@order.ship_zip}
+        p #{@order.ship_country}
+  .column.medium-7
+    .card
+      .card-divider
+        h4 Order details
+      .card-section
+        h5 Products
+        table
+          thead
+          tbody
+            - @order.line_items.each do |li|
+              tr
+                th = li.name
+                td $#{li.price} x #{li.quantity}

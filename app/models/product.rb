@@ -12,6 +12,9 @@ class Product < ApplicationRecord
   has_many :products, class_name: "Product", foreign_key: "bundle_id"
   belongs_to :bundle, class_name: "Product"
 
+  has_many :line_items
+  has_many :orders, through: :line_items
+
   validates :name, presence: true
 
   before_create :generate_sku

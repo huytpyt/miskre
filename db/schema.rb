@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170831092202) do
+ActiveRecord::Schema.define(version: 20170908172234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,24 @@ ActiveRecord::Schema.define(version: 20170831092202) do
     t.string   "imageable_type"
     t.integer  "imageable_id"
     t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
+  end
+
+  create_table "line_items", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "order_id"
+    t.integer  "quantity"
+    t.string   "sku"
+    t.string   "variant_id"
+    t.float    "total_discount"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.float    "price"
+    t.integer  "grams"
+    t.string   "title"
+    t.string   "name"
+    t.string   "variant_title"
+    t.index ["order_id"], name: "index_line_items_on_order_id", using: :btree
+    t.index ["product_id"], name: "index_line_items_on_product_id", using: :btree
   end
 
   create_table "options", force: :cascade do |t|

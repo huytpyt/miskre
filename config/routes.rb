@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     end
     get 'purchases', on: :collection
   end
-  resources :orders, only: :index do
+  resources :orders, only: [:index, :show] do
     get 'fetch', on: :collection
   end
 

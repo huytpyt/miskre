@@ -9,6 +9,7 @@ table#order-table
       th Email
       th Date
       th Status
+      th 
       /th Total
   tbody
     - orders.each do |order|
@@ -18,4 +19,8 @@ table#order-table
         td = order.email
         td = order.date.strftime("%F")
         td #{order.financial_status} | #{order.fulfillment_status}
+        td
+          ul.menu
+            li
+              = link_to "View", order_path(order)
         /td = order.total_price
