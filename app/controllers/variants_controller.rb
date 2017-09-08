@@ -64,6 +64,21 @@ class VariantsController < ApplicationController
     # end
   end
 
+  def upload_image_url
+    image = @variant.images.new
+    image.file_remote_url= params[:url]
+    if image.save
+      redirect_to edit_product_variant_path(@product, @variant),
+        notice: 'Image was successfully updated.'
+    else
+      redirect_to edit_product_variant_path(@product, @variant),
+        notice: 'Check your image URL.'
+    end
+  rescue
+    redirect_to edit_product_variant_path(@product, @variant),
+      notice: 'Check your image URL.'
+  end
+
   # DELETE /variants/1
   # DELETE /variants/1.json
   def destroy

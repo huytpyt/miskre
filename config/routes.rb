@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :options
     resources :variants do
       get 'reload', on: :collection
+      post 'upload_image_url', on: :member
     end
     get 'purchases', on: :collection
   end
