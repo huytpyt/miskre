@@ -19,6 +19,7 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.day do
-  rake "shop:sync_orders"
+# every 1.day do
+every 15.minutes do
+  rake 'shop:sync_orders'
 end
