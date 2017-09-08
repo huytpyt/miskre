@@ -40,6 +40,8 @@ set :default_env, {
   shopcenter_database_password: ENV["SHOPCENTER_DATABASE_PASSWORD"]
 }
 
+set :whenever_environment, ->{ fetch(:rails_env) }
+
 namespace :puma do
   desc 'Create Directories for Puma Pids and Socket'
   task :make_dirs do

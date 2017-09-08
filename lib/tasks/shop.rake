@@ -33,7 +33,7 @@ namespace :shop do
     Shop.all.each do |s|
       p s.name
       c = ShopifyCommunicator.new(s.id)
-      c.sync_orders(30.days.ago, DateTime.now)
+      c.sync_orders(60.days.ago, DateTime.now)
     end
   end
 end
