@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get 'add_to_shop'
       patch 'assign'
       delete 'remove_shop'
+      post 'upload_image_url'
     end
     resources :options
     resources :variants do

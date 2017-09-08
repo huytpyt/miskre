@@ -4,4 +4,8 @@ class Image < ApplicationRecord
 
   # belongs_to :product
   belongs_to :imageable, polymorphic: true
+
+  def file_remote_url=(url_value)
+    self.file = URI.parse(url_value)
+  end
 end

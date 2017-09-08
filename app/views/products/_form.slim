@@ -22,14 +22,20 @@
             div
               = image_tag pi.file.url(:medium)
             = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
-  .row
+  /.row
     .columns
       ul#dvPreview
   .row
     .columns
+      h4 Images
+    .columns
+      ul#dvPreview
+    .columns.medium-6
       .field
-        = f.label :images
+        /= f.label :images
         = f.file_field :images, multiple: true
+    .columns.medium-6
+      a href="#" data-open="modal_image_url" Add image from URL
   .row
     .columns.medium-3
       .field
@@ -103,3 +109,11 @@
     .columns.small-1.small-centered
       .actions
         = f.submit "Save", id: "submit-product", class: 'button alert small'
+
+.reveal#modal_image_url data-reveal=""
+  = form_tag upload_image_url_product_path, method: :post do
+    = label_tag :url, "Paste Image URL"
+    = text_field_tag :url
+    = submit_tag 'Add Image'
+  button.close-button data-close="" aria-label="Close modal" type="button"
+    span aria-hidden="true" &times

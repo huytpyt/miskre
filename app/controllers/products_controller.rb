@@ -2,6 +2,7 @@ class ProductsController < ApplicationController
   # TODO
   # sync products from shop
   before_action :set_product, only: [:show, :edit, :update, :destroy, 
+                                     :upload_image_url,
                                      :add_to_shop, :assign, :remove_shop]
 
   # GET /products
@@ -74,6 +75,18 @@ class ProductsController < ApplicationController
         format.json { render json: @product.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def upload_image_url
+    image = @product.images.new
+    image.file_remote_url= params[:url]
+    if image.save
+      redirect_to edit_product_path(@product), notice: 'Image was successfully updated.'
+    else
+      redirect_to edit_product_path(@product), notice: 'Check your image URL.'
+    end
+  rescue
+    redirect_to edit_product_path(@product), notice: 'Check your image URL.'
   end
 
   # DELETE /products/1
