@@ -50,6 +50,7 @@ input#productsResource value="#{products_path()}" type="hidden"
       table#product-table
         thead
           tr
+            th Id
             th Name
             th Vendor
             th SKU
@@ -63,6 +64,7 @@ input#productsResource value="#{products_path()}" type="hidden"
         tbody
           - @products.each do |p|
             tr
+              th = p.id
               - if p.is_bundle
                 th = link_to p.name + " [Bundle]", p.link
               - else
