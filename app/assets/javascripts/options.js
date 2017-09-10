@@ -35,7 +35,7 @@ var options = new Vue({
         }
       )
     },
-    updateOption: function() {
+    updateOption: function(option) {
       var that = this;
       optionResource.update({id: option.id}, {option: option}).then(
         function (response) {
@@ -44,7 +44,7 @@ var options = new Vue({
         }
       )
     },
-    removeOption: function() {
+    removeOption: function(option) {
       this.options.splice(this.options.indexOf(option), 1)
       optionResource.delete({id: option.id}).then(
         function (response) {
