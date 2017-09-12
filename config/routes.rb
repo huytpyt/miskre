@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   root to: 'home#index'
   devise_for :users
   resources :images, only: :destroy 
-  resources :shops
+  resources :shops do
+    collection do 
+      get ':id/products', to: "shops#products", as: "products_index"
+    end
+  end
   resources :products do
     member do
       get 'add_to_shop'

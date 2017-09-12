@@ -6,6 +6,11 @@ class ShopsController < ApplicationController
   def index
   end
 
+  def products
+    @shop = Shop.find_by_id(params[:id])
+    @products = @shop&.products
+  end
+
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy
