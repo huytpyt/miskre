@@ -40,7 +40,13 @@ set :default_env, {
   shopcenter_database_password: ENV["SHOPCENTER_DATABASE_PASSWORD"]
 }
 
-set :whenever_environment, ->{ fetch(:rails_env) }
+# Whenever config
+set :whenever_environment,  ->{ fetch :rails_env, fetch(:stage, "production") }
+set :whenever_identifier, "#{fetch(:application)}_#{fetch(:stage)}"
+set :whenever_variables, -> do
+  "'environment=#{fetch :whenever_environment}" \
+  "&rbenv_root=#{fetch :rbenv_path}'"
+end
 
 namespace :puma do
   desc 'Create Directories for Puma Pids and Socket'
@@ -84,7 +90,7 @@ namespace :deploy do
   before :starting,     :check_revision
   after  :finishing,    :compile_assets
   after  :finishing,    :cleanup
-  after  :finishing,    :restart
+  # after  :finishing,    :restart
 end
 
 namespace :bower do

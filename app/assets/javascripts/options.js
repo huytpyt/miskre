@@ -39,7 +39,6 @@ var options = new Vue({
       var that = this;
       optionResource.update({id: option.id}, {option: option}).then(
         function (response) {
-          that.option = response.data;
           that.editMode = false;
         }
       )

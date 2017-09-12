@@ -70,8 +70,10 @@ class ShopifyCommunicator
         orders.each do |o|
           begin
             order_params = get_order_params(o)
-            new_order = @shop.orders.create(order_params)
-            add_line_items(new_order, o.line_items)
+            new_order = @shop.orders.new(order_params)
+            if new_order.save
+              add_line_items(new_order, o.line_items)
+            end
           rescue NoMethodError => e
             p 'invalid order'
           end
@@ -99,7 +101,7 @@ class ShopifyCommunicator
         price: li.price,
         total_discount: li.total_discount
       }
-      order.line_items.create!(li_params)
+      order.line_items.create(li_params)
     end
   end
 
