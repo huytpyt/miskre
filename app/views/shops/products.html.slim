@@ -1,18 +1,21 @@
-#shop-products-list  
+#shop-products-list
   .page-header
     h2.text-center #{@shop.name} #{t('product_list')}
   br
   br
   / .products.large-up-4
+  .row
+    .column
+      = paginate @products
   .row.large-up-3.page-content
     - @products.each do |product|
       .column
         .card
-          .card-divider 
+          .card-divider
             h4.each-block-header
               span.text-left.pull-left
                 = product.name
-              span.text-right.pull-right
+              /span.text-right.pull-right
                 = product.price
           .card-section
             - unless product.images.empty?

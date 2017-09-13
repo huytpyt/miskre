@@ -2,11 +2,9 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   root to: 'home#index'
   devise_for :users
-  resources :images, only: :destroy 
+  resources :images, only: :destroy
   resources :shops do
-    collection do 
-      get ':id/products', to: "shops#products", as: "products_index"
-    end
+    get 'products', on: :member
   end
   resources :products do
     member do

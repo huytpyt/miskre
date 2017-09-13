@@ -7,8 +7,7 @@ class ShopsController < ApplicationController
   end
 
   def products
-    @shop = Shop.find_by_id(params[:id])
-    @products = @shop&.products
+    @products = @shop.products.page params[:page]
   end
 
   # DELETE /shops/1

@@ -24,4 +24,4 @@
               /td = link_to 'Show', shop 
               /td = link_to 'Edit', edit_shop_path(shop)
               td = link_to t('.disconnect'), shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
-              td = link_to t(".product_list"), products_index_shops_path(shop), class: "button tiny success"
+              td = link_to t(".product_list"), products_shop_path(shop), class: "button tiny success"
