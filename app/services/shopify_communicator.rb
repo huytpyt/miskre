@@ -106,7 +106,6 @@ class ShopifyCommunicator
   end
 
   def add_product(product_id)
-    ShopifyAPI::Base.activate_session(@session)
     product = Product.find(product_id)
 
     new_product = ShopifyAPI::Product.new
@@ -157,7 +156,25 @@ class ShopifyCommunicator
       }]
     end
     shopify_product.variants = variants
-    shopify_product.save
+    response = shopify_product.save
+
+    if response && !product.variants.empty?
+      product.variants.each do |v|
+        unless v.images.empty?
+          shopify_v = shopify_product.variants.find(sku: v.sku).first
+
+          raw_content = Paperclip.io_adapters.for(v.images.first.file).read
+          encoded_content = Base64.encode64(raw_content)
+
+          image_params = {
+            "variant_ids" => [shopify_v.id],
+            "attachment" => encoded_content
+          }
+          img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
+          img.save
+        end
+      end
+    end
   end
 
   def remove_product(product_id)
