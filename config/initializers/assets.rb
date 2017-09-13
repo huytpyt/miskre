@@ -8,7 +8,7 @@ Rails.application.config.assets.version = '1.0'
 
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
-Rails.application.config.assets.precompile += %w( 
+Rails.application.config.assets.precompile += %w(
   slick-carousel/slick/slick.css
   slick-carousel/slick/slick-theme.css
   slick-carousel/slick/slick.min.js
@@ -22,4 +22,11 @@ Rails.application.config.assets.precompile += %w(
   options
   variants
   edit_variants
+
+  login/welcome.css
+  Detector.js
+  three.min.js
+  Tween.js
+  globe.js
+  welcome.js
 )

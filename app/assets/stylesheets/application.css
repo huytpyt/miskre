@@ -18,6 +18,7 @@
  *= require foundation
  *= require dropzone
  *= require chosen
+ *= stub login/welcome.css
  */
 
 .page-header

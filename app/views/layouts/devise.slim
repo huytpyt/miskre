@@ -1,0 +1,31 @@
+doctype html
+html lang="en"
+  head
+    title Miskre
+    meta charset="utf-8"
+    meta content="width=device-width, initial-scale=1.0" name="viewport"
+    meta name="apple-mobile-web-app-capable" content="yes"
+    meta name="apple-mobile-web-app-status-bar-style" content="black"
+    /link rel="apple-touch-icon" href="/assets/img/"
+    /link rel="apple-touch-startup-image" href="/assets/img"
+    = stylesheet_link_tag "login/welcome.css"
+    = javascript_include_tag "application"
+  body
+
+    #container
+
+    #login
+      #logo
+        a href="#"
+          = image_tag "logo.svg"
+      = yield
+    = yield :script
+
+    #credit Miskre Shop Center © 2017
+
+    = javascript_include_tag "Detector"
+    = javascript_include_tag "three.min.js"
+    = javascript_include_tag "Tween"
+    = javascript_include_tag "globe"
+    .hidden-scripts
+      = javascript_include_tag "welcome"

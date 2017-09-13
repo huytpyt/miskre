@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include ShopifyApp::LoginProtection
+  layout :layout_by_resource
   protect_from_forgery with: :exception
   before_action :authenticate_user!
   before_action :set_current_shop
@@ -16,6 +17,15 @@ class ApplicationController < ActionController::Base
     if resource.instance_of?(User)
       return rails_admin_path if resource.admin?
       return root_path
+    end
+  end
+
+  private
+  def layout_by_resource
+    if devise_controller?
+      "devise"
+    else
+      "application"
     end
   end
 
