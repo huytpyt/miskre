@@ -4,12 +4,8 @@ en:
       product_list: 'Products List'
       disconnect: "Disconnect"
     products:
-      connect_shop: "Connect With Your Shop"
       product_list: "Products List"
       price: "Price:"
       weight: "Weight:"
       size: "Size (L*H*W):"
-      edit: "Edit"
-      destroy: "Destroy"
       back: "Back"
-      sure: "Are you sure?"
