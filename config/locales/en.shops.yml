@@ -1,0 +1,11 @@
+en:
+  shops:
+    index:
+      product_list: 'Products List'
+      disconnect: "Disconnect"
+    products:
+      product_list: "Products List"
+      price: "Price:"
+      weight: "Weight:"
+      size: "Size (L*H*W):"
+      back: "Back"

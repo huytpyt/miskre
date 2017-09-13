@@ -6,6 +6,10 @@ class ShopsController < ApplicationController
   def index
   end
 
+  def products
+    @products = @shop.products.page params[:page]
+  end
+
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy

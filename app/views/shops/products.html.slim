@@ -1,0 +1,31 @@
+#shop-products-list
+  .page-header
+    h2.text-center #{@shop.name} #{t('product_list')}
+  br
+  br
+  / .products.large-up-4
+  .row
+    .column
+      = paginate @products
+  .row.large-up-3.page-content
+    - @products.each do |product|
+      .column
+        .card
+          .card-divider
+            h4.each-block-header
+              span.text-left.pull-left
+                = product.name
+              /span.text-right.pull-right
+                = product.price
+          .card-section
+            - unless product.images.empty?
+              = image_tag product.images.first.file.url(:medium)
+            - else
+              = image_tag "default.jpg"
+          .card-section
+            p = product.desc
+            p #{t('.price')} $#{product.price}
+            p #{t('.weight')} #{product.weight}g
+            p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+  .row
+    = link_to t('.back'), shops_path

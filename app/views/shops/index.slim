@@ -14,6 +14,7 @@
             th Domain
             th Shopify Domain
             th
+            th
         tbody
           - @shops.each do |shop|
             tr
@@ -22,4 +23,5 @@
               td = shop.shopify_domain
               /td = link_to 'Show', shop 
               /td = link_to 'Edit', edit_shop_path(shop)
-              td = link_to 'Disconnect', shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
+              td = link_to t('.disconnect'), shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
+              td = link_to t(".product_list"), products_shop_path(shop), class: "button tiny success"
