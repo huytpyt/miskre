@@ -21,9 +21,9 @@ Rails.application.routes.draw do
     get 'purchases', on: :collection
   end
   resources :orders, only: [:index, :show] do
+    resources :fulfillments, only: [:new, :create]
     get 'fetch', on: :collection
   end
-
   post 'selectShop', to: 'home#selectShop'
 
   post 'shipping_rates', to: 'carrier_service#shipping_rates'

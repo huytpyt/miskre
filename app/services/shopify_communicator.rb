@@ -99,7 +99,10 @@ class ShopifyCommunicator
         title: li.title,
         name: li.name,
         price: li.price,
-        total_discount: li.total_discount
+        total_discount: li.total_discount,
+        fulfillable_quantity: li.fulfillable_quantity,
+        fulfillment_status: li.fulfillment_status,
+        line_item_id: li.id
       }
       order.line_items.create(li_params)
     end

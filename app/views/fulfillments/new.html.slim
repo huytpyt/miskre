@@ -1,0 +1,54 @@
+#new-fulfillment-page
+  .row
+    .column.medium-12
+      .card
+        .card-divider
+          h4 Fulfillment
+        .card-section
+          = form_tag order_fulfillments_path
+            h5 Mark as fulfilled
+            br
+            h6 QUANTITY TO FULFILL
+
+            table
+              thead
+                tr 
+                  th Items
+                  th Weight
+                  th Quantity
+              tbody
+                - @order.line_items.each do |item|
+                  -  fulfillable_quantity = item&.fulfillable_quantity.present? ? item&.fulfillable_quantity : 0
+                  - if fulfillable_quantity > 0
+                    tr
+                      td
+                        = item.name
+                      td 
+                        = item.grams
+                        |(g)
+                      td
+                        row
+                          .column.medium-11
+                            = number_field_tag "quantity[]", nil, max: item.fulfillable_quantity
+                          .column.medium-1
+                            |of #{item.fulfillable_quantity}
+            br
+            h6 TRACKING INFORMATION
+            .row
+              .form-group.column.medium-4
+                = label_tag :tracking_number, nil, class: "control-label"
+                = text_field_tag :tracking_number, nil, class: "form-control"
+              .form-group.column.medium-4
+                = label_tag :shipping_carrier, nil, class: "control-label"
+                = text_field_tag :shipping_carrier, nil, class: "form-control"
+              .form-group.column.medium-4
+                = label_tag :tracking_url, "Tracking URL", class: "control-label"
+                = text_field_tag :tracking_url, nil, class: "form-control"
+            br
+            h6 NOTIFY CUSTOMER OF SHIPMENT
+            .row
+              .column.medium-8
+                = check_box :notify, :check
+                |&nbsp;Send shipment details to your customer now
+              .column.medium-4
+                = submit_tag "Fulfill Items", class: "button pull-right"
