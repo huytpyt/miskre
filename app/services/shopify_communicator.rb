@@ -161,15 +161,18 @@ class ShopifyCommunicator
     if response && !product.variants.empty?
       product.variants.each do |v|
         unless v.images.empty?
-          shopify_v = shopify_product.variants.find(sku: v.sku).first
+          shopify_v = shopify_product.variants.find {|sv| sv.sku == v.sku}
 
-          raw_content = Paperclip.io_adapters.for(v.images.first.file).read
+          img = v.images.first
+          raw_content = Paperclip.io_adapters.for(img.file).read
           encoded_content = Base64.encode64(raw_content)
 
           image_params = {
             "variant_ids" => [shopify_v.id],
-            "attachment" => encoded_content
+            "attachment" => encoded_content,
+            "filename" => img.file_file_name
           }
+
           img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
           img.save
         end
