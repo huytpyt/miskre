@@ -23,8 +23,7 @@ class Product < ApplicationRecord
   validates :weight, numericality: { only_integer: true,
                                        greater_than_or_equal_to: 0}
 
-  before_create :generate_sku
-  # after_create :calculate_price
+  after_initialize :generate_sku, :if => :new_record?
   before_save :pack_bundle, if: :is_bundle
   before_save :calculate_price
 
@@ -62,8 +61,18 @@ class Product < ApplicationRecord
   end
 
   def generate_sku
-    self.sku = SKU[Product.count]
-    # self.sku = space[p1] + space[p2] + space[p3]
+    p = Product.last
+    if p
+      last_sku_idx = SKU.index(p.sku)
+    else
+      last_sku_idx = -1
+    end
+
+    idx = last_sku_idx + 1
+    while Product.find_by(sku: SKU[idx]) do
+      idx += 1
+    end
+    self.sku = SKU[idx]
   end
 
   def regen_variants
