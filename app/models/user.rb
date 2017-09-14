@@ -4,7 +4,12 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
-  enumerize :role, in: [:admin, :user], default: :user, predicates: true
+  enumerize :role, in: [:admin, :manager, :user],
+    default: :user, predicates: true
 
   has_many :shops
+
+  def staff?
+    self.admin? || self.manager?
+  end
 end

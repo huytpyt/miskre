@@ -1,6 +1,2 @@
 .page-header
   h1 Welcome to #{t('appName')}
-
-/ul
-  - @products.each do |product|
-    li = link_to product.title, "https://#{@shop_session.url}/admin/products/#{product.id}", target: "_top"

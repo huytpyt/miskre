@@ -81,10 +81,11 @@ input#productsResource value="#{products_path()}" type="hidden"
                 ul.menu
                   li
                     = link_to "Add To Shops", add_to_shop_product_path(p)
-                  li
-                    = link_to "Edit", edit_product_path(p)
-                  li
-                    = link_to 'Destroy', p, method: :delete, data: { confirm: 'Are you sure?' }
+                  - if current_user.staff?
+                    li
+                      = link_to "Edit", edit_product_path(p)
+                    li
+                      = link_to 'Destroy', p, method: :delete, data: { confirm: 'Are you sure?' }
 
 /#products
   .row
