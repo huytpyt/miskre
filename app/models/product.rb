@@ -15,7 +15,13 @@ class Product < ApplicationRecord
   has_many :line_items
   has_many :orders, through: :line_items
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
+  validates :sku, presence: true, uniqueness: true
+  validates :quantity, numericality: { only_integer: true,
+                                       greater_than_or_equal_to: 0}
+  validates :cost, numericality: { greater_than_or_equal_to: 0}
+  validates :weight, numericality: { only_integer: true,
+                                       greater_than_or_equal_to: 0}
 
   before_create :generate_sku
   # after_create :calculate_price

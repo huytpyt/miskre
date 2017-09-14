@@ -8,6 +8,8 @@ class Shop < ActiveRecord::Base
   has_many :products, through: :supplies
   has_many :orders
 
+  validates :name, presence: true, uniqueness: true
+
   before_create :get_shop_infor
 
   def self.store_with_user(session, current_user)
