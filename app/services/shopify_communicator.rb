@@ -130,6 +130,9 @@ class ShopifyCommunicator
     shopify_product.images = product.images.collect do |i|
       # p URI.join(request.url, i.file.url(:original)).to_s
       # { "src" => URI.join(request.url, i.file.url(:original)) }
+      #
+      #
+      # { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original))}
       raw_content = Paperclip.io_adapters.for(i.file).read
       encoded_content = Base64.encode64(raw_content)
       { "attachment" => encoded_content }
@@ -172,9 +175,8 @@ class ShopifyCommunicator
             "attachment" => encoded_content,
             "filename" => img.file_file_name
           }
-
-          img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
-          img.save
+          shopify_img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
+          shopify_img.save
         end
       end
     end

@@ -67,14 +67,15 @@ class Product < ApplicationRecord
       option1 = self.options.first
       option1.values.each do |v|
         sku = self.sku + self.variants.count().to_s.rjust(3, "0")
-        self.variants.create(sku: sku, option1: v)
+        self.variants.create(sku: sku, option1: v, price: self.price)
       end
     when 2
       option1, option2 = self.options[0..1]
       option1.values.each do |v1|
         option2.values.each do |v2|
           sku = self.sku + self.variants.count().to_s.rjust(3, "0")
-          self.variants.create(sku: sku, option1: v1, option2: v2)
+          self.variants.create(sku: sku, option1: v1, option2: v2,
+                               price: self.price)
         end
       end
     when 3
@@ -83,7 +84,8 @@ class Product < ApplicationRecord
         option2.values.each do |v2|
           option3.values.each do |v3|
             sku = self.sku + self.variants.count().to_s.rjust(3, "0")
-            self.variants.create(sku: sku, option1: v1, option2: v2, option3: v3)
+            self.variants.create(sku: sku, option1: v1, option2: v2,
+                                 option3: v3, price: self.price)
           end
         end
       end
