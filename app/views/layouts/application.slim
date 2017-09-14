@@ -4,7 +4,7 @@ html lang="en"
     meta charset="utf-8"
     meta name="viewport" content="width=device-width, initial-scale=1.0"
 
-    title == content_for?(:title) ? yield(:title) : "Shop Center"
+    title == content_for?(:title) ? yield(:title) : t('appName')
     = stylesheet_link_tag "application"
     = csrf_meta_tags
     = yield :css
