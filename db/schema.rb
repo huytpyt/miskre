@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170908172234) do
+ActiveRecord::Schema.define(version: 20170914142041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "fulfillments", force: :cascade do |t|
+    t.integer  "order_id"
+    t.string   "fulfillment_id"
+    t.string   "status"
+    t.string   "service"
+    t.string   "tracking_company"
+    t.string   "shipment_status"
+    t.string   "tracking_number"
+    t.text     "tracking_url"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.string   "items"
+    t.index ["order_id"], name: "index_fulfillments_on_order_id", using: :btree
+  end
 
   create_table "images", force: :cascade do |t|
     t.datetime "created_at",        null: false
@@ -34,13 +49,16 @@ ActiveRecord::Schema.define(version: 20170908172234) do
     t.string   "sku"
     t.string   "variant_id"
     t.float    "total_discount"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.float    "price"
     t.integer  "grams"
     t.string   "title"
     t.string   "name"
     t.string   "variant_title"
+    t.integer  "fulfillable_quantity"
+    t.string   "fulfillment_status"
+    t.string   "line_item_id"
     t.index ["order_id"], name: "index_line_items_on_order_id", using: :btree
     t.index ["product_id"], name: "index_line_items_on_product_id", using: :btree
   end

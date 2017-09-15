@@ -1,29 +1,66 @@
-.row
-  .column.medium-5
-    .card
-      .card-divider
-        h4 Customer
-      .card-section
-        h5 Order contact
-        p #{@order.first_name} #{@order.last_name}
-        p #{@order.email}
-      .card-section
-        h6 Shipping address
-        p #{@order.first_name} #{@order.last_name}
-        p #{@order.ship_address1}
-        p #{@order.ship_address2}
-        p #{@order.ship_city} #{@order.ship_state} #{@order.ship_zip}
-        p #{@order.ship_country}
-  .column.medium-7
-    .card
-      .card-divider
-        h4 Order details
-      .card-section
-        h5 Products
-        table
-          thead
-          tbody
-            - @order.line_items.each do |li|
-              tr
-                th = li.name
-                td $#{li.price} x #{li.quantity}
+#show-order-page 
+  .row
+    .column.medium-5
+      .card
+        .card-divider
+          h4 Customer
+        .card-section
+          h5 Order contact
+          p #{@order.first_name} #{@order.last_name}
+          p #{@order.email}
+        .card-section
+          h6 Shipping address
+          p #{@order.first_name} #{@order.last_name}
+          p #{@order.ship_address1}
+          p #{@order.ship_address2}
+          p #{@order.ship_city} #{@order.ship_state} #{@order.ship_zip}
+          p #{@order.ship_country}
+    .column.medium-7
+      .row
+        .column.medium-12
+          .card
+            .card-divider
+              h4 Order details
+            .card-section
+              h5 Products
+              table
+                thead
+                tbody
+                  - @order.line_items.each do |li|
+                    tr
+                      th = li.name
+                      td $#{li.price} x #{li.quantity}
+        - if @sum > 0
+          .fulfillments-button.column.medium-12
+            = link_to "Start Fulfilling", new_order_fulfillment_path(@order), class: "button start-fulfilling-btn pull-right"
+        .column.medium-12
+          .card 
+            .card-divider
+              h4 Fulfillments
+            .card-section
+              - @fulfillments.each do |fulfillment|
+                span
+                  b #F#{fulfillment.id}
+                  |&nbsp;
+                  = fulfillment.status
+                br
+                br
+                .row
+                  .column.medium-6
+                    b Carrier
+                    br
+                    = fulfillment.tracking_company
+                  .column.medium-6
+                    b Tracking number
+                    br
+                    = link_to fulfillment.tracking_number, fulfillment.tracking_url, target: "_blank"
+                br
+                .row
+                  .column.medium-12
+                    b Items
+                    br
+                    - fulfillment&.items&.each do |item|
+                     | #{item[:name]} x #{item[:quantity]}
+                     br
+
+                hr

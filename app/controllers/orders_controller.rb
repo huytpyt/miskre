@@ -6,6 +6,8 @@ class OrdersController < ApplicationController
 
   def show
     @order = Order.find(params[:id])
+    @sum = @order.line_items.sum(:fulfillable_quantity)
+    @fulfillments = @order.fulfillments.all
   end
 
   def fetch
