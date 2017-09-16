@@ -3,9 +3,12 @@ Rails.application.routes.draw do
   root to: 'home#index'
   devise_for :users
   resources :images, only: :destroy
-  resources :shops do
-    get 'products', on: :member
+
+  resources :shops, only: [:index, :show]
+  resources :supplies, only: [:edit, :update] do
+    post 'upload_image_url', on: :member
   end
+
   resources :products do
     member do
       get 'add_to_shop'
@@ -20,10 +23,12 @@ Rails.application.routes.draw do
     end
     get 'purchases', on: :collection
   end
+
   resources :orders, only: [:index, :show] do
     resources :fulfillments, only: [:new, :create]
     get 'fetch', on: :collection
   end
+
   post 'selectShop', to: 'home#selectShop'
 
   post 'shipping_rates', to: 'carrier_service#shipping_rates'

@@ -1,0 +1,71 @@
+.page-header
+  h1 Customize Product
+
+= form_for @supply do |f|
+  - product = @supply.product
+  - if @supply.errors.any?
+    .row
+      #error_explanation
+        h2 #{pluralize(@supply.errors.count, "error")} prohibited this product from being saved:
+        ul
+          - @supply.errors.full_messages.each do |message|
+            li = message
+  - if @supply.images.size > 0
+    .row
+      .columns
+        #images-preview
+          - @supply.images.each do |pi|
+            div
+              = image_tag pi.file.url(:medium)
+            = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
+  .row
+    .columns
+      h4 Images
+    .columns
+      ul#dvPreview
+    .columns.medium-6
+      .field
+        = f.file_field :images, multiple: true
+    .columns.medium-6
+      a href="#" data-open="modal_image_url" Add image from URL
+  .row.medium-up-6
+    .columns.medium-3
+      .field
+        = f.label :name
+        = f.text_field :name
+    .columns.medium-3
+      .field
+        = f.label :price
+        = f.number_field :price
+    .columns.medium-3
+      .field
+        = f.label :original
+        = f.check_box :original
+  .row
+    .columns
+      .field
+        = f.label :desc
+        = f.cktext_area :desc
+  .row
+    .columns
+      h4 Details
+    .columns.medium-3
+      p SKU: #{product.sku}
+    .columns.medium-3
+      p Vendor: #{product.vendor}
+    .columns.medium-3
+      p Weight (g): #{product.weight}
+    .columns.medium-3
+      p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+  .row
+    .columns.small-1.small-centered
+      .actions
+        = f.submit "Save", id: "submit-product", class: 'button alert small'
+
+.reveal#modal_image_url data-reveal=""
+  = form_tag upload_image_url_supply_path, method: :post do
+    = label_tag :url, "Paste Image URL"
+    = text_field_tag :url
+    = submit_tag 'Add Image'
+  button.close-button data-close="" aria-label="Close modal" type="button"
+    span aria-hidden="true" &times

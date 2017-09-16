@@ -37,6 +37,7 @@ class Ability
       can :manage, :all
     else
       can :manage, Shop, user_id: user.id
+      can :manage, Supply
       can :manage, Product
       can :manage, Option
       can :manage, Variant

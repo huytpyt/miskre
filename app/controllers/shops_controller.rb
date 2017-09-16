@@ -6,8 +6,8 @@ class ShopsController < ApplicationController
   def index
   end
 
-  def products
-    @products = @shop.products.page params[:page]
+  def show
+    @supplies = @shop.supplies.page params[:page]
   end
 
   # DELETE /shops/1

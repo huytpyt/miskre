@@ -1,0 +1,37 @@
+#shop-products-list
+  .page-header
+    h2.text-center #{@shop.name} #{t('product_list')}
+  br
+  br
+  / .products.large-up-4
+  .row
+    .column
+      = paginate @supplies
+  .row.large-up-3.page-content
+    - @supplies.each do |s|
+      .column
+        .card
+          .card-divider
+            h4.each-block-header
+              span.text-left.pull-left
+                = s.name
+              /span.text-right.pull-right
+                = product.price
+          .card-section
+            - unless s.images.empty?
+              = image_tag product.images.first.file.url(:medium)
+            - else
+              = image_tag "default.jpg"
+          .card-section
+            p = s.desc
+            p #{t('.price')} $#{product.price}
+            p #{t('.weight')} #{product.weight}g
+            p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+          .card-section
+            ul.menu
+              li
+                = link_to "Customize", edit_supply_path(s)
+              li
+                = link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
+  .row
+    = link_to t('.back'), shops_path

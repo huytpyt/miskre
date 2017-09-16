@@ -1,7 +1,7 @@
 class ProductsController < ApplicationController
   # TODO
   # sync products from shop
-  before_action :set_product, only: [:show, :edit, :update, :destroy, 
+  before_action :set_product, only: [:show, :edit, :update, :destroy,
                                      :upload_image_url,
                                      :add_to_shop, :assign, :remove_shop]
 

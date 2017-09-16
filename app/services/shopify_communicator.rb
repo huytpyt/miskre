@@ -162,9 +162,9 @@ class ShopifyCommunicator
       }]
     end
     shopify_product.variants = variants
-    response = shopify_product.save
+    shopify_product.save
 
-    if response && !product.variants.empty?
+    if shopify_product.persisted? && !product.variants.empty?
       product.variants.each do |v|
         unless v.images.empty?
           shopify_v = shopify_product.variants.find {|sv| sv.sku == v.sku}
