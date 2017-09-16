@@ -12,8 +12,8 @@ var ship = new Vue({
       var vm = this;
 
       var success = function(res) {
-        vm.epub = response.data.epub;
-        vm.dhl = response.data.dhl;
+        vm.epub = res.data.epub;
+        vm.dhl = res.data.dhl;
       }
 
       var error = function(res) {
