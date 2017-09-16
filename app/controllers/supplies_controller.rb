@@ -32,6 +32,13 @@ class SuppliesController < ApplicationController
     redirect_to edit_supply_path(@supply), notice: 'Check your image URL.'
   end
 
+  def destroy
+    product = @supply.product
+    @supply.destroy
+    redirect_to add_to_shop_product_url(product),
+      notice: 'Product was successfully remove from shop.'
+  end
+
   private
   # Never trust parameters from the scary internet, only allow the white list through.
   def supply_params

@@ -101,6 +101,7 @@ class ProductsController < ApplicationController
 
   def add_to_shop
     @available_shops = current_user.shops - @product.shops
+    @supplies = @product.supplies.where(user_id: current_user.id)
   end
 
   def assign
@@ -112,12 +113,6 @@ class ProductsController < ApplicationController
       end
     end
     redirect_to add_to_shop_product_path(@product), notice: 'Product has been added to shops.'
-  end
-
-  def remove_shop
-    c = ShopifyCommunicator.new(params[:shop_id])
-    c.remove_product(@product.id)
-    redirect_to add_to_shop_product_url, notice: 'Product was successfully remove from shop.'
   end
 
   def purchases

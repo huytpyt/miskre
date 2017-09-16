@@ -114,7 +114,10 @@ class ShopifyCommunicator
     new_product = ShopifyAPI::Product.new
     assign(new_product, product)
 
-    Supply.create(shop_id: @shop.id, product_id: product.id, shopify_product_id: new_product.id)
+    Supply.create(shop_id: @shop.id,
+                  product_id: product.id,
+                  user_id: @shop.user_id,
+                  shopify_product_id: new_product.id)
   end
 
   def sync_product(supply_id)
@@ -188,14 +191,7 @@ class ShopifyCommunicator
   end
 
   def remove_product(product_id)
-    ShopifyAPI::Base.activate_session(@session)
-    supply = Supply.find_by(shop_id: @shop.id, product_id: product_id)
-    if supply
-      begin
-        ShopifyAPI::Product.delete(supply.shopify_product_id)
-      rescue ActiveResource::ResourceNotFound
-      end
-      supply.destroy
-    end
+    ShopifyAPI::Product.delete(product_id)
+  rescue ActiveResource::ResourceNotFound
   end
 end

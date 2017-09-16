@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   resources :images, only: :destroy
 
   resources :shops, only: [:index, :show]
-  resources :supplies, only: [:edit, :update] do
+  resources :supplies, only: [:edit, :update, :destroy] do
     post 'upload_image_url', on: :member
   end
 
@@ -13,7 +13,6 @@ Rails.application.routes.draw do
     member do
       get 'add_to_shop'
       patch 'assign'
-      delete 'remove_shop'
       post 'upload_image_url'
     end
     resources :options

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170916025437) do
+ActiveRecord::Schema.define(version: 20170916074732) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,8 +154,10 @@ ActiveRecord::Schema.define(version: 20170916025437) do
     t.float    "price"
     t.string   "name"
     t.boolean  "original",           default: true
+    t.integer  "user_id"
     t.index ["product_id"], name: "index_supplies_on_product_id", using: :btree
     t.index ["shop_id"], name: "index_supplies_on_shop_id", using: :btree
+    t.index ["user_id"], name: "index_supplies_on_user_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -195,6 +197,7 @@ ActiveRecord::Schema.define(version: 20170916025437) do
   add_foreign_key "options", "users"
   add_foreign_key "orders", "shops"
   add_foreign_key "shops", "users"
+  add_foreign_key "supplies", "users"
   add_foreign_key "variants", "products"
   add_foreign_key "variants", "users"
 end
