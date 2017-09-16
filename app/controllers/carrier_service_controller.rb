@@ -65,14 +65,14 @@ class CarrierServiceController < ApplicationController
 
     rates = [
       {
-        'service_name': 'ePUB', 
+        'service_name': 'ePUB',
         'description': '9-12 working days',
         'service_code': 'ePacket',
         'currency': 'USD',
         'total_price': (epub_price * 100).round.to_s
-      }, 
+      },
       {
-        'service_name': 'DHL', 
+        'service_name': 'DHL',
         'description': '5-8 working days',
         'service_code': 'dhl',
         'currency': 'USD',

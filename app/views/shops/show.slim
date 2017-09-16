@@ -20,7 +20,7 @@
                 = product.price
           .card-section
             - unless s.images.empty?
-              = image_tag product.images.first.file.url(:medium)
+              = image_tag s.images.first.file.url(:medium)
             - else
               = image_tag "default.jpg"
           .card-section
