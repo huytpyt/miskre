@@ -12,7 +12,7 @@ class SuppliesController < ApplicationController
             @supply.images.create(file: img)
           end
         end
-        format.html { redirect_to edit_supply_path(@supply), notice: 'Variant was successfully updated.' }
+        format.html { redirect_to edit_supply_path(@supply), notice: 'Product was successfully updated.' }
       else
         format.html { render :edit }
       end

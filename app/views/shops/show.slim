@@ -9,6 +9,7 @@
       = paginate @supplies
   .row.large-up-3.page-content
     - @supplies.each do |s|
+      - product = s.product
       .column
         .card
           .card-divider

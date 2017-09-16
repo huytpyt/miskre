@@ -117,20 +117,22 @@ class ShopifyCommunicator
     Supply.create(shop_id: @shop.id, product_id: product.id, shopify_product_id: new_product.id)
   end
 
-  def sync_product(product_id)
-    product = Product.find(product_id)
-    supplies = Supply.where(product_id: product.id, shop_id: @shop.id)
-    supplies.each do |s|
-      shopify_product = ShopifyAPI::Product.find(s.shopify_product_id)
-      assign(shopify_product, product)
-    end
+  def sync_product(supply_id)
+    supply = Supply.find(supply_id)
+    shopify_product = ShopifyAPI::Product.find(supply.shopify_product_id)
+    assign(shopify_product, supply.product, supply)
   end
 
-  def assign(shopify_product, product)
-    shopify_product.title = product.name
+  def assign(shopify_product, product, supply=nil)
+    # if a supply is given, we will get it's name, desc, price, image
+    # to update to Shopify
+    # otherwise, we will use product's name, desc, price, image
+    source = supply || product
+
+    shopify_product.title = source.name
     shopify_product.vendor = product.vendor
-    shopify_product.body_html = product.desc
-    shopify_product.images = product.images.collect do |i|
+    shopify_product.body_html = source.desc
+    shopify_product.images = source.images.collect do |i|
       # p URI.join(request.url, i.file.url(:original)).to_s
       # { "src" => URI.join(request.url, i.file.url(:original)) }
       #
@@ -158,7 +160,7 @@ class ShopifyCommunicator
       variants = [{
         'weight': product.weight,
         'weight_unit': 'g',
-        'price': product.price
+        'price': source.price
       }]
     end
     shopify_product.variants = variants

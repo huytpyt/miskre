@@ -4,6 +4,11 @@ class Supply < ApplicationRecord
 
   has_many :images, as: :imageable, dependent: :destroy
   after_initialize :copy_product_attr, :if => :new_record?
+  after_save :sync_job, :unless => :new_record?
+
+  def sync_job
+    SuppliesSyncJob.perform_later(self.id)
+  end
 
   def copy_product_attr
     self.name = self.product.name
