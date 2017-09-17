@@ -19,8 +19,8 @@
               /span.text-right.pull-right
                 = product.price
           .card-section
-            - unless p.images.empty?
-              = image_tag p.images.first.file.url(:medium)
+            - unless product.images.empty?
+              = image_tag product.images.first.file.url(:medium)
             - else
               = image_tag "default.jpg"
           .card-section
