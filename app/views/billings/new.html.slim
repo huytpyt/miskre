@@ -1,0 +1,9 @@
+.page-header
+  h1 Import Orders
+
+#billings
+  .row
+    .column
+      = form_tag import_billings_path, multipart: true 
+        = file_field_tag :file
+        = submit_tag "Import"

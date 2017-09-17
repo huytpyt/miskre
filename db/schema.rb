@@ -10,10 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170916074732) do
+ActiveRecord::Schema.define(version: 20170916180349) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "billings", force: :cascade do |t|
+    t.integer  "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "billings_orders", force: :cascade do |t|
+    t.integer  "billing_id"
+    t.string   "order_shopify_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["billing_id"], name: "index_billings_orders_on_billing_id", using: :btree
+  end
 
   create_table "fulfillments", force: :cascade do |t|
     t.integer  "order_id"
@@ -27,6 +41,7 @@ ActiveRecord::Schema.define(version: 20170916074732) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.string   "items"
+    t.string   "shopify_order_id"
     t.index ["order_id"], name: "index_fulfillments_on_order_id", using: :btree
   end
 

@@ -36,4 +36,12 @@ namespace :shop do
       c.sync_orders(60.days.ago, DateTime.now)
     end
   end
+
+  task :sync_fulfillments => :environment do
+    Shop.all.each do |shop|
+      p shop.name
+      communicator = ShopifyCommunicator.new(shop.id)
+      communicator.sync_fulfillments(shop)
+    end
+  end
 end

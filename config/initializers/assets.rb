@@ -15,7 +15,7 @@ Rails.application.config.assets.precompile += %w(
   ckeditor/*
   chosen-jquery
 
-  products/index
+  products_billings/index.js
   products/form
   orders/index
   shipping_rates

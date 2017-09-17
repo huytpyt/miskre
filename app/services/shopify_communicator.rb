@@ -47,6 +47,34 @@ class ShopifyCommunicator
     }
   end
 
+  def sync_fulfillments shop
+    order_ids = shop.orders.ids
+    fulfillments = Fulfillment.where(fulfillment_id: nil, order_id: order_ids)
+    count = fulfillments.size
+    total_pages = count / 50 + 1
+    fetched_pages = 0
+    current_page = 0
+
+    while fetched_pages < total_pages
+      current_page = fetched_pages + 1
+      p "Fetching #{current_page} / #{total_pages} pages"
+      begin
+        fetched_pages += 1
+        fulfillments.each do |fulfillment|
+          begin
+            new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
+            if new_fulfilllment.save
+              fulfillment.update(fulfillment_id: new_fulfilllment.id)
+            end
+          rescue NoMethodError => e
+            p 'invalid fulfillment'
+          end
+        end
+        sleep 0.5
+      end
+    end
+  end
+
   def sync_orders(start_date=10.day.ago, end_date=DateTime.now)
     params = {
       status: 'any',

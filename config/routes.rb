@@ -28,6 +28,10 @@ Rails.application.routes.draw do
     get 'fetch', on: :collection
   end
 
+  resources :billings do
+    collection { post :import }
+  end
+
   post 'selectShop', to: 'home#selectShop'
 
   post 'shipping_rates', to: 'carrier_service#shipping_rates'

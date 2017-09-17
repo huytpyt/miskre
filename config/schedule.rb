@@ -32,3 +32,6 @@ set :output, "cron_log.log"
 every 2.hours do
   rake 'shop:sync_orders'
 end
+every 1.hours do
+  rake 'shop:sync_fulfillments'
+end
