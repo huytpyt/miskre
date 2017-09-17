@@ -31,8 +31,10 @@
           .card-section
             ul.menu
               li
-                = link_to "Customize", edit_supply_path(s)
+                = link_to "Customize", edit_supply_path(s), class: 'button tiny'
               li
-                = link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
+                = link_to "Remove", supply_path(s.id),
+                  method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
+                /= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
   .row
     = link_to t('.back'), shops_path

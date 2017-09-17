@@ -33,10 +33,9 @@ class SuppliesController < ApplicationController
   end
 
   def destroy
-    product = @supply.product
+    shop = @supply.shop
     @supply.destroy
-    redirect_to add_to_shop_product_url(product),
-      notice: 'Product was successfully remove from shop.'
+    redirect_to shop_url(shop), notice: 'Product was successfully removed from shop.'
   end
 
   private
