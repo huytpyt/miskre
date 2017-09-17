@@ -15,7 +15,8 @@ class Supply < ApplicationRecord
     self.name = self.product.name
     self.price = self.product.price
     self.desc = self.product.desc
-    self.images = self.product.images
+    # TODO sync images
+    # self.images = self.product.images
   end
 
   def remove_shopify_product
