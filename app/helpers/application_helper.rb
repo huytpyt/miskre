@@ -21,6 +21,6 @@ module ApplicationHelper
   end
 
   def billing_options
-    [['Pending', 'pending'], ['Paid', 'paid']]
+    [['Pending', 'pending'], ['Paid', 'paid'], ['Refunded', 'refunded']]
   end
 end

@@ -47,14 +47,14 @@ class ShopifyCommunicator
     }
   end
 
-  def sync_fulfillments shop
-    order_ids = shop.orders.ids
+  def sync_fulfillments(billing_id)
+    order_ids = @shop.orders.ids
     fulfillments = Fulfillment.where(fulfillment_id: nil, order_id: order_ids)
     count = fulfillments.size
     total_pages = count / 50 + 1
     fetched_pages = 0
     current_page = 0
-
+    count_fulfilled = 0
     while fetched_pages < total_pages
       current_page = fetched_pages + 1
       p "Fetching #{current_page} / #{total_pages} pages"
@@ -65,6 +65,7 @@ class ShopifyCommunicator
             new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
             if new_fulfilllment.save
               fulfillment.update(fulfillment_id: new_fulfilllment.id)
+              count_fulfilled += 1
             end
           rescue NoMethodError => e
             p 'invalid fulfillment'
@@ -72,6 +73,9 @@ class ShopifyCommunicator
         end
         sleep 0.5
       end
+    end
+    if count_fulfilled == count
+      Billing.find_by_id(billing_id).update(status: "pending")
     end
   end
 

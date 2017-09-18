@@ -41,7 +41,7 @@ class BillingsController < ApplicationController
     if current_user.staff?
       @billing.update(params_billing)
       @billing.orders.each do |order|
-        order.update(financial_status: "paid")
+        order.update(financial_status: params_billing[:status])
       end
       redirect_to billing_path(@billing), notice: "Update successfully!"
     end
@@ -62,10 +62,10 @@ class BillingsController < ApplicationController
       
       billings_orders = billing_service.update_data spreadsheet
 
-      if billings_orders[0].none?
+      if billings_orders[0].billings_orders.none?
         redirect_to billings_path, notice: billings_orders[1]
       else
-        FulfillmentsSyncJob.perform_later
+        FulfillmentsSyncJob.perform_later billings_orders[0].id
         redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
       end
     end

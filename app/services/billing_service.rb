@@ -26,7 +26,7 @@ class BillingService
 
   def update_data spreadsheet
     header = spreadsheet.row(1)
-    billing = Billing.create(status: "pending")
+    billing = Billing.create(status: "processing")
     errors = ""
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
@@ -56,6 +56,6 @@ class BillingService
     if billing.billings_orders.none?
       billing.destroy
     end
-    return [billing.billings_orders, errors]
+    return [billing, errors]
   end
 end

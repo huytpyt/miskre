@@ -36,7 +36,7 @@
           = form_for @billing do |f|
             .form-group
               = f.label :status, class: "control-label"
-              = f.select :status, ["pending", "paid"], class: "form-control"
+              = f.select :status, ["pending", "paid", "refunded"], class: "form-control"
               = f.submit nil, class: "button success"
 - else
   h2 Not found this billing!
