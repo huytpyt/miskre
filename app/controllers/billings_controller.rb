@@ -2,7 +2,33 @@ class BillingsController < ApplicationController
   before_action :order_service, only: [:index, :show]
   before_action :get_billing, only: [:show, :update]
   def index
-    @billings = Billing.all
+    @status = params[:status].to_s
+    query_params = {}
+    query_params['status'] = @status unless @status.empty?
+    if current_user.staff?
+      @shops = Shop.all
+    else
+      @shops = current_user.shops&.all
+    end
+    if params[:shop_id]
+      begin
+        @current_shop = @shops.find_by_id(params[:shop_id])
+      rescue ActiveRecord::RecordNotFound
+        @current_shop = nil
+        @billings = []
+      end
+    else
+      unless current_user&.shops&.empty?
+        @current_shop = @shops&.first
+      else
+        @current_shop = nil
+        @billings = []
+      end
+    end
+    order_ids = @current_shop&.orders&.ids
+    billings_orders = BillingsOrder.where(order_id: order_ids)
+    billing_ids = billings_orders.pluck(:billing_id).uniq
+    @billings = Billing.where(id: billing_ids).where(query_params)
   end
 
   def new
@@ -58,7 +84,18 @@ class BillingsController < ApplicationController
   end
 
   def get_billing
-    @billing = Billing.find(params[:id])
-    @billings_orders = @billing.orders
+    if current_user.staff?
+      @billing = Billing.find(params[:id])
+      @billings_orders = @billing.orders
+    else
+      shop_ids = current_user.shops.ids
+      order_ids = Order.where(shop_id: shop_ids).ids
+      billings_orders = BillingsOrder.where(order_id: order_ids)
+      billing_ids = billings_orders.pluck(:billing_id).uniq
+      @billings = Billing.where(id: billing_ids)
+
+      @billing = @billings.find_by_id(params[:id])
+      @billings_orders = @billing&.orders&.where(id: order_ids)
+    end
   end
 end

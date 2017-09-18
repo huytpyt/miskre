@@ -14,6 +14,27 @@ p#notice
           .column.medium-3
             = link_to 'Import Orders', new_billing_path, class: 'button primary small'
     .column
+      = form_tag(billings_path, method: :get) do
+        .row
+          .columns.large-4
+            label
+              | Shop
+              - if @current_shop
+                = select_tag :shop_id, options_for_select(available_shops, @current_shop.id)
+              - else
+                = select_tag :shop_id, options_for_select(available_shops)
+          .columns.large-4
+            label
+              | Financial Status
+              = select_tag :status,
+                options_for_select(billing_options, @status),
+                include_blank: true
+          .columns.large-4
+            label
+              br
+              = submit_tag "Search", class: "button"
+       
+    .column
       table#product-table
         thead
           tr

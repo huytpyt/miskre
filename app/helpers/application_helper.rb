@@ -1,6 +1,10 @@
 module ApplicationHelper
   def available_shops
-    @shops = current_user.shops.select(:id, :name).all
+    if current_user.staff?
+      @shops = Shop.all.select(:id, :name).all
+    else
+      @shops = current_user.shops.select(:id, :name).all
+    end
     @shops.collect {|s| [s.name, s.id]}
   end
 
@@ -14,5 +18,9 @@ module ApplicationHelper
   def fulfillment_options
     [['Unfulfilled', 'null'], ['Fulfilled', 'fulfilled'],
      ['Partially fulfilled', 'partial']]
+  end
+
+  def billing_options
+    [['Pending', 'pending'], ['Paid', 'paid']]
   end
 end
