@@ -13,9 +13,8 @@ class OrderService
 
   def sum_money_per_bill bill_id
     bill = Billing.find bill_id
-    shopify_order_ids = bill.billings_orders.pluck(:order_shopify_id)
     total_money = 0
-    Order.where(shopify_id: shopify_order_ids).each do |order|
+    bill.orders.each do |order|
       total_money += sum_money_from_order(order)
     end
     return total_money

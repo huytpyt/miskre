@@ -16,11 +16,10 @@ p#notice
             th Total Price(Quantity * Price) * 1.3
         tbody
           - total_money = 0
-          - @billings_orders.each do |billings_order|
-            - fulfillment = Fulfillment.find_by_shopify_order_id billings_order.order_shopify_id
-            - order = Order.find_by_shopify_id billings_order.order_shopify_id
+          - @billings_orders.each do |order|
+            - fulfillment = order.fulfillments.first
             tr 
-              td = billings_order.id
+              td = order.billings_order.id
               td = link_to order.id, order_path(order)
               td = fulfillment&.tracking_company
               td = fulfillment&.tracking_number

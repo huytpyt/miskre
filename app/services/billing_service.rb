@@ -31,9 +31,9 @@ class BillingService
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       order = Order.find_by_shopify_id row["Order Id"]
-      billings_orders = BillingsOrder.find_by_order_shopify_id row["Order Id"]
+      billings_orders = BillingsOrder.find_by_order_id order&.id
       if order.present? && billings_orders.nil? && order&.fulfillments.none?
-        billings_order =  billing.billings_orders.new(order_shopify_id: row["Order Id"])
+        billings_order =  billing.billings_orders.new(order_id: order.id)
         fulfillment = order.fulfillments.new({"shopify_order_id"=>row["Order Id"], "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>row["Shipping Method"], "tracking_number"=>row["Tracking No."], "tracking_url"=>TRACKING_URL + row["Tracking No."], "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
         if fulfillment.save
           billings_order.save

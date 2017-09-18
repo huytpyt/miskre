@@ -14,8 +14,7 @@ class BillingsController < ApplicationController
   def update
     if current_user.staff?
       @billing.update(params_billing)
-      shopify_order_ids = @billings_orders.pluck(:order_shopify_id)
-      Order.where(shopify_id: shopify_order_ids).each do |order|
+      @billing.orders.each do |order|
         order.update(financial_status: "paid")
       end
       redirect_to billing_path(@billing), notice: "Update successfully!"
@@ -23,23 +22,26 @@ class BillingsController < ApplicationController
   end
 
   def import
-    require 'rubygems'
-    require 'roo'
-    require 'roo-xls'
-    require 'csv'
-    require 'iconv'
-    spreadsheet = billing_service.open_spreadsheet(params[:file])
-    if spreadsheet == false
-      redirect_to new_billing_path, notice: "Unknown file type"
-      return
-    end
-    
-    billings_orders = billing_service.update_data spreadsheet
+    if current_user.staff?
+      require 'rubygems'
+      require 'roo'
+      require 'roo-xls'
+      require 'csv'
+      require 'iconv'
+      spreadsheet = billing_service.open_spreadsheet(params[:file])
+      if spreadsheet == false
+        redirect_to new_billing_path, notice: "Unknown file type"
+        return
+      end
+      
+      billings_orders = billing_service.update_data spreadsheet
 
-    if billings_orders[0].none?
-      redirect_to billings_path, notice: billings_orders[1]
-    else
-      redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
+      if billings_orders[0].none?
+        redirect_to billings_path, notice: billings_orders[1]
+      else
+        FulfillmentsSyncJob.perform_later
+        redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
+      end
     end
   end
 
@@ -57,6 +59,6 @@ class BillingsController < ApplicationController
 
   def get_billing
     @billing = Billing.find(params[:id])
-    @billings_orders = @billing.billings_orders
+    @billings_orders = @billing.orders
   end
 end

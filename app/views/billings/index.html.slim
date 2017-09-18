@@ -8,10 +8,11 @@ p#notice
 
 #billings
   .row
-    .column
-      .row
-        .column.medium-3
-          = link_to 'Import Orders', new_billing_path, class: 'button primary small'
+    - if current_user.staff?
+      .column
+        .row
+          .column.medium-3
+            = link_to 'Import Orders', new_billing_path, class: 'button primary small'
     .column
       table#product-table
         thead
