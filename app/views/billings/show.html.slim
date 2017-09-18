@@ -1,0 +1,42 @@
+- unless @billings_orders.nil?  
+  p#notice
+  .page-header
+    h1 Bill details ##{@billing.id}
+
+  #billings
+    .row
+      .column
+        table#product-table
+          thead
+            tr
+              th Id
+              th Shopyfi Order ID
+              th Tracking Company
+              th Tracking Number
+              th Tracking URL
+              th Total Price(Quantity * Price) * 1.3
+          tbody
+            - total_money = 0
+            - @billings_orders.each do |order|
+              - fulfillment = order.fulfillments.first
+              tr 
+                td = order.billings_order.id
+                td = link_to order.id, order_path(order)
+                td = fulfillment&.tracking_company
+                td = fulfillment&.tracking_number
+                td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"
+                td = number_to_currency @order_service.sum_money_from_order(order), precision: 0, unit: "VND", format: "%n %u"
+        b Total money 
+        span = number_to_currency @order_service.sum_money_per_bill(@billing), precision: 0, unit: "VND", format: "%n %u"
+    - if current_user.staff?
+      br
+      br
+      .row
+        .column
+          = form_for @billing do |f|
+            .form-group
+              = f.label :status, class: "control-label"
+              = f.select :status, ["pending", "paid", "refunded"], class: "form-control"
+              = f.submit nil, class: "button success"
+- else
+  h2 Not found this billing!

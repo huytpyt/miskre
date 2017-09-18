@@ -12,10 +12,12 @@
           = link_to "Product", main_app.products_path
         li class=(params[:controller] == 'orders' ? 'active' : '')
           = link_to "Order", main_app.orders_path
-        li 
+        /li 
           = link_to "Fulfillment", "#"
         li class=(params[:controller] == 'carrier_service' ? 'active' : '')
           = link_to "Carrier Service", carrier_service_path
+        li class=(params[:controller] == 'billings' ? 'active' : '')
+          = link_to "Billing", billings_path
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email

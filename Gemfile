@@ -63,7 +63,11 @@ gem 'bower-rails', '~> 0.11.0'
 gem 'rails_admin', '~> 1.2'
 gem 'cancancan', '~> 1.13', '>= 1.13.1'
 gem 'enumerize', '~> 2.1', '>= 2.1.2'
+# Import CSV, XLS, XLSX
 gem 'roo', '~> 2.7', '>= 2.7.1'
+gem "iconv", "~> 1.0.3"
+gem 'roo-xls', '~> 1.1'
+
 gem 'countries', '~> 2.1', '>= 2.1.2'
 gem 'ckeditor', '~> 4.2', '>= 4.2.4'
 gem 'kaminari', '~> 1.0', '>= 1.0.1'
