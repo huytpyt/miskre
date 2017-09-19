@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170918032745) do
+ActiveRecord::Schema.define(version: 20170919092946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -143,6 +143,7 @@ ActiveRecord::Schema.define(version: 20170918032745) do
     t.integer  "bundle_id"
     t.boolean  "is_bundle",        default: false
     t.integer  "quantity",         default: 0
+    t.string   "product_ids"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
   end
 

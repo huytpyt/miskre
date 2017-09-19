@@ -35,8 +35,9 @@ class ProductsController < ApplicationController
   # POST /products
   # POST /products.json
   def create
+    product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
     @product = Product.new(product_params)
-
+    @product.product_ids = product_ids
     respond_to do |format|
       if @product.save
         if params[:product][:images]
@@ -59,8 +60,11 @@ class ProductsController < ApplicationController
   # PATCH/PUT /products/1
   # PATCH/PUT /products/1.json
   def update
+    product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
     respond_to do |format|
       if @product.update(product_params)
+        @product.product_ids = product_ids
+        @product.save
         if params[:product][:images]
           params[:product][:images].each do |img|
         #params[:images].each do |key, value|
@@ -150,6 +154,6 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
                                       :height, :width, :sku, :desc, :quantity,
-                                      :price, :cost, product_ids: [])
+                                      :price, :cost)
     end
 end

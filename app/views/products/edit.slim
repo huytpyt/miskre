@@ -1,17 +1,16 @@
 /- content_for :script
   = javascript_include_tag "products"
+.edit-product-page
+  .page-header
+    - if @product.is_bundle
+      h1 Editing Bundle
+    - else
+      h1 Editing Product
+  = render 'form', product: @product
 
-.page-header
-  - if @product.is_bundle
-    h1 Editing Bundle
-  - else
-    h1 Editing Product
+  = render partial: "products/options"
+  = render partial: "products/variants"
 
-= render 'form', product: @product
-
-= render partial: "products/options"
-= render partial: "products/variants"
-
-= link_to 'Show', @product 
-br
-= link_to 'Back', products_path
+  = link_to 'Show', @product 
+  br
+  = link_to 'Back', products_path

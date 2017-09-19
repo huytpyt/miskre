@@ -2,6 +2,22 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.edit-product-page {
+  .chosen-drop {
+    .active-result {
+      font-weight: bold;
+    }
+    .active-result.group-option {
+      font-weight: 100;
+    }
+    .result-selected {
+      font-weight: bold;
+    }
+    .result-selected.group-option {
+      font-weight: 100;
+    }
+  }
+}
 ul#dvPreview
   li { 
     display: inline-block; 

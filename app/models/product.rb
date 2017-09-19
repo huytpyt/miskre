@@ -9,8 +9,8 @@ class Product < ApplicationRecord
   has_many :options, dependent: :destroy
   has_many :variants, dependent: :destroy
 
-  has_many :products, class_name: "Product", foreign_key: "bundle_id"
-  belongs_to :bundle, class_name: "Product"
+  # has_many :products, class_name: "Product", foreign_key: "bundle_id"
+  # belongs_to :bundle, class_name: "Product"
 
   has_many :line_items
   has_many :orders, through: :line_items
@@ -24,11 +24,11 @@ class Product < ApplicationRecord
                                        greater_than_or_equal_to: 0}
 
   after_initialize :generate_sku, :if => :new_record?
-  before_save :pack_bundle, if: :is_bundle
+  # before_save :pack_bundle, if: :is_bundle
   before_save :calculate_price
 
   after_save :sync_job
-
+  serialize :product_ids
   def sync_job
     ProductsSyncJob.perform_later(self.id)
   end

@@ -21,7 +21,7 @@
 //= require foundation
 //= require ckeditor/init
 //= require chosen-jquery
-
-//require_tree .
+//= require product
+// require_tree .
 
 $(function(){ $(document).foundation(); });

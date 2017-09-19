@@ -63,7 +63,26 @@
       #bundle_products style=(@product.is_bundle ? '' : 'visibility:hidden;')
         .field
           = f.label :products
-          = f.select :product_ids, Product.all.map { |p| [p.name, p.id] }, { }, { :multiple => true }
+          - f.select :product_ids, Product.all.map { |p| [p.name, p.id] }, { }, { :multiple => true}
+          .col-lg-6
+            select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6" name="product[product_ids][]"
+              option value="" 
+              - p_ids = product.product_ids&.map{|b| b[:product_id]}
+              - v_ids = product.product_ids&.map{|b| b[:variant_id]}
+              - Product.all.each do |p|
+                - if p.variants.none?
+                  - if p_ids&.include? p.id
+                    option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name
+                  - else
+                    option value="{product_id: #{p.id}, variant_id: nil}" = p.name
+                - else
+                  optgroup label=("#{p.name}") 
+                    - p.variants.each do |variant|
+                      - if v_ids&.include? variant.id
+                        option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" #{variant.option1} - #{variant.option2} - #{variant.option3}
+                      - else
+                        option value="{product_id: #{p.id}, variant_id: #{variant.id}}" #{variant.option1} - #{variant.option2} - #{variant.option3}
+                 
 
   .row
     .columns
