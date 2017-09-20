@@ -20,6 +20,8 @@ Things you may want to cover:
 * Services (job queues, cache servers, search engines, etc.)
 
 * Use sidekiq
+  required install redis
+  $ redis-server
   $ bundle exec sidekiq
 * Deployment instructions
 
