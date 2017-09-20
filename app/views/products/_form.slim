@@ -79,11 +79,9 @@
                   optgroup label=("#{p.name}") 
                     - p.variants.each do |variant|
                       - if v_ids&.include? variant.id
-                        option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" #{variant.option1} - #{variant.option2} - #{variant.option3}
+                        option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
                       - else
-                        option value="{product_id: #{p.id}, variant_id: #{variant.id}}" #{variant.option1} - #{variant.option2} - #{variant.option3}
-                 
-
+                        option value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
   .row
     .columns
       .field
