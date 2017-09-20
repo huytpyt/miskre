@@ -35,11 +35,12 @@ var options = new Vue({
         }
       )
     },
-    updateOption: function(option) {
+    updateOption: function(option, index) {
       var that = this;
       optionResource.update({id: option.id}, {option: option}).then(
         function (response) {
           that.editMode = false;
+          that.options.splice(index, 1, response.data)
         }
       )
     },
