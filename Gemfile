@@ -85,3 +85,5 @@ end
 
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
+# Environment variables
+gem 'figaro', '~> 1.1', '>= 1.1.1'

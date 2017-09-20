@@ -25,4 +25,21 @@ Things you may want to cover:
   $ bundle exec sidekiq
 * Deployment instructions
 
+* Generate secret key base:
+  $ rake secret
+
+* Use environment variables:
+  change application.yml.example to application.yml
+  SECRET_KEY_BASE = "your_secret_key_base"
+
+* Docker 
+  - Build:
+    $ docker-compose -f docker-compose.production.yml build
+  - Run migration:
+    $ docker-compose -f docker-compose.production.yml run --rm app bin/rake db:migrate
+  - Up:
+    $ docker-compose -f docker-compose.production.yml up -d 
+  - Stop
+    $ docker-compose -f docker-compose.production.yml down
+    
 * ...
