@@ -1,0 +1,9 @@
+:logfile: log/sidekiq.log
+:schedule:
+  setting:
+    every: 2h
+    class: ShopWorker
+:concurrency: 1
+:queues:
+  - default
+  - mailers
