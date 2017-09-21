@@ -27,9 +27,9 @@ Things you may want to cover:
 
 * Docker 
   - Build:
-    $ docker-compose -f docker-compose.production.yml build
+    $ docker-compose -f docker-compose.production.yml build --no-cache 
   - Run migration:
-    $ docker-compose -f docker-compose.production.yml run --rm app bin/rake db:migrate
+    $ docker-compose -f docker-compose.production.yml run app rake db:migrate
   - Up:
     $ docker-compose -f docker-compose.production.yml up -d 
   - Stop
