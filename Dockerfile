@@ -5,8 +5,7 @@ RUN apk add --no-cache \
   tzdata \
   nodejs \
   mariadb-dev \
-  postgresql-dev \
-  && rm -rf /var/cache/apk/*
+  postgresql-dev
 
 ENV APP_ROOT /opt/app
 
