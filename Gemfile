@@ -83,3 +83,7 @@ group :development do
   gem 'capistrano3-puma',   require: false
   gem 'capistrano-rails-console', '~> 2.2'
 end
+
+# For super search
+gem 'elasticsearch-model', github: 'elastic/elasticsearch-rails', branch: '5.x'
+gem 'elasticsearch-rails', github: 'elastic/elasticsearch-rails', branch: '5.x'

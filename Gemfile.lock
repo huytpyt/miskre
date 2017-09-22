@@ -1,3 +1,14 @@
+GIT
+  remote: https://github.com/elastic/elasticsearch-rails.git
+  revision: 22b698aa3f4138db6ec1d1a082e8cd24f8132224
+  branch: 5.x
+  specs:
+    elasticsearch-model (5.0.1)
+      activesupport (> 3)
+      elasticsearch (~> 5)
+      hashie
+    elasticsearch-rails (5.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -108,6 +119,14 @@ GEM
       railties (>= 4.1.0, < 5.2)
       responders
       warden (~> 1.2.3)
+    elasticsearch (5.0.4)
+      elasticsearch-api (= 5.0.4)
+      elasticsearch-transport (= 5.0.4)
+    elasticsearch-api (5.0.4)
+      multi_json
+    elasticsearch-transport (5.0.4)
+      faraday
+      multi_json
     enumerize (2.1.2)
       activesupport (>= 3.2)
     erubis (2.7.0)
@@ -352,6 +371,8 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   countries (~> 2.1, >= 2.1.2)
   devise (~> 4.3)
+  elasticsearch-model!
+  elasticsearch-rails!
   enumerize (~> 2.1, >= 2.1.2)
   font-awesome-rails (~> 4.7, >= 4.7.0.2)
   foundation-rails (~> 6.4, >= 6.4.1.2)

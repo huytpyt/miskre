@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.isotope.min
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.foundation
 //= require vue

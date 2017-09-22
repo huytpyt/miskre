@@ -21,4 +21,7 @@ Things you may want to cover:
 
 * Deployment instructions
 
+* Elasticsearch:
+  Install and start elasticsearch belongs to your operator system
+
 * ...
