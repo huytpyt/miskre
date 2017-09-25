@@ -51,6 +51,7 @@ class CarrierServiceController < ApplicationController
 
     epub_price = 0
     dhl_price = 0
+    total_price = 0
     items.each do |i|
       epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
       dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * i['grams'])
@@ -61,24 +62,52 @@ class CarrierServiceController < ApplicationController
       epub_price += (epub_cost - epub_us_cost * 0.8).round(2)
       dhl_price += (dhl_cost - epub_us_cost * 0.8).round(2)
       # p i['quantity'], i['grams'], epub_price
+      #
+      total_price += i['quantity'] * i['price']
     end
-
-    rates = [
-      {
-        'service_name': 'ePUB',
-        'description': '9-12 working days',
-        'service_code': 'ePacket',
-        'currency': 'USD',
-        'total_price': (epub_price * 100).round.to_s
-      },
-      {
-        'service_name': 'DHL',
-        'description': '5-8 working days',
-        'service_code': 'dhl',
-        'currency': 'USD',
-        'total_price': (dhl_price * 100).round.to_s
-      }
-    ]
+    if total_price > 30
+      rates = [
+        {
+          # 'service_name': 'ePUB',
+          'service_name': 'Free Insured Shipping',
+          # 'description': '9-12 working days',
+          'description': '8-12 days',
+          'service_code': 'ePacket',
+          'currency': 'USD',
+          'total_price': 0
+        },
+        {
+          # 'service_name': 'DHL',
+          'service_name': 'DHL (not free)',
+          # 'description': '5-8 working days',
+          'description': '3-5 days',
+          'service_code': 'dhl',
+          'currency': 'USD',
+          'total_price': (dhl_price * 100).round.to_s
+        }
+      ]
+    else
+      rates = [
+        {
+          # 'service_name': 'ePUB',
+          'service_name': 'Insured Shipping',
+          # 'description': '9-12 working days',
+          'description': '8-12 days',
+          'service_code': 'ePacket',
+          'currency': 'USD',
+          'total_price': (epub_price * 100).round.to_s
+        },
+        {
+          # 'service_name': 'DHL',
+          'service_name': 'Expedited Insured Shipping',
+          # 'description': '5-8 working days',
+          'description': '3-5 days',
+          'service_code': 'dhl',
+          'currency': 'USD',
+          'total_price': (dhl_price * 100).round.to_s
+        }
+      ]
+    end
     render :json => {"rates": rates}
   end
 end
