@@ -65,7 +65,7 @@ class CarrierServiceController < ApplicationController
       #
       total_price += i['quantity'] * i['price']
     end
-    if total_price > 30
+    if total_price > 3000
       rates = [
         {
           # 'service_name': 'ePUB',
