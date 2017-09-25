@@ -4,11 +4,14 @@ class Supply < ApplicationRecord
 
   has_many :images, as: :imageable, dependent: :destroy
   after_initialize :copy_product_attr, :if => :new_record?
-  after_save :sync_job, :unless => :new_record?
+  # after_save :sync_job, :unless => :new_record?
+  after_save :sync_job
   before_destroy :remove_shopify_product
 
   def sync_job
     SuppliesSyncJob.perform_later(self.id)
+    # c = ShopifyCommunicator.new(self.shop_id)
+    # c.sync_product(self.id)
   end
 
   def copy_product_attr

@@ -63,7 +63,7 @@
       #bundle_products style=(@product.is_bundle ? '' : 'visibility:hidden;')
         .field
           = f.label :products
-          - f.select :product_ids, Product.all.map { |p| [p.name, p.id] }, { }, { :multiple => true}
+          /- f.select :product_ids, Product.all.map { |p| [p.name, p.id] }, { }, { :multiple => true}
           .col-lg-6
             select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6" name="product[product_ids][]"
               option value="" 

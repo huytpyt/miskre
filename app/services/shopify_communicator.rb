@@ -167,15 +167,14 @@ class ShopifyCommunicator
     shopify_product.title = source.name
     shopify_product.vendor = product.vendor
     shopify_product.body_html = source.desc
-    shopify_product.images = source.images.collect do |i|
+    # TODO upload supply images here
+    shopify_product.images = product.images.collect do |i|
       # p URI.join(request.url, i.file.url(:original)).to_s
       # { "src" => URI.join(request.url, i.file.url(:original)) }
-      #
-      #
-      # { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original))}
-      raw_content = Paperclip.io_adapters.for(i.file).read
-      encoded_content = Base64.encode64(raw_content)
-      { "attachment" => encoded_content }
+      { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
+      # raw_content = Paperclip.io_adapters.for(i.file).read
+      # encoded_content = Base64.encode64(raw_content)
+      # { "attachment" => encoded_content }
     end
 
     variants = []
@@ -199,9 +198,9 @@ class ShopifyCommunicator
       }]
     end
     shopify_product.variants = variants
-    shopify_product.save
+    success = shopify_product.save
 
-    if shopify_product.persisted? && !product.variants.empty?
+    if success == true && !product.variants.empty?
       product.variants.each do |v|
         unless v.images.empty?
           shopify_v = shopify_product.variants.find {|sv| sv.sku == v.sku}

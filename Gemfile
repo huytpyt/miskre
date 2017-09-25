@@ -73,7 +73,6 @@ gem 'ckeditor', '~> 4.2', '>= 4.2.4'
 gem 'kaminari', '~> 1.0', '>= 1.0.1'
 gem 'jquery-datatables-rails', '~> 3.4'
 gem 'chosen-rails', '~> 1.5', '>= 1.5.2'
-gem 'whenever', '~> 0.9.7'
 gem 'vuejs-rails', '~> 2.4', '>= 2.4.2'
 
 group :development do
@@ -87,3 +86,7 @@ end
 # For super search
 gem 'elasticsearch-model', github: 'elastic/elasticsearch-rails', branch: '5.x'
 gem 'elasticsearch-rails', github: 'elastic/elasticsearch-rails', branch: '5.x'
+gem 'sidekiq'
+gem 'sidekiq-scheduler'
+# Environment variables
+gem 'figaro', '~> 1.1', '>= 1.1.1'

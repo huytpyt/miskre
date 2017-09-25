@@ -14,7 +14,7 @@ input#optionsResource value="#{product_options_path(@product.id)}" type="hidden"
             th Values
             th
         tbody
-          tr.option v-for="option in options"
+          tr.option v-for="(option, index) in options"
             td
               div v-if="editMode"
                 input type="text" v-model="option.name"
@@ -26,7 +26,7 @@ input#optionsResource value="#{product_options_path(@product.id)}" type="hidden"
                 span style="color:red" {{ errors.email }}
               div v-else="" {{ option.values }}
             td
-              button v-if="editMode" @click="updateOption(option)" Save
+              button v-if="editMode" @click="updateOption(option, index)" Save
               button v-else="" @click="editMode = true" Edit
               button v-if="!editMode" @click="removeOption(option)" style="color:red" Remove
             /td

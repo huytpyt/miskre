@@ -1,0 +1,63 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      args:
+        RAILS_ENV: production
+    volumes:
+      - public_data:/opt/app/public
+      - ./log:/opt/app/log
+    environment:
+      DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_production'
+      REDIS_URL:    'redis://cache:6379'
+      SECRET_KEY_BASE: 'e3ba32e5105fb3edf485ff800c3fa79de96006efd751357083964a388e21cf1af1e282a72a39981fdff2737b808b6af41c990e1641ce7147412a7723ce3532fe'
+    links:
+      - db
+      - cache
+    command: bundle exec rails s Puma -b 0.0.0.0
+  worker:
+    build:
+      context: .
+      args:
+        RAILS_ENV: production
+    volumes:
+      - public_data:/opt/app/public
+      - ./log:/opt/app/log
+    environment:
+      DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_production'
+      REDIS_URL:    'redis://cache:6379'
+      SECRET_KEY_BASE: 'e3ba32e5105fb3edf485ff800c3fa79de96006efd751357083964a388e21cf1af1e282a72a39981fdff2737b808b6af41c990e1641ce7147412a7723ce3532fe'
+    links:
+      - db
+      - cache
+    command: bundle exec sidekiq -C config/sidekiq.yml
+  db:
+    image: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_RANDOM_ROOT_PASSWORD: 'yes'
+      POSTGRES_DATABASE:             shop_center_production
+      POSTGRES_USER:                 miskre
+      POSTGRES_PASSWORD:             db_pass
+    ports:
+      - 5432:5432
+  cache:
+    image: redis:3-alpine
+    volumes:
+      - cache_data:/data
+  web:
+    build: containers/nginx
+    volumes:
+      - ./log:/opt/app/log
+      - ./tmp:/opt/app/tmp
+      - public_data:/opt/app/public
+    ports:
+      - "80:80"
+    links:
+      - app
+volumes:
+  db_data:
+  cache_data:
+  public_data:

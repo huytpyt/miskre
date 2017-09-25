@@ -3,6 +3,8 @@ class Option < ApplicationRecord
   before_save :capitalize_values
 
   def capitalize_values
-    self.values.map!(&:strip).map!(&:capitalize)
+    self.values.map! do |v|
+      v.split.map!(&:capitalize).join(' ')
+    end
   end
 end
