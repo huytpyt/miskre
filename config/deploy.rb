@@ -41,12 +41,12 @@ set :default_env, {
 }
 
 # Whenever config
-set :whenever_environment,  ->{ fetch :rails_env, fetch(:stage, "production") }
-set :whenever_identifier, "#{fetch(:application)}_#{fetch(:stage)}"
-set :whenever_variables, -> do
-  "'environment=#{fetch :whenever_environment}" \
-  "&rbenv_root=#{fetch :rbenv_path}'"
-end
+# set :whenever_environment,  ->{ fetch :rails_env, fetch(:stage, "production") }
+# set :whenever_identifier, "#{fetch(:application)}_#{fetch(:stage)}"
+# set :whenever_variables, -> do
+#   "'environment=#{fetch :whenever_environment}" \
+#   "&rbenv_root=#{fetch :rbenv_path}'"
+# end
 
 namespace :puma do
   desc 'Create Directories for Puma Pids and Socket'
