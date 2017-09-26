@@ -17,6 +17,9 @@ require 'capistrano/puma'
 install_plugin Capistrano::Puma
 require 'capistrano/console'
 
+require 'capistrano/sidekiq'
+require 'capistrano/sidekiq/monit' #to require monit tasks # Only for capistrano3
+
 # require "whenever/capistrano"
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
