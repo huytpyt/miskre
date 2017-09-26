@@ -3,8 +3,7 @@ class Product < ApplicationRecord
   include ShopifyApp::SessionStorage
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
-  Product.__elasticsearch__.create_index!
-  Product.import
+  Product.import(force: true)
   # has_many :images, dependent: :destroy
   has_many :images, as: :imageable, dependent: :destroy
 

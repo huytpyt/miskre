@@ -84,8 +84,8 @@ group :development do
 end
 
 # For super search
-gem 'elasticsearch-model', github: 'elastic/elasticsearch-rails', branch: '5.x'
-gem 'elasticsearch-rails', github: 'elastic/elasticsearch-rails', branch: '5.x'
+gem 'elasticsearch-rails', '~> 0.1.7'
+gem 'elasticsearch-model', '~> 0.1.7'
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 # Environment variables
