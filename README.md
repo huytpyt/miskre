@@ -25,6 +25,9 @@ Things you may want to cover:
   $ bundle exec sidekiq
 * Deployment instructions
 
+* Elasticsearch:
+  Install and start elasticsearch belongs to your operator system
+
 * Docker 
   - Build:
     $ docker-compose -f docker-compose.production.yml build --no-cache 
