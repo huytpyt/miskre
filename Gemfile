@@ -81,7 +81,6 @@ group :development do
   gem 'capistrano-bundler', require: false
   gem 'capistrano3-puma',   require: false
   gem 'capistrano-rails-console', '~> 2.2'
-  gem 'capistrano-sidekiq', '~> 0.20.0'
 end
 
 gem 'sidekiq'
