@@ -6,36 +6,57 @@
   / .products.large-up-4
   .row
     .column
-      = paginate @supplies
-  .row.large-up-3.page-content
-    - @supplies.each do |s|
-      - product = s.product
-      - unless product.nil?
-        .column
-          .card
-            .card-divider
-              h4.each-block-header
-                span.text-left.pull-left
-                  = s.name
-                /span.text-right.pull-right
-                  = product.price
-            .card-section
-              - unless product.images.empty?
-                = image_tag product.images.first.file.url(:medium)
-              - else
-                = image_tag "default.jpg"
-            .card-section
-              p = s.desc
-              p #{t('.price')} $#{product.price}
-              p #{t('.weight')} #{product.weight}g
-              p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
-            .card-section
-              ul.menu
-                li
-                  = link_to "Customize", edit_supply_path(s), class: 'button tiny'
-                li
-                  = link_to "Remove", supply_path(s.id),
-                    method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
-                  /= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
+      = paginate @products
+  .row
+    .column
+      = form_tag(shop_path(@shop), method: :get) do
+        .row
+          .columns.large-8
+            label
+              | Enter SKU or product name:
+              = text_field_tag :search
+          .columns.large-4
+            label
+              br
+              = submit_tag "Search", class: "button"
+  .row.large-up-3.page-content#productspost
+    - unless @products.none?
+      - @products.includes(:supplies, :images).each do |product|
+        - supply = product.supplies.where(shop_id: @shop.id)
+        - supply.each do |s|
+          .column.item
+            .card
+              .card-divider
+                h4.each-block-header
+                  span.text-left.pull-left
+                    = s.name
+                  /span.text-right.pull-right
+                    = product.price
+              .card-section
+                - unless product.images.empty?
+                  = image_tag product.images.first.file.url(:medium)
+                - else
+                  = image_tag "default.jpg"
+              .card-section
+                p #{t('.price')} $#{product.price}
+                p #{t('.weight')} #{product.weight}g
+                p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+              .card-section
+                ul.menu
+                  li
+                    = link_to "Customize", edit_supply_path(s), class: 'button tiny'
+                  li
+                    = link_to "Remove", supply_path(s),
+                      method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
+                    /= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
+    - else
+      .column
+        h4 Not found!
   .row
     = link_to t('.back'), shops_path
+javascript:
+  $('#products').imagesLoaded( function(){
+    $('#products').isotope({
+      itemSelector : '.item'
+    });
+  });

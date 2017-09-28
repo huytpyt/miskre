@@ -7,7 +7,8 @@ class ShopsController < ApplicationController
   end
 
   def show
-    @supplies = @shop.supplies.page params[:page]
+    @products = params[:search].present? ? @shop.products.search(params[:search]).records : @shop.products.all
+    @products = @products.page(params[:page])
   end
 
   # DELETE /shops/1

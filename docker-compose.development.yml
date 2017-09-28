@@ -1,5 +1,13 @@
 version: '3'
 services:
+  elasticsearch:
+    image: elasticsearch
+    ports:
+      - "9200:9200"
+    networks:
+      - default
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
   app:
     build:
       context: .
@@ -9,8 +17,9 @@ services:
       - .:/opt/app
     environment:
       DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_development'
-      REDIS_URL:    'redis://cache:6379'
+      REDIS_URL: 'redis://cache:6379'
     links:
+      - elasticsearch
       - db
       - cache
     command: bundle exec rails s Puma -b 0.0.0.0
@@ -23,8 +32,9 @@ services:
       - .:/opt/app
     environment:
       DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_development'
-      REDIS_URL:    'redis://cache:6379'
+      REDIS_URL: 'redis://cache:6379'
     links:
+      - elasticsearch
       - db
       - cache
     command: bundle exec sidekiq -C config/sidekiq.yml
@@ -52,5 +62,9 @@ services:
     links:
       - app
 volumes:
+  elasticsearch: 
   db_data:
   cache_data:
+
+networks:
+  default:
