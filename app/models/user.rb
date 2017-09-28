@@ -8,6 +8,7 @@ class User < ApplicationRecord
     default: :user, predicates: true
 
   has_many :shops
+  has_many :products
 
   def staff?
     self.admin? || self.manager?

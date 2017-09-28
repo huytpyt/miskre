@@ -14,6 +14,7 @@ class Product < ApplicationRecord
 
   has_many :line_items
   has_many :orders, through: :line_items
+  belongs_to :user
 
   validates :name, presence: true, uniqueness: true
   validates :sku, presence: true, uniqueness: true

@@ -9,7 +9,8 @@ class ProductsController < ApplicationController
   # GET /products.json
   def index
     # @products = Product.order(sku: :asc).page params[:page]
-    @products = Product.all
+    @my_products = current_user.products.all
+    @products = Product.where.not(id: @my_products.ids)
     respond_to do |format|
       format.json do
         render json: @products
@@ -36,7 +37,7 @@ class ProductsController < ApplicationController
   # POST /products.json
   def create
     product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
-    @product = Product.new(product_params)
+    @product = current_user.products.new(product_params)
     @product.product_ids = product_ids
     respond_to do |format|
       if @product.save
