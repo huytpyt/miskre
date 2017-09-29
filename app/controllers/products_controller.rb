@@ -9,8 +9,12 @@ class ProductsController < ApplicationController
   # GET /products.json
   def index
     # @products = Product.order(sku: :asc).page params[:page]
-    @my_products = current_user.products.all
-    @products = Product.where.not(id: @my_products.ids)
+    if current_user.staff?
+      @products = Product.all
+    else
+      @my_products = current_user.products.all
+      @products = Product.all.includes(:user).where(user_id: User.where(role: [:admin, :manager]).ids.push(nil))
+    end
     respond_to do |format|
       format.json do
         render json: @products
@@ -155,6 +159,6 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
                                       :height, :width, :sku, :desc, :quantity,
-                                      :price, :cost)
+                                      :price, :cost, :product_url)
     end
 end

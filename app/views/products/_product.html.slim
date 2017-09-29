@@ -1,0 +1,37 @@
+thead
+  tr
+    th Id
+    th Name
+    th Vendor
+    th SKU
+    th Cost
+    th Weight
+    th Size (L*W*H)
+    th Price
+    th Quantity
+    th Shipping Cost (ePUB | DHL)
+    th
+tbody
+  - products.each do |p|
+    tr
+      td = p.id
+      - if p.is_bundle
+        th = link_to p.name + " [Bundle]", edit_product_path(p)
+      - else
+        th = link_to p.name, edit_product_path(p)
+      td = p.vendor
+      td = p.sku
+      td $#{ p.cost }
+      td #{p.weight}g
+      td #{p.length}cm * #{p.width}cm * #{p.height}cm
+      td $#{p.price}
+      td = p.quantity
+      td $#{p.epub} | $#{p.dhl}
+      td
+        ul.menu
+          li
+            = link_to "Add To Shops", add_to_shop_product_path(p)
+          li
+            = link_to "Edit", edit_product_path(p)
+          li
+            = link_to 'Destroy', p, method: :delete, data: { confirm: 'Are you sure?' }
