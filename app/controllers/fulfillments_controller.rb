@@ -28,6 +28,7 @@ class FulfillmentsController < ApplicationController
       @order.fulfillments.create(fulfillment_id: fulfillment.id, status: fulfillment.status, service: fulfillment.service, tracking_company: fulfillment.tracking_company, shipment_status: fulfillment.shipment_status, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, items: items_array)
       @order.update(fulfillment_status: ShopifyAPI::Order.find(:first, params: {id: @order.shopify_id}).fulfillment_status)
       fulfillment_service.update_line_items @order
+      fulfillment_service.calculator_quantity quantity_array, @order
       flash[:notice] = "Created succesfully"
       redirect_to order_path(@order)
     else
