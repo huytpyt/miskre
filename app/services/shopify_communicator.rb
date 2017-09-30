@@ -194,7 +194,8 @@ class ShopifyCommunicator
       variants = [{
         'weight': product.weight,
         'weight_unit': 'g',
-        'price': source.price
+        'price': source.price,
+        'sku': product.sku
       }]
     end
     shopify_product.variants = variants
