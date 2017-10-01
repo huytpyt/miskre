@@ -37,7 +37,10 @@ class BillingService
         fulfillment = order.fulfillments.new({"shopify_order_id"=>row["Order Id"], "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>row["Shipping Method"], "tracking_number"=>row["Tracking No."], "tracking_url"=>TRACKING_URL + row["Tracking No."], "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
         if fulfillment.save
           billings_order.save
-          line_items = order.line_items.each {|line_item| line_item.update(fulfillable_quantity: 0)}
+          order.line_items.each do |line_item| 
+            line_item.update(fulfillable_quantity: 0)
+            ProductService.new.update_fulfillable_quantity_each_item line_item.sku, line_item.quantity
+          end
           order.update(fulfillment_status: "fulfilled")
         end
       else

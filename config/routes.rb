@@ -8,7 +8,11 @@ Rails.application.routes.draw do
   resources :supplies, only: [:edit, :update, :destroy] do
     post 'upload_image_url', on: :member
   end
-
+  resources :reports do
+    collection do
+      get "product_orders_unfulfilled", to: "reports#{}product_orders_unfulfilled"
+    end
+  end
   resources :products do
     member do
       get 'add_to_shop'

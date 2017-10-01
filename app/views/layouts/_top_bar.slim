@@ -18,6 +18,8 @@
           = link_to "Carrier Service", carrier_service_path
         li class=(params[:controller] == 'billings' ? 'active' : '')
           = link_to "Billing", billings_path
+        li class=(params[:controller] == 'reports' ? 'active' : '')
+          = link_to "Report", reports_path
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email
