@@ -34,6 +34,7 @@ class FulfillmentsController < ApplicationController
       fulfillment_service.update_line_items @order
       ProductService.new.update_fulfillable_quantity_descrease items_array_sku
       SupplyService.new.update_fulfillable_quantity_descrease items_array_sku, @order.shop_id
+      fulfillment_service.calculator_quantity quantity_array, @order
       flash[:notice] = "Created succesfully"
       redirect_to order_path(@order)
     else

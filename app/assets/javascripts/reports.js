@@ -4,11 +4,14 @@
   });
 
   var init = function () {
+    createChart();
+  }
+
+  var createChart = function() {
     $.getJSON("reports/product_orders_unfulfilled.json", function (result) {
       ProductOrdersUnfulfilled(result)
     });
   }
-
   var ProductOrdersUnfulfilled = function(data) {
     var chart = new CanvasJS.Chart("products-order-unfulfilled", {
       theme: "light1", // "light2", "dark1", "dark2"

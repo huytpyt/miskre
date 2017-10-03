@@ -64,6 +64,8 @@ class ShopifyCommunicator
           begin
             new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
             if new_fulfilllment.save
+              quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
+              FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
               fulfillment.update(fulfillment_id: new_fulfilllment.id)
               count_fulfilled += 1
             end
@@ -202,7 +204,6 @@ class ShopifyCommunicator
     end
     shopify_product.variants = variants
     success = shopify_product.save
-
     if success == true && !product.variants.empty?
       product.variants.each do |v|
         unless v.images.empty?

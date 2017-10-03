@@ -45,6 +45,7 @@ class ProductsController < ApplicationController
     @product.product_ids = product_ids
     respond_to do |format|
       if @product.save
+        ProductService.new.tracking_product_quantity(@product.quantity, @product)
         if params[:product][:images]
           params[:product][:images].each do |img|
             @product.images.create(file: img)
@@ -67,9 +68,12 @@ class ProductsController < ApplicationController
   def update
     product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
     respond_to do |format|
-      if @product.update(product_params)
-        @product.product_ids = product_ids
-        @product.save
+      @product.attributes = product_params
+      @product.product_ids = product_ids
+      if @product.quantity_changed? 
+        ProductService.new.tracking_product_quantity(@product.quantity, @product)
+      end
+      if @product.save
         if params[:product][:images]
           params[:product][:images].each do |img|
         #params[:images].each do |key, value|
@@ -149,7 +153,39 @@ class ProductsController < ApplicationController
     send_data csv, filename: "purchase_list.csv"
   end
 
+  def report
+    unless current_user.staff?
+      redirect_to root_path
+    end
+  end
+  
+  def tracking_product
+    array = []
+    if current_user.staff?
+      trackings = Product.find(params[:id]).tracking_products.where(created_at: get_start_date..get_end_date)
+      trackings.each do |tracking|
+        array.push(x: tracking.created_at, y: [tracking.open, tracking.high, tracking.low, tracking.close])
+      end
+    end
+    render json: array
+  end
   private
+    def get_start_date
+      if params[:start].present? && params[:start] != UNDEFINED
+        DateTime.parse(params[:start])
+      else
+        (DateTime.now - 7.days).strftime(TIME_FORMAT)
+      end
+    end
+
+    def get_end_date
+      if params[:end].present? && params[:end] != UNDEFINED
+        DateTime.parse(params[:end]).end_of_day
+      else
+        DateTime.now.strftime(TIME_FORMAT_END)
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_product
       @product = Product.find(params[:id])

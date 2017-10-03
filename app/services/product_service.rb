@@ -18,4 +18,20 @@ class ProductService
     fulfillable_quantity = (product.fulfillable_quantity || 0) + quantity.to_i
     product.update(fulfillable_quantity: fulfillable_quantity)
   end
+
+  def tracking_product_quantity product_quantity, product
+    today_tracking = product.tracking_products.where("created_at >= ?", Time.zone.now.beginning_of_day)
+    if today_tracking.none?
+      product.tracking_products.create(open: product_quantity, high: product_quantity, low: product_quantity, close: product_quantity)
+    else
+      today_tracking = today_tracking.first
+      if product_quantity < today_tracking.low
+        today_tracking.low = product_quantity
+      elsif product_quantity > today_tracking.high
+        today_tracking.high = product_quantity
+      end
+      today_tracking.close = product_quantity
+      today_tracking.save
+    end
+  end
 end

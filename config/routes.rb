@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   end
   resources :products do
     member do
+      get 'report'
+      get 'tracking_product'
       get 'add_to_shop'
       patch 'assign'
       post 'upload_image_url'

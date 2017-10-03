@@ -23,7 +23,7 @@ class ShopsController < ApplicationController
 
   def supply_orders_unfulfilled
     array = []
-    supplies = Supply.where.not(fulfillable_quantity: nil).order(fulfillable_quantity: :DESC).select(:name, :fulfillable_quantity).first(15)
+    supplies = Supply.where(shop_id: params[:id]).where.not(fulfillable_quantity: nil).order(fulfillable_quantity: :DESC).select(:name, :fulfillable_quantity).first(15)
     supplies.each do | supply|
       array.push({ label: supply.name,  y: supply.fulfillable_quantity || 0})
     end
