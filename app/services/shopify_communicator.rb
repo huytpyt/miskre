@@ -138,6 +138,7 @@ class ShopifyCommunicator
       }
       order.line_items.create(li_params)
       ProductService.new.update_fulfilable_quantity_increase li.sku, li.fulfillable_quantity
+      SupplyService.new.update_fulfilable_quantity_increase li.sku, li.fulfillable_quantity, order.shop_id
     end
   end
 

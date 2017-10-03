@@ -40,6 +40,7 @@ class BillingService
           order.line_items.each do |line_item| 
             line_item.update(fulfillable_quantity: 0)
             ProductService.new.update_fulfillable_quantity_each_item line_item.sku, line_item.quantity
+            SupplyService.new.update_fulfillable_quantity_each_item line_item.sku, line_item.quantity, order.shop_id
           end
           order.update(fulfillment_status: "fulfilled")
         end

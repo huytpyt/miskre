@@ -33,6 +33,7 @@ class FulfillmentsController < ApplicationController
       @order.update(fulfillment_status: ShopifyAPI::Order.find(:first, params: {id: @order.shopify_id}).fulfillment_status)
       fulfillment_service.update_line_items @order
       ProductService.new.update_fulfillable_quantity_descrease items_array_sku
+      SupplyService.new.update_fulfillable_quantity_descrease items_array_sku, @order.shop_id
       flash[:notice] = "Created succesfully"
       redirect_to order_path(@order)
     else

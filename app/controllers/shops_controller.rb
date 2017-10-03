@@ -20,4 +20,16 @@ class ShopsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def supply_orders_unfulfilled
+    array = []
+    supplies = Supply.where.not(fulfillable_quantity: nil).order(fulfillable_quantity: :DESC).select(:name, :fulfillable_quantity).first(15)
+    supplies.each do | supply|
+      array.push({ label: supply.name,  y: supply.fulfillable_quantity || 0})
+    end
+    render json: array
+  end
+
+  def reports
+  end
 end

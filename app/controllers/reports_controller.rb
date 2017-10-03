@@ -4,7 +4,7 @@ class ReportsController < ApplicationController
 
   def product_orders_unfulfilled
     array = []
-    products = Product.order(fulfillable_quantity: :ASC).select(:name, :fulfillable_quantity).first(15)
+    products = Product.where.not(fulfillable_quantity: nil).order(fulfillable_quantity: :DESC).select(:name, :fulfillable_quantity).first(15)
     products.each do | product|
       array.push({ label: product.name,  y: product.fulfillable_quantity || 0})
     end

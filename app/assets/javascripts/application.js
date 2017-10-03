@@ -24,7 +24,6 @@
 //= require canvasjs.min
 //= require chosen-jquery
 //= require product
-//= require reports
 // require_tree .
 
 $(function(){ $(document).foundation(); });

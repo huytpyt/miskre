@@ -1,0 +1,2 @@
+class TrackingProduct < ApplicationRecord
+end
