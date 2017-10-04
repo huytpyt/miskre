@@ -22,15 +22,17 @@ class FulfillmentService
       if line_item.sku.length == 3
         product = Product.find_by_sku line_item.sku
         unless product.nil?
-          current_quantity = product.quantity || 0
+          current_quantity = product&.quantity || 0
           product.quantity = current_quantity - quantity_array[quantity_index].to_i
+          ProductService.new.tracking_product_quantity(product.quantity, product)
           product.save
         end
       else
         product = Product.find_by_sku line_item.sku.first 3
         unless product.nil?
-          current_quantity = product.quantity || 0
+          current_quantity = product&.quantity || 0
           product.quantity = current_quantity - quantity_array[quantity_index].to_i
+          ProductService.new.tracking_product_quantity(product.quantity, product)
           product.save
           variant = Variant.find_by_sku line_item.sku
           current_variant = variant.quantity || 0

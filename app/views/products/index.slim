@@ -42,17 +42,17 @@ input#productsResource value="#{products_path()}" type="hidden"
     .column
       - if current_user.staff?
         table#product-table
-          = render "product", products: @products
+          = render "product", products: @products, is_my_product: true
       - else
         ul.tabs
           li.tab-link.current data-tab="tab-1" My products
           li.tab-link data-tab="tab-2" Other Products
         #tab-1.tab-content.current
           table#my-product-table
-            = render "product", products: @my_products
+            = render "product", products: @my_products, is_my_product: true
         #tab-2.tab-content
           table#product-table
-            = render "product", products: @products
+            = render "product", products: @products, is_my_product: false
 
 /#products
   .row

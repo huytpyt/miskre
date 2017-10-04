@@ -4,13 +4,24 @@ Rails.application.routes.draw do
   devise_for :users
   resources :images, only: :destroy
 
-  resources :shops, only: [:index, :show]
+  resources :shops, only: [:index, :show] do
+    collection do
+      get ":id/supply_orders_unfulfilled", to: "shops#supply_orders_unfulfilled", as: "reports"
+      get ":id/reports", to: "shops#reports", as: "report_view"
+    end
+  end
   resources :supplies, only: [:edit, :update, :destroy] do
     post 'upload_image_url', on: :member
   end
-
+  resources :reports do
+    collection do
+      get "product_orders_unfulfilled", to: "reports#product_orders_unfulfilled"
+    end
+  end
   resources :products do
     member do
+      get 'report'
+      get 'tracking_product'
       get 'add_to_shop'
       patch 'assign'
       post 'upload_image_url'

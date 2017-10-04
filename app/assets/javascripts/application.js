@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require moment
 //= require jquery.isotope.min
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.foundation
@@ -21,7 +22,9 @@
 //= require dropzone
 //= require foundation
 //= require ckeditor/init
+//= require canvasjs.min
 //= require chosen-jquery
+//= require daterangepicker
 //= require product
 // require_tree .
 

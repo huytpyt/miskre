@@ -14,7 +14,8 @@ Rails.application.config.assets.precompile += %w(
   slick-carousel/slick/slick.min.js
   ckeditor/*
   chosen-jquery
-
+  shops
+  reports
   products_billings/form
   orders/index
   shipping_rates
