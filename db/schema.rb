@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170929023115) do
+ActiveRecord::Schema.define(version: 20171002042355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,28 +124,29 @@ ActiveRecord::Schema.define(version: 20170929023115) do
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
-    t.integer  "weight",           default: 0
-    t.float    "length",           default: 0.0
-    t.float    "height",           default: 0.0
-    t.float    "width",            default: 0.0
+    t.integer  "weight",               default: 0
+    t.float    "length",               default: 0.0
+    t.float    "height",               default: 0.0
+    t.float    "width",                default: 0.0
     t.string   "sku"
     t.text     "desc"
-    t.float    "price",            default: 0.0
+    t.float    "price",                default: 0.0
     t.float    "compare_at_price"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.string   "shopify_id"
-    t.float    "cost",             default: 0.0
+    t.float    "cost",                 default: 0.0
     t.text     "link"
     t.float    "epub"
     t.float    "dhl"
-    t.string   "vendor",           default: "Miskre"
+    t.string   "vendor",               default: "Miskre"
     t.integer  "bundle_id"
-    t.boolean  "is_bundle",        default: false
-    t.integer  "quantity",         default: 0
+    t.boolean  "is_bundle",            default: false
+    t.integer  "quantity",             default: 0
     t.string   "product_ids"
     t.integer  "user_id"
     t.string   "product_url"
+    t.integer  "fulfillable_quantity"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
   end
@@ -168,16 +169,28 @@ ActiveRecord::Schema.define(version: 20170929023115) do
     t.integer  "product_id"
     t.integer  "shop_id"
     t.string   "shopify_product_id"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.text     "desc"
     t.float    "price"
     t.string   "name"
-    t.boolean  "original",           default: true
+    t.boolean  "original",             default: true
     t.integer  "user_id"
+    t.integer  "fulfillable_quantity"
     t.index ["product_id"], name: "index_supplies_on_product_id", using: :btree
     t.index ["shop_id"], name: "index_supplies_on_shop_id", using: :btree
     t.index ["user_id"], name: "index_supplies_on_user_id", using: :btree
+  end
+
+  create_table "tracking_products", force: :cascade do |t|
+    t.integer  "open"
+    t.integer  "high"
+    t.integer  "low"
+    t.integer  "close"
+    t.integer  "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_tracking_products_on_product_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|

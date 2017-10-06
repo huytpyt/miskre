@@ -183,6 +183,10 @@ class ShopifyCommunicator
 
     variants = []
     unless product.variants.empty?
+      shopify_product.options = product.options.collect do |o|
+        { "name" => o.name.capitalize }
+      end
+
       variants = product.variants.collect do |v|
         {
           'option1': v.option1,
