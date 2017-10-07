@@ -79,12 +79,14 @@
     var startDate = getUrlParameter('start');
     var endDate = getUrlParameter('end');
     var dataPoints = [];
-    $.getJSON("tracking_product?start=" + startDate + "&end=" + endDate, function (result) {
-      $.each(result, function(key, value){
-        dataPoints.push({x: new Date(value.x), y: value.y});
+    if ($("#mk-report-product").length > 0) {
+      $.getJSON("tracking_product?start=" + startDate + "&end=" + endDate, function (result) {
+        $.each(result, function(key, value){
+          dataPoints.push({x: new Date(value.x), y: value.y});
+        });
+        OHLCChart(dataPoints)
       });
-      OHLCChart(dataPoints)
-    });
+    }
   }
   var OHLCChart = function(data) {
     var dataPoints = [];

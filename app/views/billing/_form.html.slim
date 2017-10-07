@@ -1,0 +1,39 @@
+- @credit_card ||= {}
+= form_for :card, url: path do |f|
+  - if @credit_card == {}
+    .form-group.column.medium-6
+      = f.label :number, "Credit Card Number"
+      = f.number_field :number, maxlength: 16
+    .form-group.column.medium-2
+      = f.label :exp_month
+      = f.number_field :exp_month
+    .form-group.column.medium-2
+      = f.label :exp_year
+      = f.number_field :exp_year
+    .form-group.column.medium-2
+      = f.label :cvc, "Security Code (CVC)"
+      = f.number_field :cvc
+  .form-group.column.medium-12
+    = f.label :name, "Full Name"
+    = f.text_field :name, value: @credit_card["name"]
+  .form-group.column.medium-6
+    = f.label :address_line1, "Address Line 1"
+    = f.text_field :address_line1, value: @credit_card["address_line1"] 
+  .form-group.column.medium-6
+    = f.label :address_line2, "Address Line 2"
+    = f.text_field :address_line2, value: @credit_card["address_line2"] 
+  .form-group.column.medium-6
+    = f.label :address_country, "Country"
+    = f.text_field :address_country, value: @credit_card["address_country"] 
+  .form-group.column.medium-6
+    = f.label :address_city, "City"
+    = f.text_field :address_city, value: @credit_card["address_city"] 
+  .form-group.column.medium-6
+    = f.label :address_state, "State/Province"
+    = f.text_field :address_state, value: @credit_card["address_state"] 
+  .form-group.column.medium-6
+    = f.label :address_zip, "Zip/Postal Code"
+    = f.text_field :address_zip, value: @credit_card["address_zip"] 
+  .form-group.column.medium-6
+    = link_to "Back", billing_index_path, class: "button pull-right back-btn"
+    = f.submit type, class: "button pull-right success"

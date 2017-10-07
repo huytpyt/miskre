@@ -90,3 +90,4 @@ gem 'sidekiq'
 gem 'sidekiq-scheduler'
 # Environment variables
 gem 'figaro', '~> 1.1', '>= 1.1.1'
+gem 'stripe', '~> 3.3', '>= 3.3.1'
