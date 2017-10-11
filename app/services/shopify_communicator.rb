@@ -203,6 +203,7 @@ class ShopifyCommunicator
         'weight': product.weight,
         'weight_unit': 'g',
         'price': source.price,
+        'compare_at_price': product.compare_at_price,
         'sku': product.sku
       }]
     end
