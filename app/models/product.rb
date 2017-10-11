@@ -63,9 +63,9 @@ class Product < ApplicationRecord
     epub_us_cost = CarrierService.get_epub_cost('US', self.weight)
     dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
 
-    self.price = (self.cost * 3 + epub_us_cost * 0.8).round(0)
+    self.price = (self.cost * 4 + epub_us_cost * 0.8).round(0)
     # patch is the portion of shipping_cost which is added to product price
-    patch = (self.price - self.cost * 3).round(2)
+    patch = (self.price - self.cost * 4).round(2)
     self.epub = (epub_us_cost - patch).round(2)
     self.dhl = (dhl_us_cost - patch).round(2)
     # self.save
