@@ -64,6 +64,7 @@ class Product < ApplicationRecord
     dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
 
     self.price = (self.cost * 4 + epub_us_cost * 0.8).round(0)
+    self.compare_at_price = (self.price * rand(2.25 .. 2.75)/ 5).round(0) * 5
     # patch is the portion of shipping_cost which is added to product price
     patch = (self.price - self.cost * 4).round(2)
     self.epub = (epub_us_cost - patch).round(2)
