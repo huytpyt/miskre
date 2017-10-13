@@ -14,13 +14,13 @@ class CarrierServiceController < ApplicationController
     dhl_cost = CarrierService.get_dhl_cost(country, weight)
 
     # BECAUSE we are already add 80% epub US cost to product price
-    epub_us_cost = CarrierService.get_epub_cost('US', weight)
-    epub_price = epub_cost - epub_us_cost * 0.8
-    dhl_price = dhl_cost - epub_us_cost * 0.8
+    # epub_us_cost = CarrierService.get_epub_cost('US', weight)
+    # epub_price = epub_cost - epub_us_cost * 0.8
+    # dhl_price = dhl_cost - epub_us_cost * 0.8
 
     data = {
-      'epub': epub_price.round(2),
-      'dhl': dhl_price.round(2)
+      'epub': epub_cost.round(2),
+      'dhl': dhl_cost.round(2)
     }
     respond_to do |format|
       format.json do

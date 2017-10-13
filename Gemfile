@@ -77,6 +77,7 @@ gem 'vuejs-rails', '~> 2.4', '>= 2.4.2'
 
 group :development do
   gem 'capistrano', '~> 3.9'
+  gem 'capistrano-rails', '~> 1.3'
   gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.1'
   gem 'capistrano-bundler', require: false
   gem 'capistrano3-puma',   require: false
