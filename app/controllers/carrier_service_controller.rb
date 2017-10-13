@@ -9,8 +9,15 @@ class CarrierServiceController < ApplicationController
   def lookup
     country = params[:country]
     weight = params[:weight].to_i
+    length = params[:length].to_i
+    height = params[:height].to_i
+    width = params[:width].to_i
 
     epub_cost = CarrierService.get_epub_cost(country, weight)
+
+    cal_weight = (length * height * width) / 5
+    weight = cal_weight > weight ? cal_weight : weight
+
     dhl_cost = CarrierService.get_dhl_cost(country, weight)
 
     # BECAUSE we are already add 80% epub US cost to product price
