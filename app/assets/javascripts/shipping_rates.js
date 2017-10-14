@@ -2,7 +2,6 @@ var ship = new Vue({
   el: '#shipping_prices',
   data: {
     country: 'US',
-    weight: 50,
     epub: 0,
     dhl: 0,
     errors: {}
@@ -23,7 +22,10 @@ var ship = new Vue({
       this.$http.get('/find_ship_cost', {
         params: {
           country: vm.country,
-          weight: vm.weight
+          weight: vm.weight,
+          length: vm.length,
+          height: vm.height,
+          width: vm.width
         }
       }).then(success, error);
     }
