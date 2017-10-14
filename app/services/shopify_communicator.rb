@@ -1,8 +1,12 @@
 class ShopifyCommunicator
   def initialize(shop_id)
-    @shop = Shop.find(shop_id)
-    @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
-    ShopifyAPI::Base.activate_session(@session)
+    begin
+      @shop = Shop.find(shop_id)
+      @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
+      ShopifyAPI::Base.activate_session(@session)
+    rescue
+      p "UnauthorizedAccess"
+    end
   end
 
   def get_order_params(o)
