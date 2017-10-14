@@ -18,8 +18,8 @@ class OrdersController < ApplicationController
 
   private
   def set_query
-    @start_date = params[:start_date] || Date.current - 7
-    @end_date = params[:end_date] || Date.current
+    @start_date = params[:start_date].to_date || Date.current - 7
+    @end_date = params[:end_date].to_date || Date.current
     @financial_status = params[:financial_status].to_s
     @fulfillment_status = params[:fulfillment_status].to_s
 
@@ -34,7 +34,7 @@ class OrdersController < ApplicationController
     if params[:shop_id]
       begin
         @current_shop = Shop.find(params[:shop_id])
-        @orders = @current_shop.orders.where(date: @start_date..@end_date).where(query_params)
+        @orders = @current_shop.orders.where(date: @start_date.beginning_of_day..@end_date.end_of_day).where(query_params)
       rescue ActiveRecord::RecordNotFound
         @current_shop = nil
         @orders = []
@@ -42,7 +42,7 @@ class OrdersController < ApplicationController
     else
       unless current_user.shops.empty?
         @current_shop = current_user.shops.first
-        @orders = @current_shop.orders.where(date: @start_date..@end_date).where(query_params)
+        @orders = @current_shop.orders.where(date: @start_date.beginning_of_day..@end_date.end_of_day).where(query_params)
       else
         @current_shop = nil
         @orders = []
