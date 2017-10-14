@@ -4,6 +4,10 @@ var ship = new Vue({
     country: 'US',
     epub: 0,
     dhl: 0,
+    weight: 0,
+    length: 0,
+    height: 0,
+    width: 0,
     errors: {}
   },
   methods: {
