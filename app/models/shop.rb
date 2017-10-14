@@ -8,7 +8,7 @@ class Shop < ActiveRecord::Base
   has_many :products, through: :supplies
   has_many :orders
 
-  validates :name, presence: true, uniqueness: true
+  validates :name, uniqueness: true
 
   before_create :get_shop_infor
 
