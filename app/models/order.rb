@@ -14,10 +14,10 @@ class Order < ApplicationRecord
       column_names =  ["OrderId", "First Name", "Last Name",
                        "Ship Address1", "Ship Address2", "Ship City",
                        "Ship State", "Ship Zip", "Ship Country",
-                       "Ship Phone", "Email", "Quantity", "SKUs Info",
-                       "Unit Price", "Date", "Remark", "Shipping Method",
+                       "Ship Phone", "Email", "Quantity", "SKUs Info (SKU*Quantity)",
+                       "Unit Price(price1,price2...)", "Date", "Remark", "Shipping Method",
                        "Tracking No.", "Fulfill Fee", "Product Name",
-                       "Color", "Size"]
+                       "Tracking URL", "Color", "Size"]
       csv << column_names
 
       all.each do |order|
@@ -25,9 +25,9 @@ class Order < ApplicationRecord
                order.ship_address1, order.ship_address2,
                order.ship_city, order.ship_state,
                order.ship_zip, order.ship_country,
-               order.ship_phone, order.email,
+               order.ship_phone, "",
                order.quantity, order.skus, order.unit_price, order.date,
-               "remark", order.shipping_method, "0", "0", order.product_name,
+               "remark", order.shipping_method, "0", "0", order.product_name, "",
                "Color", "Size"]
         csv << row
       end
