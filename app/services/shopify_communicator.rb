@@ -24,7 +24,7 @@ class ShopifyCommunicator
     end
 
     o.shipping_lines.each do |s|
-      shipping_methods.append(s.title)
+      shipping_methods.append(s.code)
     end
 
     {
