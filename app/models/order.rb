@@ -24,7 +24,7 @@ class Order < ApplicationRecord
         if order.shipping_method == "ePacket"
           shipping_method_code = "ePUB"
         elsif order.shipping_method == "dhl"
-          shipping_method_code == "DHL"
+          shipping_method_code = "DHL"
         else
           shipping_method_code = order.shipping_method
         end
