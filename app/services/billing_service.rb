@@ -34,7 +34,7 @@ class BillingService
       billings_orders = BillingsOrder.find_by_order_id order&.id
       if order.present? && billings_orders.nil? && order&.fulfillments.none?
         billings_order =  billing.billings_orders.new(order_id: order.id)
-        fulfillment = order.fulfillments.new({"shopify_order_id"=>row["Order Id"], "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>row["Shipping Method"], "tracking_number"=>row["Tracking No."], "tracking_url"=>TRACKING_URL + row["Tracking No."], "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
+        fulfillment = order.fulfillments.new({"shopify_order_id"=>row["OrderId"], "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>TRACKING_COMPANY, "tracking_number"=>row["Tracking No."], "tracking_url"=>TRACKING_URL + row["Tracking No."], "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
         if fulfillment.save
           billings_order.save
           order.line_items.each do |line_item| 

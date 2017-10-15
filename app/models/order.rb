@@ -26,7 +26,7 @@ class Order < ApplicationRecord
                order.ship_city, order.ship_state,
                order.ship_zip, order.ship_country,
                order.ship_phone, "",
-               order.quantity, order.skus, order.unit_price, order.date,
+               order.quantity, order.skus, "", order.date,
                "remark", order.shipping_method, "0", "0", order.product_name, "",
                "Color", "Size"]
         csv << row
