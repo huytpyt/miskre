@@ -21,13 +21,21 @@ class Order < ApplicationRecord
       csv << column_names
 
       all.each do |order|
+        if order.shipping_method == "ePacket"
+          shipping_method_code = "ePUB"
+        elsif order.shipping_method == "dhl"
+          shipping_method_code == "DHL"
+        else
+          shipping_method_code = order.shipping_method
+        end
+            
         row = [order.shopify_id, order.first_name, order.last_name,
                order.ship_address1, order.ship_address2,
                order.ship_city, order.ship_state,
                order.ship_zip, order.ship_country,
                order.ship_phone, "",
                order.quantity, order.skus, "", order.date,
-               "remark", order.shipping_method, "0", "0", order.product_name, "",
+               "remark", shipping_method_code, "0", "0", order.product_name, "",
                "Color", "Size"]
         csv << row
       end
