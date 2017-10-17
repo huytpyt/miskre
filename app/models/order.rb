@@ -11,13 +11,12 @@ class Order < ApplicationRecord
 
   def self.to_csv
     CSV.generate(headers:true) do |csv|
-      column_names =  ["OrderId", "First Name", "Last Name",
+      column_names =  ["Order Id", "First Name", "Last Name",
                        "Ship Address1", "Ship Address2", "Ship City",
                        "Ship State", "Ship Zip", "Ship Country",
                        "Ship Phone", "Email", "Quantity", "SKUs Info (SKU*Quantity)",
                        "Unit Price(price1,price2...)", "Date", "Remark", "Shipping Method",
-                       "Tracking No.", "Fulfill Fee", "Product Name",
-                       "Tracking URL", "Color", "Size"]
+                       "Tracking No.", "Fulfil Fee$", "Product Name", "Color", "Size"]
       csv << column_names
 
       all.each do |order|
@@ -35,7 +34,7 @@ class Order < ApplicationRecord
                order.ship_zip, order.ship_country,
                order.ship_phone, "",
                order.quantity, order.skus, "", order.date,
-               "remark", shipping_method_code, "0", "0", order.product_name, "",
+               "remark", shipping_method_code, "", "", order.product_name,
                "Color", "Size"]
         csv << row
       end
