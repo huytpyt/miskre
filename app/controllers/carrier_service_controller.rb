@@ -80,7 +80,7 @@ class CarrierServiceController < ApplicationController
           'service_name': 'Free Insured Shipping',
           # 'description': '9-12 working days',
           # 'description': '8-12 days',
-          'service_code': 'ePacket',
+          'service_code': 'ePUP',
           'currency': 'USD',
           'total_price': 0
         },
@@ -89,7 +89,7 @@ class CarrierServiceController < ApplicationController
           'service_name': 'DHL (not free)',
           # 'description': '5-8 working days',
           # 'description': '3-5 days',
-          'service_code': 'dhl',
+          'service_code': 'DHL',
           'currency': 'USD',
           'total_price': (dhl_price * 100).round(0).to_s
         }
@@ -101,7 +101,7 @@ class CarrierServiceController < ApplicationController
           'service_name': 'Insured Shipping',
           # 'description': '9-12 working days',
           # 'description': '8-12 days',
-          'service_code': 'ePacket',
+          'service_code': 'ePUP',
           'currency': 'USD',
           'total_price': (epub_price * 100).round(0).to_s
         },
@@ -110,7 +110,7 @@ class CarrierServiceController < ApplicationController
           'service_name': 'Expedited Insured Shipping',
           # 'description': '5-8 working days',
           # 'description': '3-5 days',
-          'service_code': 'dhl',
+          'service_code': 'DHL',
           'currency': 'USD',
           'total_price': (dhl_price * 100).round(0).to_s
         }

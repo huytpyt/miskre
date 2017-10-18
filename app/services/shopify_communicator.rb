@@ -1,8 +1,12 @@
 class ShopifyCommunicator
   def initialize(shop_id)
-    @shop = Shop.find(shop_id)
-    @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
-    ShopifyAPI::Base.activate_session(@session)
+    begin
+      @shop = Shop.find(shop_id)
+      @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
+      ShopifyAPI::Base.activate_session(@session)
+    rescue
+      p "UnauthorizedAccess"
+    end
   end
 
   def get_order_params(o)
@@ -20,7 +24,7 @@ class ShopifyCommunicator
     end
 
     o.shipping_lines.each do |s|
-      shipping_methods.append(s.title)
+      shipping_methods.append(s.code)
     end
 
     {
@@ -87,37 +91,40 @@ class ShopifyCommunicator
       created_at_min: start_date.strftime("%FT%T%:z"),
       created_at_max: end_date.strftime("%FT%T%:z")
     }
+    begin
+      count = ShopifyAPI::Order.find(:count, params: params).count
+      total_pages = count / 50 + 1
+      fetched_pages = 0
+      current_page = 0
 
-    count = ShopifyAPI::Order.find(:count, params: params).count
-    total_pages = count / 50 + 1
-    fetched_pages = 0
-    current_page = 0
+      while fetched_pages < total_pages
+        current_page = fetched_pages + 1
+        p "Fetching #{current_page} / #{total_pages} pages"
+        begin
+          params["page"] = current_page
+          orders = ShopifyAPI::Order.find(:all, params: params )
+          fetched_pages += 1
 
-    while fetched_pages < total_pages
-      current_page = fetched_pages + 1
-      p "Fetching #{current_page} / #{total_pages} pages"
-      begin
-        params["page"] = current_page
-        orders = ShopifyAPI::Order.find(:all, params: params )
-        fetched_pages += 1
-
-        orders.each do |o|
-          begin
-            order_params = get_order_params(o)
-            new_order = @shop.orders.new(order_params)
-            if new_order.save
-              add_line_items(new_order, o.line_items)
+          orders.each do |o|
+            begin
+              order_params = get_order_params(o)
+              new_order = @shop.orders.new(order_params)
+              if new_order.save
+                add_line_items(new_order, o.line_items)
+              end
+            rescue NoMethodError => e
+              p 'invalid order'
             end
-          rescue NoMethodError => e
-            p 'invalid order'
           end
-        end
 
-        sleep 0.5
-      #rescue
-      #  p "Error Connection. Try again ..."
-      #  next 
+          sleep 0.5
+        #rescue
+        #  p "Error Connection. Try again ..."
+        #  next 
+        end
       end
+    rescue
+      p "error on this shop"
     end
   end
 

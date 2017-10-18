@@ -1,7 +1,7 @@
 :logfile: log/sidekiq.log
 :schedule:
   setting:
-    every: 2h
+    every: 30m
     class: ShopWorker
 :concurrency: 1
 :queues:
