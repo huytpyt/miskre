@@ -21,3 +21,4 @@
 public/system
 /cron_log.log
 /public/assets/
+/dump.rdb
