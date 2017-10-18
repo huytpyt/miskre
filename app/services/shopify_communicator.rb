@@ -158,7 +158,6 @@ class ShopifyCommunicator
     assign(new_product, product)
     if @shop.present?
       Supply.create(shop_id: @shop.id,
-                    cost: @shop.user.user? ? product.cus_cost : product.cost,
                     product_id: product.id,
                     user_id: @shop.user_id,
                     shopify_product_id: new_product.id)
