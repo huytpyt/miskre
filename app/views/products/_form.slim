@@ -90,7 +90,7 @@
     .columns.medium-3
       .field
         = f.label :cost, "Cost ($)"
-        = f.number_field :cost, step: 0.1
+        = f.number_field :cost, step: 0.01
     .columns.medium-9
       .row
         .columns.medium-3
@@ -117,12 +117,13 @@
       .row
         .columns
           h4 Prices
-        .columns.medium-4
-          p Price: $#{@product.price}
-        .columns.medium-4
-          p ePUB: $#{@product.epub}
-        .columns.medium-4
-          p DHL: $#{@product.dhl}
+          |Price auto calculation:&nbsp;
+          = product.price
+        .columns.medium-3
+          .field
+            = f.label :suggest_price, "Suggested Price"
+            = f.text_field :suggest_price
+        .columns.medium-9
       /.field
         = f.label :shipping_price
         = f.text_field :shipping_price

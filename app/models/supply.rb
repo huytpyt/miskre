@@ -15,11 +15,17 @@ class Supply < ApplicationRecord
   end
 
   def copy_product_attr
-    self.name = self.product.name
-    self.price = self.product.price
-    self.desc = self.product.desc
+    product = self.product
+    self.name = product&.name
+    self.price = product&.suggest_price
+    self.desc = product&.desc
+    self.compare_at_price = product&.compare_at_price
+    self.epub = 0.2*product.cus_epub
+    self.dhl = product.cus_dhl - (1-0.2)*product.cus_epub
+    self.cost_epub = product.cus_epub
+    self.cost_dhl = product.cus_dhl
     # TODO sync images
-    # self.images = self.product.images
+    # self.images = product.images
   end
 
   def remove_shopify_product

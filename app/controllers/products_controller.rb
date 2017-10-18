@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy,
                                      :upload_image_url,
                                      :add_to_shop, :assign, :remove_shop]
+  before_action :check_is_staff, except: [:index, :show, :add_to_shop, :shipping, :assign]
 
   # GET /products
   # GET /products.json
@@ -28,6 +29,11 @@ class ProductsController < ApplicationController
   def show
   end
 
+  def shipping
+    @product = Product.find(params[:product_id])
+    cal_weight = (@product.length * @product.height * @product.width) / 5
+    @weight = cal_weight > @product.weight ? cal_weight : @product.weight
+  end
   # GET /products/new
   def new
     @product = Product.new
@@ -73,6 +79,14 @@ class ProductsController < ApplicationController
       if @product.quantity_changed? 
         ProductService.new.tracking_product_quantity(@product.quantity, @product)
       end
+      if @product.suggest_price_changed? 
+        random = rand(2.25 .. 2.75)
+        @product.variants.each do |variant|
+          variant.price = @product.suggest_price
+          variant.compare_at_price = (variant.price * random/ 5).round(0) * 5
+          variant.save
+        end
+      end
       if @product.save
         if params[:product][:images]
           params[:product][:images].each do |img|
@@ -113,8 +127,12 @@ class ProductsController < ApplicationController
   end
 
   def add_to_shop
-    @available_shops = current_user.shops - @product.shops
-    @supplies = @product.supplies.where(user_id: current_user.id)
+    if @product.suggest_price.present?
+      @available_shops = current_user.shops - @product.shops
+      @supplies = @product.supplies.where(user_id: current_user.id)
+    else
+      redirect_to products_path, notice: 'Add suggest price please'
+    end
   end
 
   def assign
@@ -195,6 +213,12 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
                                       :height, :width, :sku, :desc, :quantity,
-                                      :price, :cost, :product_url)
+                                      :price, :cost, :product_url, :suggest_price)
+    end
+
+    def check_is_staff
+      unless current_user.staff?
+        redirect_to :back
+      end
     end
 end

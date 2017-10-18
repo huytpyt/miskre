@@ -20,11 +20,6 @@ class CarrierServiceController < ApplicationController
 
     dhl_cost = CarrierService.get_dhl_cost(country, weight)
 
-    # BECAUSE we are already add 80% epub US cost to product price
-    # epub_us_cost = CarrierService.get_epub_cost('US', weight)
-    # epub_price = epub_cost - epub_us_cost * 0.8
-    # dhl_price = dhl_cost - epub_us_cost * 0.8
-
     data = {
       'epub': epub_cost.round(2),
       'dhl': dhl_cost.round(2)
@@ -60,14 +55,20 @@ class CarrierServiceController < ApplicationController
     dhl_price = 0
     total_price = 0
     items.each do |i|
-      epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
-      dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * i['grams'])
+      product = Product.find_by_sku i['sku']
+      cal_weight = (product.length * product.height * product.width) / 5
+      weight = cal_weight > product.weight ? cal_weight : product.weight
 
-      # BECAUSE we are already add 80% epub US cost to product price
       epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
+      dhl_us_cost = CarrierService.get_dhl_cost('US', i['quantity'] * weight)
 
-      epub_price += (epub_cost - epub_us_cost * 0.8).round(2)
-      dhl_price += (dhl_cost - epub_us_cost * 0.8).round(2)
+      epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
+      diff_epub = epub_cost > epub_us_cost ? (epub_cost - epub_us_cost)*0.8 : 0
+      dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * weight)
+      diff_dhl = dhl_cost > dhl_us_cost ? (dhl_cost - dhl_us_cost)*0.8 : 0
+
+      epub_price += (0.2*epub_cost + diff_epub).round(2)
+      dhl_price += (dhl_cost - 0.8*epub_us_cost + diff_dhl).round(2)
       # p i['quantity'], i['grams'], epub_price
       #
       total_price += i['quantity'] * i['price']
@@ -90,7 +91,7 @@ class CarrierServiceController < ApplicationController
           # 'description': '3-5 days',
           'service_code': 'dhl',
           'currency': 'USD',
-          'total_price': (dhl_price * 100).round.to_s
+          'total_price': (dhl_price * 100).round(0).to_s
         }
       ]
     else
@@ -102,7 +103,7 @@ class CarrierServiceController < ApplicationController
           # 'description': '8-12 days',
           'service_code': 'ePacket',
           'currency': 'USD',
-          'total_price': (epub_price * 100).round.to_s
+          'total_price': (epub_price * 100).round(0).to_s
         },
         {
           # 'service_name': 'DHL',
@@ -111,7 +112,7 @@ class CarrierServiceController < ApplicationController
           # 'description': '3-5 days',
           'service_code': 'dhl',
           'currency': 'USD',
-          'total_price': (dhl_price * 100).round.to_s
+          'total_price': (dhl_price * 100).round(0).to_s
         }
       ]
     end

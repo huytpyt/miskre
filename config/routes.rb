@@ -4,11 +4,12 @@ Rails.application.routes.draw do
   devise_for :users
   resources :images, only: :destroy
 
-  resources :shops, only: [:index, :show] do
+  resources :shops do
     collection do
       get ":id/supply_orders_unfulfilled", to: "shops#supply_orders_unfulfilled", as: "reports"
       get ":id/reports", to: "shops#reports", as: "report_view"
     end
+    get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
   end
   resources :supplies, only: [:edit, :update, :destroy] do
     post 'upload_image_url', on: :member
@@ -32,6 +33,7 @@ Rails.application.routes.draw do
       post 'upload_image_url', on: :member
     end
     get 'purchases', on: :collection
+    get "shipping"
   end
 
   resources :orders, only: [:index, :show] do

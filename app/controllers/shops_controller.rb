@@ -32,4 +32,11 @@ class ShopsController < ApplicationController
 
   def reports
   end
+
+  def shipping
+    @supply = Supply.find(params[:supply_id])
+    @product = @supply.product
+    cal_weight = (@product.length * @product.height * @product.width) / 5
+    @weight = cal_weight > @product.weight ? cal_weight : @product.weight
+  end
 end
