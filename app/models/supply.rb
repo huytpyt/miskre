@@ -17,6 +17,7 @@ class Supply < ApplicationRecord
   def copy_product_attr
     product = self.product
     self.name = product&.name
+    self.cost = User.find(self.user_id).user? ? product.cus_cost : product.cost
     self.price = product&.suggest_price
     self.desc = product&.desc
     self.compare_at_price = product&.compare_at_price
