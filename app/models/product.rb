@@ -31,7 +31,7 @@ class Product < ApplicationRecord
   # before_save :pack_bundle, if: :is_bundle
   before_save :calculate_price
 
-  after_save :sync_job
+  after_commit :sync_job
   serialize :product_ids
 
   def sync_job
