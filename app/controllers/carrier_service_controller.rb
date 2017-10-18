@@ -3,7 +3,7 @@ class CarrierServiceController < ApplicationController
   skip_before_action :authenticate_user!, only: :shipping_rates
 
   def index
-    @shops = current_user.shops
+    @shops = current_user.staff? ? Shop.all : current_user.shops
   end
 
   def lookup
@@ -58,7 +58,6 @@ class CarrierServiceController < ApplicationController
       product = Product.find_by_sku i['sku']
       cal_weight = (product.length * product.height * product.width) / 5
       weight = cal_weight > product.weight ? cal_weight : product.weight
-
       epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
       dhl_us_cost = CarrierService.get_dhl_cost('US', i['quantity'] * weight)
 
@@ -72,6 +71,7 @@ class CarrierServiceController < ApplicationController
       # p i['quantity'], i['grams'], epub_price
       #
       total_price += i['quantity'] * i['price']
+      
     end
     if total_price > 3500
       rates = [
