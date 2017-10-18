@@ -16,6 +16,11 @@ class OrdersController < ApplicationController
     end
   end
 
+  def fetch_orders 
+    ShopService.delay.sync_orders
+    redirect_to orders_path
+  end
+
   private
   def set_query
     @start_date = params[:start_date]&.to_date || Date.current - 7
