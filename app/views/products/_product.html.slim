@@ -2,32 +2,35 @@ thead
   tr
     th Id
     th Name
-    th Vendor
     th SKU
-    th Cost
-    th Weight
-    th Size (L*W*H)
-    th Price
-    th Quantity
-    th Shipping Cost (ePUB | DHL)
+    - if current_user.staff?
+      th Quantity
+    th Cost ($)
+    th Price ($)
+    th Profit ($)
+    th Details about cost, price, shipping, profit
     th
-    th
+    - if is_my_product
+      th
 tbody
   - products.each do |p|
     tr
       td = p.id
       - if p.is_bundle
-        th = link_to p.name + " [Bundle]", edit_product_path(p)
+        th = link_to p.name + " [Bundle]", product_path(p)
       - else
-        th = link_to p.name, edit_product_path(p)
-      td = p.vendor
+        th = link_to p.name, product_path(p)
       td = p.sku
-      td $#{ p.cost }
-      td #{p.weight}g
-      td #{p.length}cm * #{p.width}cm * #{p.height}cm
-      td $#{p.price}
-      td = p.quantity
-      td $#{p.epub} | $#{p.dhl}
+      - if current_user.staff?
+        td = p.quantity
+      td = current_user.staff? ? p.cost : p.cost * 1.3
+      td = p.suggest_price
+      - if p.suggest_price && p.epub && p.cus_cost && p.cus_epub
+        td = current_user.staff? ? ((p.suggest_price + p.epub) - (p.cost + p.cus_epub)).round(2) : ((p.suggest_price + p.epub) - (p.cus_cost + p.cus_epub)).round(2)
+      - else 
+        td
+      td 
+        = link_to "Detail", product_shipping_path(p)
       td
         ul.menu
           li

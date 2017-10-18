@@ -60,16 +60,22 @@ class Product < ApplicationRecord
   end
 
   def calculate_price
+    cal_weight = (self.length * self.height * self.width) / 5
+    weight = cal_weight > self.weight ? cal_weight : self.weight
+
     epub_us_cost = CarrierService.get_epub_cost('US', self.weight)
     dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
 
-    self.price = (self.cost * 4 + epub_us_cost * 0.8).round(0)
-    self.compare_at_price = (self.price * rand(2.25 .. 2.75)/ 5).round(0) * 5
-    # patch is the portion of shipping_cost which is added to product price
+    self.cus_cost = (self.cost * 1.3).round(2)
+    random = rand(2.25 .. 2.75)
+    self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
+    
     patch = (self.price - self.cost * 4).round(2)
     self.epub = (epub_us_cost - patch).round(2)
     self.dhl = (dhl_us_cost - patch).round(2)
-    # self.save
+
+    self.cus_epub = epub_us_cost
+    self.cus_dhl = dhl_us_cost
   end
 
   def generate_sku
@@ -94,7 +100,7 @@ class Product < ApplicationRecord
       option1 = self.options.first
       option1.values.each do |v|
         sku = self.sku + self.variants.count().to_s.rjust(3, "0")
-        self.variants.create(sku: sku, option1: v, price: self.price)
+        self.variants.create(sku: sku, option1: v, price: self.suggest_price, compare_at_price: self.compare_at_price)
       end
     when 2
       option1, option2 = self.options[0..1]
@@ -102,7 +108,7 @@ class Product < ApplicationRecord
         option2.values.each do |v2|
           sku = self.sku + self.variants.count().to_s.rjust(3, "0")
           self.variants.create(sku: sku, option1: v1, option2: v2,
-                               price: self.price)
+                               price: self.suggest_price, compare_at_price: self.compare_at_price)
         end
       end
     when 3
@@ -112,7 +118,7 @@ class Product < ApplicationRecord
           option3.values.each do |v3|
             sku = self.sku + self.variants.count().to_s.rjust(3, "0")
             self.variants.create(sku: sku, option1: v1, option2: v2,
-                                 option3: v3, price: self.price)
+                                 option3: v3, price: self.suggest_price, compare_at_price: self.compare_at_price)
           end
         end
       end

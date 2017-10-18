@@ -24,8 +24,8 @@
               img src="#"
         .columns.small-6
           .card-section
-            p = @product.desc
-            p Price: $#{@product.price}
+            p = raw @product.desc
+            p Price: $#{@product.suggest_price}
             p Weight: #{@product.weight}g
             p Size (L*H*W): #{@product.length}cm x #{@product.height}cm x #{@product.width}cm
           .card-section

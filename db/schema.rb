@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171007071625) do
+ActiveRecord::Schema.define(version: 20171018093819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,12 +130,12 @@ ActiveRecord::Schema.define(version: 20171007071625) do
     t.float    "width",                default: 0.0
     t.string   "sku"
     t.text     "desc"
-    t.float    "price",                default: 0.0
+    t.float    "price"
     t.float    "compare_at_price"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
     t.string   "shopify_id"
-    t.float    "cost",                 default: 0.0
+    t.float    "cost"
     t.text     "link"
     t.float    "epub"
     t.float    "dhl"
@@ -147,6 +147,10 @@ ActiveRecord::Schema.define(version: 20171007071625) do
     t.integer  "user_id"
     t.string   "product_url"
     t.integer  "fulfillable_quantity"
+    t.float    "cus_epub"
+    t.float    "cus_dhl"
+    t.float    "suggest_price"
+    t.float    "cus_cost"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
   end
@@ -177,6 +181,12 @@ ActiveRecord::Schema.define(version: 20171007071625) do
     t.boolean  "original",             default: true
     t.integer  "user_id"
     t.integer  "fulfillable_quantity"
+    t.float    "epub"
+    t.float    "dhl"
+    t.float    "cost_epub"
+    t.float    "cost_dhl"
+    t.float    "compare_at_price"
+    t.float    "cost"
     t.index ["product_id"], name: "index_supplies_on_product_id", using: :btree
     t.index ["shop_id"], name: "index_supplies_on_shop_id", using: :btree
     t.index ["user_id"], name: "index_supplies_on_user_id", using: :btree
@@ -217,12 +227,13 @@ ActiveRecord::Schema.define(version: 20171007071625) do
     t.string   "option2"
     t.string   "option3"
     t.integer  "quantity"
-    t.float    "price",      default: 0.0
+    t.float    "price",            default: 0.0
     t.string   "sku"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.integer  "product_id"
     t.integer  "user_id"
+    t.float    "compare_at_price"
     t.index ["product_id"], name: "index_variants_on_product_id", using: :btree
     t.index ["user_id"], name: "index_variants_on_user_id", using: :btree
   end

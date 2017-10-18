@@ -38,9 +38,26 @@
                 - else
                   = image_tag "default.jpg"
               .card-section
-                p #{t('.price')} $#{product.price}
-                p #{t('.weight')} #{product.weight}g
-                p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+                p 
+                  = t('.cost')
+                  |:&nbsp;$
+                  = s.cost
+                p
+                  = t('.price')
+                  |:&nbsp;$
+                  = s.price 
+                p
+                  = t('.compare_at_price')
+                  |:&nbsp;$
+                  = s.compare_at_price
+                p
+                  = t('.profit')
+                  |:&nbsp;$
+                  - if s.price && s.epub && s.cost && s.cost_epub
+                    = ((s.price + s.epub) - (s.cost + s.cost_epub)).round(2)
+                p 
+                  |Details about cost, price, shipping, profit:
+                  = link_to "Detail", shop_shipping_path(@shop, s)
               .card-section
                 ul.menu
                   li

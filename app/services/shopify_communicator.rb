@@ -156,11 +156,13 @@ class ShopifyCommunicator
 
     new_product = ShopifyAPI::Product.new
     assign(new_product, product)
-
-    Supply.create(shop_id: @shop.id,
-                  product_id: product.id,
-                  user_id: @shop.user_id,
-                  shopify_product_id: new_product.id)
+    if @shop.present?
+      Supply.create(shop_id: @shop.id,
+                    cost: @shop.user.user? ? product.cus_cost : product.cost,
+                    product_id: product.id,
+                    user_id: @shop.user_id,
+                    shopify_product_id: new_product.id)
+    end
   end
 
   def sync_product(supply_id)
@@ -201,6 +203,7 @@ class ShopifyCommunicator
           'option3': v.option3,
           'weight': product.weight,
           'weight_unit': 'g',
+          'compare_at_price': v.compare_at_price,
           'price': v.price,
           'sku': v.sku
         }
@@ -209,8 +212,8 @@ class ShopifyCommunicator
       variants = [{
         'weight': product.weight,
         'weight_unit': 'g',
-        'price': source.price,
-        'compare_at_price': product.compare_at_price,
+        'price': source.suggest_price,
+        'compare_at_price': source.compare_at_price,
         'sku': product.sku
       }]
     end

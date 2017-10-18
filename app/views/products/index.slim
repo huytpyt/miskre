@@ -1,4 +1,4 @@
-p#notice = notice
+p#notice
 .page-header
   h1 Products
 /.products.large-up-4
@@ -37,7 +37,7 @@ input#productsResource value="#{products_path()}" type="hidden"
     .column
       .row
         .column.medium-3
-          = link_to 'New Product [Bundle]', new_product_path, class: 'button primary small'
+          = link_to current_user.staff? ? 'New Product [Bundle]' : 'New Bundle Product', new_product_path, class: 'button primary small'
 
     .column
       - if current_user.staff?
@@ -45,8 +45,8 @@ input#productsResource value="#{products_path()}" type="hidden"
           = render "product", products: @products, is_my_product: true
       - else
         ul.tabs
-          li.tab-link.current data-tab="tab-1" My products
-          li.tab-link data-tab="tab-2" Other Products
+          li.tab-link.current data-tab="tab-1" My bundle products
+          li.tab-link data-tab="tab-2" Miskre Products
         #tab-1.tab-content.current
           table#my-product-table
             = render "product", products: @my_products, is_my_product: true
