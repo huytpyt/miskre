@@ -27,13 +27,28 @@ class Order < ApplicationRecord
         else
           shipping_method_code = order.shipping_method
         end
+        skus = []
+        order.line_items.each do |item|
+          product = Product.find_by_sku(item.sku&.first(3))
+          if product&.is_bundle
+            product.product_ids.each do |id|
+              if id[:variant_id].nil?
+                skus.push("#{item.quantity} * #{Product.find(id[:product_id]).sku}")
+              else
+                 skus.push("#{item.quantity} * #{Variant.find(id[:variant_id]).sku}")
+              end
+            end
+          else
+            skus.push("#{item.quantity} * #{item.sku}")
+          end
+        end
             
         row = [order.shopify_id, order.first_name, order.last_name,
                order.ship_address1, order.ship_address2,
                order.ship_city, order.ship_state,
                order.ship_zip, order.ship_country,
                order.ship_phone, "",
-               order.quantity, order.skus, "", order.date,
+               order.quantity, skus.join(","), "", order.date,
                "remark", shipping_method_code, "", "", order.product_name,
                "Color", "Size"]
         csv << row
