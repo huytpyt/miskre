@@ -28,18 +28,22 @@ class Order < ApplicationRecord
           shipping_method_code = order.shipping_method
         end
         skus = []
-        order.line_items.each do |item|
-          product = Product.find_by_sku(item.sku&.first(3))
+        skus_array = order.skus.split(",")
+        skus_array.each do |item|
+          sku_item = item.split("*")
+          sku = sku_item[0]
+          quantity = sku_item[1]
+          product = Product.find_by_sku(sku&.first(3))
           if product&.is_bundle
             product.product_ids.each do |id|
               if id[:variant_id].nil?
-                skus.push("#{item.quantity} * #{Product.find(id[:product_id]).sku}")
+                skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
               else
-                 skus.push("#{item.quantity} * #{Variant.find(id[:variant_id]).sku}")
+                 skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
               end
             end
           else
-            skus.push("#{item.quantity} * #{item.sku}")
+            skus.push("#{sku} * #{quantity}")
           end
         end
             
