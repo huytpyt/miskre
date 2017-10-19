@@ -23,7 +23,7 @@ tbody
       td = p.sku
       - if current_user.staff?
         td = p.quantity
-      td = current_user.staff? ? p.cost : p.cost * 1.3
+      td = current_user.staff? ? p.cost : p.cus_cost
       td = p.suggest_price
       - if p.suggest_price && p.epub && p.cus_cost && p.cus_epub
         td = current_user.staff? ? ((p.suggest_price + p.epub) - (p.cost + p.cus_epub)).round(2) : ((p.suggest_price + p.epub) - (p.cus_cost + p.cus_epub)).round(2)
