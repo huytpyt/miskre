@@ -31,7 +31,7 @@ class Order < ApplicationRecord
         skus_array = order.skus.split(",")
         skus_array.each do |item|
           sku_item = item.split("*")
-          sku = sku_item[0]
+          sku = sku_item[0].strip
           quantity = sku_item[1]
           product = Product.find_by_sku(sku&.first(3))
           if product&.is_bundle
