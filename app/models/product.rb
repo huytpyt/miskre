@@ -70,9 +70,8 @@ class Product < ApplicationRecord
     random = rand(2.25 .. 2.75)
     self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
     
-    patch = (self.price - self.cost * 4).round(2)
-    self.epub = (epub_us_cost - patch).round(2)
-    self.dhl = (dhl_us_cost - patch).round(2)
+    self.epub = (0.2 * epub_us_cost).round(2)
+    self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
 
     self.cus_epub = epub_us_cost
     self.cus_dhl = dhl_us_cost
