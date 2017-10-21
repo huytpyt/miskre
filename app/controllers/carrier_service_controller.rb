@@ -47,15 +47,15 @@ class CarrierServiceController < ApplicationController
   end
 
   def shipping_rates
+    #get vendor to define which shop to get rate
     rate = params[:rate]
     country = rate['destination']['country']
     items = rate['items']
-
     epub_price = 0
     dhl_price = 0
     total_price = 0
     items.each do |i|
-      product = Product.find_by_sku i['sku']
+      product = Product.find_by_sku i['sku']&.first(3)
       cal_weight = (product.length * product.height * product.width) / 5
       weight = cal_weight > product.weight ? cal_weight : product.weight
       epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
