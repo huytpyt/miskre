@@ -23,6 +23,14 @@ class JobsService
     end
   end
 
+  def self.sync_this_supply supply_id
+    supply = Supply.find_by_id(supply_id)
+    if supply.present?
+      c = ShopifyCommunicator.new(supply.shop_id)
+      c.sync_supply(supply_id)
+    end
+  end
+
   def self.remove_shopify_product shop_id, shopify_product_id
     c = ShopifyCommunicator.new(shop_id)
     c.remove_product(shopify_product_id)

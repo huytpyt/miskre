@@ -157,10 +157,16 @@ class ShopifyCommunicator
     new_product = ShopifyAPI::Product.new
     assign(new_product, product)
     if @shop.present?
-      Supply.create(shop_id: @shop.id,
+      supply = Supply.new(shop_id: @shop.id,
                     product_id: product.id,
                     user_id: @shop.user_id,
                     shopify_product_id: new_product.id)
+      supply.copy_product_attr
+      if supply.save
+        product.variants.each do |variant|
+          supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+        end
+      end
     end
   end
 
@@ -170,15 +176,57 @@ class ShopifyCommunicator
     assign(shopify_product, supply.product, supply)
   end
 
+  def sync_supply(supply_id)
+    supply = Supply.find(supply_id)
+    product = supply.product
+
+    shopify_product = ShopifyAPI::Product.find(supply.shopify_product_id)
+    shopify_product.title = supply.name
+    shopify_product.body_html = supply.desc
+    shopify_product.images = (product.images + supply.images).collect do |i|
+      { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
+      raw_content = Paperclip.io_adapters.for(i.file).read
+      encoded_content = Base64.encode64(raw_content)
+      { "attachment" => encoded_content }
+    end
+    unless supply.supply_variants.empty?
+      shopify_product.options = product.options.collect do |o|
+        { "name" => o.name.capitalize }
+      end
+      variants = supply.supply_variants.collect do |v|
+        {
+          'option1': v.option1,
+          'option2': v.option2,
+          'option3': v.option3,
+          'weight': product.weight,
+          'weight_unit': 'g',
+          'compare_at_price': v.compare_at_price,
+          'price': v.price,
+          'sku': v.sku
+        }
+      end
+    else
+      variants = [{
+        'weight': product.weight,
+        'weight_unit': 'g',
+        'price': supply.price,
+        'compare_at_price': supply.compare_at_price,
+        'sku': product.sku
+      }]
+    end
+
+    shopify_product.variants = variants
+    shopify_product.save
+  end
+
   def assign(shopify_product, product, supply=nil)
     # if a supply is given, we will get it's name, desc, price, image
     # to update to Shopify
     # otherwise, we will use product's name, desc, price, image
-    source = supply || product
 
-    shopify_product.title = source.name
+    shopify_product.title = product.name
     shopify_product.vendor = product.vendor
-    shopify_product.body_html = source.desc
+    shopify_product.body_html = product.desc
     # TODO upload supply images here
     shopify_product.images = product.images.collect do |i|
       { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
@@ -192,7 +240,6 @@ class ShopifyCommunicator
       shopify_product.options = product.options.collect do |o|
         { "name" => o.name.capitalize }
       end
-
       variants = product.variants.collect do |v|
         {
           'option1': v.option1,
@@ -210,7 +257,7 @@ class ShopifyCommunicator
         'weight': product.weight,
         'weight_unit': 'g',
         'price': product.suggest_price,
-        'compare_at_price': source.compare_at_price,
+        'compare_at_price': product.compare_at_price,
         'sku': product.sku
       }]
     end

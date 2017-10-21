@@ -3,14 +3,13 @@ class Supply < ApplicationRecord
   belongs_to :product
 
   has_many :images, as: :imageable, dependent: :destroy
-  after_initialize :copy_product_attr, :if => :new_record?
-  # after_save :sync_job, :unless => :new_record?
-  after_save :sync_job
+  has_many :supply_variants
+
+  after_update :sync_this_supply
   before_destroy :remove_shopify_product
-  def sync_job
-    JobsService.delay.sync_supply self.id
-    # c = ShopifyCommunicator.new(self.shop_id)
-    # c.sync_product(self.id)
+
+  def sync_this_supply
+    JobsService.delay.sync_this_supply self.id
   end
 
   def copy_product_attr
@@ -25,6 +24,12 @@ class Supply < ApplicationRecord
     self.dhl = product.cus_dhl - shop.shipping_rate*product.cus_epub
     self.cost_epub = product.cus_epub
     self.cost_dhl = product.cus_dhl
+    self.supply_variants.destroy_all
+    product.variants.each do |variant|
+      self.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+    end
+    #only create or update at product
+
     # TODO sync images
     # self.images = product.images
   end
