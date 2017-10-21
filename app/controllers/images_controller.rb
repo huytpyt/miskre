@@ -8,9 +8,10 @@ class ImagesController < ApplicationController
     type = image.imageable_type
     parent = image.imageable
     image.destroy
-
     if type == 'Product'
       redirect_to edit_product_path(parent), notice: 'Image was successfully destroyed.'
+    elsif type == 'Supply' 
+      redirect_to edit_supply_path(parent)
     else
       redirect_to edit_product_variant_path(parent.product, parent), notice: 'Image was successfully destroyed.'
     end

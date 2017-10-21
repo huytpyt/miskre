@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     get "change_price_option", to: "shops#change_price_option", as: "change_price_option"
   end
   resources :supplies, only: [:edit, :update, :destroy] do
+    get "edit_variant/:variant_id", to: "supplies#edit_variant", as: "edit_variant"
+    patch "edit_variant/:variant_id", to: "supplies#update_variant", as: "update_variant"
     post 'upload_image_url', on: :member
   end
   resources :reports do

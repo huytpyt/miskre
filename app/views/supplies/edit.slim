@@ -61,11 +61,34 @@
       p Weight (g): #{product.weight}
     .columns.medium-3
       p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+  
+  .page-header
+    h1 Variants
+  #variants
+    .row
+      .column
+        table
+          thead
+            tr
+              th Option 1
+              th Option 2
+              th Option 3
+              th Price ($)
+              th SKU
+              th Edit Price
+          tbody
+            - @supply.supply_variants.each do |variant|
+              tr
+                td = variant.option1
+                td = variant.option2
+                td = variant.option3
+                td = variant.price
+                td = variant.sku
+                td = link_to "Edit", supply_edit_variant_path(@supply, variant.id)
   .row
     .columns.small-1.small-centered
       .actions
         = f.submit "Save", id: "submit-product", class: 'button alert small'
-
 .reveal#modal_image_url data-reveal=""
   = form_tag upload_image_url_supply_path, method: :post do
     = label_tag :url, "Paste Image URL"

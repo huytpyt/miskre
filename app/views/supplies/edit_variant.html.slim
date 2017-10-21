@@ -1,0 +1,46 @@
+= form_for @variant, url: supply_edit_variant_path(@supply, @variant) do |f|
+  .row
+    .columns
+      h4 Images
+    .columns
+      ul#dvPreview
+    .columns.medium-6
+      .field
+        /= f.label :images
+        = f.file_field :images, multiple: true
+    .columns.medium-6
+      a href="#" data-open="modal_image_url" Add image from URL
+  /.row
+    .columns
+      .field
+        = f.label :images
+        = f.file_field :images, multiple: true
+  .row
+    .columns.medium-4
+      .field
+        = f.label :option1
+        = f.text_field :option1, disabled: true
+    .columns.medium-4
+      .field
+        = f.label :option2
+        = f.text_field :option2, disabled: true
+    .columns.medium-4
+      .field
+        = f.label :option3
+        = f.text_field :option3, disabled: true
+  .row
+    .columns.medium-4
+      .field
+        = f.label :compare_at_price
+        = f.number_field :compare_at_price, disabled: true
+    .columns.medium-4
+      .field
+        = f.label :price
+        = f.text_field :price
+    .columns.medium-4
+      .field
+        = f.label :sku
+        = f.text_field :sku, disabled: true
+  .row
+    .actions
+      = f.submit "Save", id: "submit-variant"
