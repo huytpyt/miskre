@@ -58,7 +58,8 @@
       h3 Already available in these shops
       ul.available-shops
         - @supplies.each do |s|
-          li
-            p = s.shop.name
-            = link_to "Remove", supply_path(s.id),
-              method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert small'
+          - if s.shop.present?
+            li
+              p = s.shop.name
+              = link_to "Remove", supply_path(s.id),
+                method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert small'

@@ -65,7 +65,7 @@ class BillingsController < ApplicationController
       if billings_orders[0].billings_orders.none?
         redirect_to billings_path, notice: billings_orders[1]
       else
-        FulfillmentsSyncJob.perform_later billings_orders[0].id
+        JobsService.delay.fulfillment billings_orders[0].id
         redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
       end
     end
