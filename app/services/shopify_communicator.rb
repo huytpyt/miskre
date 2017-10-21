@@ -182,6 +182,7 @@ class ShopifyCommunicator
 
     shopify_product = ShopifyAPI::Product.find(supply.shopify_product_id)
     shopify_product.title = supply.name
+    shopify_product.vendor = @shop.shopify_domain
     shopify_product.body_html = supply.desc
     shopify_product.images = (product.images + supply.images).collect do |i|
       { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
@@ -225,7 +226,7 @@ class ShopifyCommunicator
     # otherwise, we will use product's name, desc, price, image
 
     shopify_product.title = product.name
-    shopify_product.vendor = product.vendor
+    shopify_product.vendor = @shop.shopify_domain
     shopify_product.body_html = product.desc
     # TODO upload supply images here
     shopify_product.images = product.images.collect do |i|
