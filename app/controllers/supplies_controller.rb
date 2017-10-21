@@ -41,6 +41,6 @@ class SuppliesController < ApplicationController
   private
   # Never trust parameters from the scary internet, only allow the white list through.
   def supply_params
-    params.require(:supply).permit(:name, :price, :desc, :original)
+    params.require(:supply).permit(:name, :price, :desc, :original, :keep_custom)
   end
 end

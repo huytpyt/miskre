@@ -35,13 +35,7 @@ class Product < ApplicationRecord
   serialize :product_ids
 
   def sync_job
-    ProductsSyncJob.perform_later(self.id)
-    # p 'sync product after save'
-    # self.supplies.where(original: true).each do |s|
-    #   p 'copy supply attributes'
-    #   s.copy_product_attr
-    #   s.save
-    # end
+    JobsService.delay.sync_product self.id
   end
 
   def pack_bundle

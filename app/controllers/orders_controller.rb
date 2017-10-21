@@ -17,7 +17,7 @@ class OrdersController < ApplicationController
   end
 
   def fetch_orders 
-    OrdersSyncJob.perform_later
+    ShopService.delay.sync_orders
     redirect_to orders_path
   end
 

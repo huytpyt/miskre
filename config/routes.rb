@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       get ":id/reports", to: "shops#reports", as: "report_view"
     end
     get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
+    patch "global_price_setting", to: "shops#global_price_setting", as: "global_price_setting"
+    get "change_price_option", to: "shops#change_price_option", as: "change_price_option"
   end
   resources :supplies, only: [:edit, :update, :destroy] do
     post 'upload_image_url', on: :member

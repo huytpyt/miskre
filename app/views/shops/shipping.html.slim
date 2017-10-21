@@ -24,16 +24,16 @@
                 = cost = @supply.cost
               td
                 = epub_cost = CarrierService.get_epub_cost(country.alpha2, @product.weight)
-                - diff_epub = epub_cost > @supply.cost_epub ? (epub_cost - @supply.cost_epub)*0.8 : 0
+                - diff_epub = epub_cost > @supply.cost_epub ? (epub_cost - @supply.cost_epub)*@shop.shipping_rate : 0
                 |&nbsp;|&nbsp;
                 = dhl_cost = CarrierService.get_dhl_cost(country.alpha2, @weight)
-                - diff_dhl = dhl_cost > @supply.cost_dhl ? (dhl_cost - @supply.cost_dhl)*0.8 : 0
+                - diff_dhl = dhl_cost > @supply.cost_dhl ? (dhl_cost - @supply.cost_dhl)*@shop.shipping_rate : 0
               td 
                 = price = @supply.price
               td 
-                =  epub_price = (0.2*epub_cost + diff_epub).round(2)
+                =  epub_price = ((1 - @shop.shipping_rate)*epub_cost + diff_epub).round(2)
                 |&nbsp;|&nbsp;
-                = dhl_price = (dhl_cost - (1-0.2)*epub_cost + diff_dhl).round(2)
+                = dhl_price = (dhl_cost - @shop.shipping_rate*epub_cost + diff_dhl).round(2)
               td 
                 = total_cost_epub = (cost + epub_cost).round(2)
                 |&nbsp;|&nbsp;

@@ -28,7 +28,7 @@
         = f.file_field :images, multiple: true
     .columns.medium-6
       a href="#" data-open="modal_image_url" Add image from URL
-  .row.medium-up-6
+  .row.medium-up-12
     .columns.medium-3
       .field
         = f.label :name
@@ -36,11 +36,15 @@
     .columns.medium-3
       .field
         = f.label :price
-        = f.number_field :price
+        = f.text_field :price
     .columns.medium-3
       .field
-        = f.label :original
+        = f.label :original, "Allow change price when staff update this product"
         = f.check_box :original
+    .columns.medium-3
+      .field
+        = f.label :keep_custom, "Keep custom price (not apply suggest price and global price setting"
+        = f.check_box :keep_custom
   .row
     .columns
       .field

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171018093819) do
+ActiveRecord::Schema.define(version: 20171020105750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -156,8 +156,8 @@ ActiveRecord::Schema.define(version: 20171018093819) do
   end
 
   create_table "shops", force: :cascade do |t|
-    t.string   "shopify_domain",      null: false
-    t.string   "shopify_token",       null: false
+    t.string   "shopify_domain",                        null: false
+    t.string   "shopify_token",                         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
@@ -165,6 +165,9 @@ ActiveRecord::Schema.define(version: 20171018093819) do
     t.integer  "user_id"
     t.boolean  "use_carrier_service"
     t.string   "carrier_service_id"
+    t.float    "cost_rate",             default: 4.0
+    t.float    "shipping_rate",         default: 0.8
+    t.boolean  "global_setting_enable", default: false
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree
   end
@@ -173,8 +176,8 @@ ActiveRecord::Schema.define(version: 20171018093819) do
     t.integer  "product_id"
     t.integer  "shop_id"
     t.string   "shopify_product_id"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
     t.text     "desc"
     t.float    "price"
     t.string   "name"
@@ -187,6 +190,7 @@ ActiveRecord::Schema.define(version: 20171018093819) do
     t.float    "cost_dhl"
     t.float    "compare_at_price"
     t.float    "cost"
+    t.boolean  "keep_custom",          default: false
     t.index ["product_id"], name: "index_supplies_on_product_id", using: :btree
     t.index ["shop_id"], name: "index_supplies_on_shop_id", using: :btree
     t.index ["user_id"], name: "index_supplies_on_user_id", using: :btree

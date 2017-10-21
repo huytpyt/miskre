@@ -181,12 +181,10 @@ class ShopifyCommunicator
     shopify_product.body_html = source.desc
     # TODO upload supply images here
     shopify_product.images = product.images.collect do |i|
-      # p URI.join(request.url, i.file.url(:original)).to_s
-      # { "src" => URI.join(request.url, i.file.url(:original)) }
       { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
-      # raw_content = Paperclip.io_adapters.for(i.file).read
-      # encoded_content = Base64.encode64(raw_content)
-      # { "attachment" => encoded_content }
+      raw_content = Paperclip.io_adapters.for(i.file).read
+      encoded_content = Base64.encode64(raw_content)
+      { "attachment" => encoded_content }
     end
 
     variants = []
@@ -211,7 +209,7 @@ class ShopifyCommunicator
       variants = [{
         'weight': product.weight,
         'weight_unit': 'g',
-        'price': source.suggest_price,
+        'price': product.suggest_price,
         'compare_at_price': source.compare_at_price,
         'sku': product.sku
       }]
