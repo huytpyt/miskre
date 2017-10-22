@@ -12,6 +12,20 @@ class Supply < ApplicationRecord
     JobsService.delay.sync_this_supply self.id
   end
 
+  def copy_product_attr_add_product
+    product = self.product
+    shop = self.shop
+    self.name = product&.name
+    self.cost = User.find(self.user_id).user? ? product.cus_cost : product.cost
+    self.price = product&.suggest_price
+    self.desc = product&.desc
+    self.compare_at_price = product&.compare_at_price
+    self.epub = (1 - shop.shipping_rate)*product.cus_epub
+    self.dhl = product.cus_dhl - shop.shipping_rate*product.cus_epub
+    self.cost_epub = product.cus_epub
+    self.cost_dhl = product.cus_dhl
+  end
+
   def copy_product_attr
     product = self.product
     shop = self.shop
@@ -35,6 +49,6 @@ class Supply < ApplicationRecord
   end
 
   def remove_shopify_product
-    JobsService.delay.remove_shopify_product self.shop.id, self.shopify_product_id
+    JobsService.remove_shopify_product self.shop.id, self.shopify_product_id
   end
 end

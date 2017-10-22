@@ -7,8 +7,8 @@ class ShopsController < ApplicationController
   end
 
   def show
-    @products = params[:search].present? ? @shop.products.search(params[:search]).records : @shop.products.all
-    @products = @products.page(params[:page])
+    @supplies = params[:search].present? ? @shop.supplies.search(params[:search]).records : @shop.supplies.all
+    @supplies = @supplies.page(params[:page])
     @global_settting = @shop.global_setting_enable
   end
 
