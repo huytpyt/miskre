@@ -1,4 +1,8 @@
 class Supply < ApplicationRecord
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
+  Supply.import(force: true)
+  
   belongs_to :shop
   belongs_to :product
 
