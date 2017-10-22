@@ -5,7 +5,7 @@
   br
   .row
     .column
-      = paginate @products
+      = paginate @supplies
 
   .row
     .column.large-8
@@ -49,50 +49,48 @@
               br
               = submit_tag "Search", class: "button"
   .row.large-up-3.page-content#productspost
-    - unless @products.none?
-      - @products.includes(:supplies, :images).each do |product|
-        - supply = product.supplies.where(shop_id: @shop.id)
-        - supply.each do |s|
+    - unless @supplies.none?
+      - @supplies.each do |supply|
           .column.item
             .card
               .card-divider
                 h4.each-block-header
                   span.text-left.pull-left
-                    = s.name
+                    = supply.name
                   /span.text-right.pull-right
                     = product.price
               .card-section
-                - unless product.images.empty?
-                  = image_tag product.images.first.file.url(:medium)
+                - unless supply.product.images.empty?
+                  = image_tag supply.product.images.first.file.url(:medium)
                 - else
                   = image_tag "default.jpg"
               .card-section
                 p 
                   = t('.cost')
                   |:&nbsp;$
-                  = s.cost
+                  = supply.cost
                 p
                   = t('.price')
                   |:&nbsp;$
-                  = s.price 
+                  = supply.price 
                 p
                   = t('.compare_at_price')
                   |:&nbsp;$
-                  = s.compare_at_price
+                  = supply.compare_at_price
                 p
                   = t('.profit')
                   |:&nbsp;$
-                  - if s.price && s.epub && s.cost && s.cost_epub
-                    = ((s.price + s.epub) - (s.cost + s.cost_epub)).round(2)
+                  - if supply.price && supply.epub && supply.cost && supply.cost_epub
+                    = ((supply.price + supply.epub) - (supply.cost + supply.cost_epub)).round(2)
                 p 
                   |Details about cost, price, shipping, profit:
-                  = link_to "Detail", shop_shipping_path(@shop, s)
+                  = link_to "Detail", shop_shipping_path(@shop, supply)
               .card-section
                 ul.menu
                   li
-                    = link_to "Customize", edit_supply_path(s), class: 'button tiny'
+                    = link_to "Customize", edit_supply_path(supply), class: 'button tiny'
                   li
-                    = link_to "Remove", supply_path(s),
+                    = link_to "Remove", supply_path(supply),
                       method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
                     /= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
     - else

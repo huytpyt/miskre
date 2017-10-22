@@ -161,7 +161,7 @@ class ShopifyCommunicator
                     product_id: product.id,
                     user_id: @shop.user_id,
                     shopify_product_id: new_product.id)
-      supply.copy_product_attr
+      supply.copy_product_attr_add_product
       if supply.save
         product.variants.each do |variant|
           supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)

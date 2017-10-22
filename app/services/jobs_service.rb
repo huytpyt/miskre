@@ -9,7 +9,7 @@ class JobsService
 
   def self.sync_product product_id
     product = Product.find(product_id)
-    product.supplies.where(original: true).each do |s|
+    product.supplies.where(original: true).where.not(shopify_product_id: nil).each do |s|
       s.copy_product_attr
       s.save
     end
