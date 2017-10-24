@@ -38,11 +38,13 @@ class VariantsController < ApplicationController
   # PATCH/PUT /variants/1.json
   def update
     respond_to do |format|
-      random = rand(2.25 .. 2.75)
-      
+      if @product.is_bundle
+        product_ids = params[:variant][:product_ids]&.map {|a| eval(a)} || []
+        @variant.product_ids = product_ids
+      end
+
       if @variant.update(variant_params)
-        @variant.compare_at_price =  (@variant.price * random/ 5).round(0) * 5
-        @variant.save
+        VariantService.update_variant @product, @variant
         if params[:variant][:images]
           params[:variant][:images].each do |img|
             @variant.images.create(file: img)

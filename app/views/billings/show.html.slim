@@ -14,7 +14,7 @@
               th Tracking Company
               th Tracking Number
               th Tracking URL
-              th Total Price(Quantity * Price)
+              th Total Cost
           tbody
             - total_money = 0
             - @billings_orders.each do |order|
@@ -25,9 +25,9 @@
                 td = fulfillment&.tracking_company
                 td = fulfillment&.tracking_number
                 td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"
-                td = number_to_currency @order_service.sum_money_from_order(order), precision: 0, unit: "VND", format: "%n %u"
+                td = number_to_currency @order_service.sum_money_from_order(order), precision: 0, unit: "$", format: "%u%n"
         b Total money 
-        span = number_to_currency @order_service.sum_money_per_bill(@billing), precision: 0, unit: "VND", format: "%n %u"
+        span = number_to_currency @order_service.sum_money_per_bill(@billing), precision: 0, unit: "$", format: "%u %n"
     - if current_user.staff?
       br
       br

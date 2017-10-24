@@ -3,7 +3,7 @@ class BillingService
     case File.extname(file.original_filename)
     when ".csv"
       begin
-        Roo::Csv.new(file.path, {})
+        Roo::CSV.new(file.path, {})
       rescue
         return false
       end
@@ -30,11 +30,11 @@ class BillingService
     errors = ""
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      order = Order.find_by_shopify_id row["Order Id"]
+      order = Order.find_by_shopify_id row["Order Id"].to_i
       billings_orders = BillingsOrder.find_by_order_id order&.id
       if order.present? && billings_orders.nil? && order&.fulfillments.none?
         billings_order =  billing.billings_orders.new(order_id: order.id)
-        fulfillment = order.fulfillments.new({"shopify_order_id"=>row["Order Id"], "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>TRACKING_COMPANY, "tracking_number"=>row["Tracking No."], "tracking_url"=>TRACKING_URL + row["Tracking No."], "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
+        fulfillment = order.fulfillments.new({"shopify_order_id"=>row["Order Id"].to_i.to_s, "fulfillment_id"=>nil, "status"=>"success", "service"=>"manual", "tracking_company"=>TRACKING_COMPANY, "tracking_number"=>row["Tracking No."].to_s, "tracking_url"=>TRACKING_URL + row["Tracking No."].to_s, "items"=>order.line_items.collect {|order| {name: order.name, quantity: order.quantity}} })
         if fulfillment.save
           billings_order.save
           order.line_items.each do |line_item| 

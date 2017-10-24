@@ -6,7 +6,10 @@
       h1 Editing Bundle
     - else
       h1 Editing Product
-  = render 'form', product: @product
+  - if @product.is_bundle
+    = render "form_bundle", {product: @product, action_path: product_update_bundle_path(@product)}
+  - else
+    = render 'form', product: @product
 
   = render partial: "products/options"
   = render partial: "products/variants"

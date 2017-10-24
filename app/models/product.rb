@@ -17,6 +17,7 @@ class Product < ApplicationRecord
   belongs_to :user
   has_many :tracking_products
   
+  validates :suggest_price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
   validates :sku, presence: true, uniqueness: true
   validates :quantity, numericality: { only_integer: true}
@@ -31,23 +32,18 @@ class Product < ApplicationRecord
   after_commit :sync_job
   serialize :product_ids
 
-  def sync_job
-    JobsService.delay.sync_product self.id
-  end
+  validate :validate_bundle
 
-  def pack_bundle
-    unless self.products.empty?
-      self.cost = 0
-      self.weight = 0
-      self.length = 0
-      self.width = 0
-      self.height = 0
-
-      self.products.each do |p|
-        self.cost += p.cost
-        self.weight += p.weight
+  def validate_bundle
+    if self.is_bundle
+      if self.product_ids == []
+        errors.add(:product_ids, "is required")
       end
     end
+  end
+
+  def sync_job
+    JobsService.delay.sync_product self.id
   end
 
   def calculate_price
@@ -66,6 +62,8 @@ class Product < ApplicationRecord
 
     self.cus_epub = epub_us_cost
     self.cus_dhl = dhl_us_cost
+
+    self.price = self.cost*4 + 0.8*self.cus_epub
   end
 
   def generate_sku
@@ -90,7 +88,7 @@ class Product < ApplicationRecord
       option1 = self.options.first
       option1.values.each do |v|
         sku = self.sku + self.variants.count().to_s.rjust(3, "0")
-        self.variants.create(sku: sku, option1: v, price: self.suggest_price, compare_at_price: self.compare_at_price)
+        self.variants.create(sku: sku, option1: v, price: self.suggest_price, compare_at_price: self.compare_at_price, product_ids: self.product_ids)
       end
     when 2
       option1, option2 = self.options[0..1]
@@ -98,7 +96,7 @@ class Product < ApplicationRecord
         option2.values.each do |v2|
           sku = self.sku + self.variants.count().to_s.rjust(3, "0")
           self.variants.create(sku: sku, option1: v1, option2: v2,
-                               price: self.suggest_price, compare_at_price: self.compare_at_price)
+                               price: self.suggest_price, compare_at_price: self.compare_at_price, product_ids: self.product_ids)
         end
       end
     when 3
@@ -108,7 +106,7 @@ class Product < ApplicationRecord
           option3.values.each do |v3|
             sku = self.sku + self.variants.count().to_s.rjust(3, "0")
             self.variants.create(sku: sku, option1: v1, option2: v2,
-                                 option3: v3, price: self.suggest_price, compare_at_price: self.compare_at_price)
+                                 option3: v3, price: self.suggest_price, compare_at_price: self.compare_at_price, product_ids: self.product_ids)
           end
         end
       end
