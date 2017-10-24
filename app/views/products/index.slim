@@ -36,23 +36,23 @@ input#productsResource value="#{products_path()}" type="hidden"
   .row
     .column
       .row
-        .column.medium-3
-          = link_to current_user.staff? ? 'New Product [Bundle]' : 'New Bundle Product', new_product_path, class: 'button primary small'
+        .column.medium-2
+          = link_to 'New Bundle Product', new_bundle_products_path, class: 'button primary small pull-left'
+        - if current_user.staff?
+          .column.medium-2
+            = link_to 'New Product', new_product_path, class: 'button primary small pull-left'
+        .column.medium-8
 
     .column
-      - if current_user.staff?
+      ul.tabs
+        li.tab-link.current data-tab="tab-1" Bundle
+        li.tab-link data-tab="tab-2" Products
+      #tab-1.tab-content.current
+        table#my-product-table
+          = render "product", products: @bundle
+      #tab-2.tab-content
         table#product-table
-          = render "product", products: @products, is_my_product: true
-      - else
-        ul.tabs
-          li.tab-link.current data-tab="tab-1" My bundle products
-          li.tab-link data-tab="tab-2" Miskre Products
-        #tab-1.tab-content.current
-          table#my-product-table
-            = render "product", products: @my_products, is_my_product: true
-        #tab-2.tab-content
-          table#product-table
-            = render "product", products: @products, is_my_product: false
+          = render "product", products: @products
 
 /#products
   .row

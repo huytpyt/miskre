@@ -41,6 +41,28 @@
       .field
         = f.label :images
         = f.file_field :images, multiple: true
+  - if @product.is_bundle
+    .row
+      .columns.medium-12
+        .field
+          = f.label :products
+          select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6"  name="variant[product_ids][]"
+            option value="" 
+            - p_ids = variant.product_ids&.map{|b| b[:product_id]}
+            - v_ids = variant.product_ids&.map{|b| b[:variant_id]}
+            - Product.where(is_bundle: false).select(:id, :name).find_each(batch_size: 100) do |p|
+              - if p.variants.none?
+                - if p_ids&.include? p.id
+                  option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name
+                - else
+                  option value="{product_id: #{p.id}, variant_id: nil}" = p.name
+              - else
+                optgroup label=("#{p.name}") 
+                  - p.variants.each do |variant|
+                    - if v_ids&.include? variant.id
+                      option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
+                    - else
+                      option value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
   .row
     .columns.medium-4
       .field
@@ -62,7 +84,10 @@
     .columns.medium-4
       .field
         = f.label :price
-        = f.number_field :price
+        - if @product.is_bundle
+          = f.number_field :price, disabled: true
+        - else 
+          = f.number_field :price
     .columns.medium-4
       .field
         = f.label :sku

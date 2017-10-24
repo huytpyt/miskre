@@ -66,12 +66,14 @@ class ShopifyCommunicator
         fetched_pages += 1
         fulfillments.each do |fulfillment|
           begin
-            new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
-            if new_fulfilllment.save
-              quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
-              FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
-              fulfillment.update(fulfillment_id: new_fulfilllment.id)
-              count_fulfilled += 1
+            if fulfillment.present?
+              new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
+              if new_fulfilllment.save
+                quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
+                FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
+                fulfillment.update(fulfillment_id: new_fulfilllment.id)
+                count_fulfilled += 1
+              end
             end
           rescue NoMethodError => e
             p 'invalid fulfillment'

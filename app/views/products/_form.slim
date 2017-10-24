@@ -1,10 +1,10 @@
 - content_for :css
-  = stylesheet_link_tag "slick-carousel/slick/slick.css"
-  = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
+  / = stylesheet_link_tag "slick-carousel/slick/slick.css"
+  / = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
 
 - content_for :script
-  = javascript_include_tag "products_billings/form"
-  = javascript_include_tag "slick-carousel/slick/slick.min.js"
+  / = javascript_include_tag "products_billings/form"
+  / = javascript_include_tag "slick-carousel/slick/slick.min.js"
 
 = form_for product do |f|
   - if product.errors.any?
@@ -53,34 +53,34 @@
     .columns.medium-3
       .field
         = f.label :vendor
-        = f.text_field :vendor
-  .row
-    .columns.medium-3
-      .field
-        = f.label :is_bundle
-        = f.check_box :is_bundle
-    .columns.medium-9
-      #bundle_products style=(@product.is_bundle ? '' : 'visibility:hidden;')
-        .field
-          = f.label :products
-          .col-lg-6
-            select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6" name="product[product_ids][]"
-              option value="" 
-              - p_ids = product.product_ids&.map{|b| b[:product_id]}
-              - v_ids = product.product_ids&.map{|b| b[:variant_id]}
-              - Product.all.select(:id, :name).find_each(batch_size: 100) do |p|
-                - if p.variants.none?
-                  - if p_ids&.include? p.id
-                    option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name
-                  - else
-                    option value="{product_id: #{p.id}, variant_id: nil}" = p.name
-                - else
-                  optgroup label=("#{p.name}") 
-                    - p.variants.each do |variant|
-                      - if v_ids&.include? variant.id
-                        option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
-                      - else
-                        option value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
+        = f.text_field :vendor, disabled: true
+  / .row
+  /   .columns.medium-3
+  /     .field
+  /       = f.label :is_bundle
+  /       = f.check_box :is_bundle
+  /   .columns.medium-9
+  /     #bundle_products style=(@product.is_bundle ? '' : 'visibility:hidden;')
+  /       .field
+  /         = f.label :products
+  /         .col-lg-6
+  /           select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6" name="product[product_ids][]"
+  /             option value="" 
+  /             - p_ids = product.product_ids&.map{|b| b[:product_id]}
+  /             - v_ids = product.product_ids&.map{|b| b[:variant_id]}
+  /             - Product.all.select(:id, :name).find_each(batch_size: 100) do |p|
+  /               - if p.variants.none?
+  /                 - if p_ids&.include? p.id
+  /                   option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name
+  /                 - else
+  /                   option value="{product_id: #{p.id}, variant_id: nil}" = p.name
+  /               - else
+  /                 optgroup label=("#{p.name}") 
+  /                   - p.variants.each do |variant|
+  /                     - if v_ids&.include? variant.id
+  /                       option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
+  /                     - else
+  /                       option value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
   .row
     .columns
       .field

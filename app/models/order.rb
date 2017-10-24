@@ -35,11 +35,22 @@ class Order < ApplicationRecord
           quantity = sku_item[1]
           product = Product.find_by_sku(sku&.first(3))
           if product&.is_bundle
-            product.product_ids.each do |id|
-              if id[:variant_id].nil?
-                skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
-              else
-                 skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
+            if product.variants.present?
+              variant = Variant.find_by_sku sku
+              variant.product_ids.each do |id|
+                if id[:variant_id].nil?
+                  skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
+                else
+                   skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
+                end
+              end
+            else
+              product.product_ids.each do |id|
+                if id[:variant_id].nil?
+                  skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
+                else
+                   skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
+                end
               end
             end
           else

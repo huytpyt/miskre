@@ -24,6 +24,12 @@ Rails.application.routes.draw do
     end
   end
   resources :products do
+    collection do
+      get "new_bundle", to: "products#new_bundle"
+      post "create_bundle", to: "products#create_bundle"
+    end
+    patch "update_bundle", to: "products#update_bundle"
+    
     member do
       get 'report'
       get 'tracking_product'

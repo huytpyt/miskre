@@ -22,3 +22,7 @@
 en:
   appName: 'Miskre'
   hello: "Hello world"
+  activerecord:
+    attributes:
+      product:
+        product_ids: "Products reference"
