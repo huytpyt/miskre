@@ -49,6 +49,13 @@
       .field
         = f.label :keep_custom, "Keep custom price (not apply suggest price and global price setting"
         = f.check_box :keep_custom
+  - if product.is_bundle && product.variants == []
+    .row
+      .columns
+        hr
+            | Products: 
+            = find_product_name_from_bundle product
+        hr
   .row
     .columns
       .field
@@ -77,6 +84,8 @@
               th Option 1
               th Option 2
               th Option 3
+              - if product.is_bundle && product.variants != []
+                th Products
               th Price ($)
               th SKU
               th Edit Price
@@ -86,6 +95,8 @@
                 td = variant.option1
                 td = variant.option2
                 td = variant.option3
+                - if product.is_bundle && product.variants != []
+                  td = find_product_name Variant.find_by_sku(variant.sku)
                 td = variant.price
                 td = variant.sku
                 td = link_to "Edit", supply_edit_variant_path(@supply, variant.id)

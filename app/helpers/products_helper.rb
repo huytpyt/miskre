@@ -12,6 +12,18 @@ module ProductsHelper
          products.push(variant_name(Product.find(id[:product_id]).name, variant))
       end
     end
-    products.join(",")
+    products.join(", ")
+  end
+
+  def find_product_name_from_bundle product
+    products = []
+    product.product_ids.each do |id|
+      if id[:variant_id].nil?
+        products.push(Product.find(id[:product_id]).name) 
+      else
+        products.push(variant_name(Product.find(id[:product_id]).name, Variant.find(id[:variant_id])))
+      end
+    end
+    products.join(", ")
   end
 end
