@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy,
                                      :upload_image_url,
                                      :add_to_shop, :assign, :remove_shop]
-  before_action :check_is_staff, except: [:index, :show, :add_to_shop, :shipping, :assign, :new_bundle, :create_bundle, :update_bundle, :edit]
+  before_action :check_is_staff, except: [:index, :show, :add_to_shop, :shipping, :assign, :new_bundle, :create_bundle, :update_bundle, :edit, :destroy]
 
   # GET /products
   # GET /products.json
@@ -90,6 +90,10 @@ class ProductsController < ApplicationController
 
   def update_bundle
     @product = Product.find(params[:product_id])
+    unless current_user.staff? || @product.user_id == current_user.id
+      redirect_to @product
+      return
+    end
     product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
     
     respond_to do |format|
@@ -154,6 +158,9 @@ class ProductsController < ApplicationController
 
   # GET /products/1/edit
   def edit
+    unless current_user.staff? || @product.user_id == current_user.id
+      redirect_to @product
+    end
   end
 
   # POST /products
@@ -232,6 +239,9 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
+    unless current_user.staff? || @product.user_id == current_user.id
+      redirect_to @product
+    end
     if @product.destroy
       @product.supplies&.destroy_all
     end
