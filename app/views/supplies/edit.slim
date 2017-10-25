@@ -33,11 +33,15 @@
       .field
         = f.label :name
         = f.text_field :name
-    .columns.medium-3
+    .columns.medium-2
       .field
         = f.label :price
         = f.text_field :price
-    .columns.medium-3
+    .columns.medium-2
+      .field
+        = f.label :compare_at_price
+        = f.text_field :compare_at_price
+    .columns.medium-2
       .field
         = f.label :original, "Allow change price when staff update this product"
         = f.check_box :original

@@ -7,7 +7,7 @@ class SuppliesController < ApplicationController
   def update
     respond_to do |format|
       @supply.attributes = supply_params
-      if @supply.price_changed?
+      if @supply.price_changed? || @supply.compare_at_price_changed?
         @supply.supply_variants.each do | variant|
           variant.update(price: @supply.price, compare_at_price: @supply.compare_at_price)
         end
@@ -48,10 +48,7 @@ class SuppliesController < ApplicationController
   end
 
   def update_variant
-    price = params[:supply_variant][:price].to_f
-    random = rand(2.25 .. 2.75)
-    compare_at_price = (price * random/ 5).round(0) * 5
-    @variant.update(price: price, compare_at_price: compare_at_price)
+    @variant.update(variant_params)
     redirect_to edit_supply_path(@supply), notice: "Update variant price successfully"
   end
 
@@ -62,7 +59,11 @@ class SuppliesController < ApplicationController
     @variant = SupplyVariant.find params[:variant_id]
   end
   # Never trust parameters from the scary internet, only allow the white list through.
+
+  def variant_params
+    params.require(:supply_variant).permit(:price, :compare_at_price)
+  end
   def supply_params
-    params.require(:supply).permit(:name, :price, :desc, :original, :keep_custom)
+    params.require(:supply).permit(:name, :price, :desc, :original, :keep_custom, :compare_at_price)
   end
 end
