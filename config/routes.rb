@@ -11,13 +11,18 @@ Rails.application.routes.draw do
       get "remove", to: "billing#remove", as: "remove"
     end
   end
-  resources :shops, only: [:index, :show] do
+  resources :shops do
     collection do
       get ":id/supply_orders_unfulfilled", to: "shops#supply_orders_unfulfilled", as: "reports"
       get ":id/reports", to: "shops#reports", as: "report_view"
     end
+    get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
+    patch "global_price_setting", to: "shops#global_price_setting", as: "global_price_setting"
+    get "change_price_option", to: "shops#change_price_option", as: "change_price_option"
   end
   resources :supplies, only: [:edit, :update, :destroy] do
+    get "edit_variant/:variant_id", to: "supplies#edit_variant", as: "edit_variant"
+    patch "edit_variant/:variant_id", to: "supplies#update_variant", as: "update_variant"
     post 'upload_image_url', on: :member
   end
   resources :reports do
@@ -26,6 +31,12 @@ Rails.application.routes.draw do
     end
   end
   resources :products do
+    collection do
+      get "new_bundle", to: "products#new_bundle"
+      post "create_bundle", to: "products#create_bundle"
+    end
+    patch "update_bundle", to: "products#update_bundle"
+    
     member do
       get 'report'
       get 'tracking_product'
@@ -39,11 +50,15 @@ Rails.application.routes.draw do
       post 'upload_image_url', on: :member
     end
     get 'purchases', on: :collection
+    get "shipping"
   end
 
   resources :orders, only: [:index, :show] do
     resources :fulfillments, only: [:new, :create]
     get 'fetch', on: :collection
+    collection do
+      get 'fetch_orders', to: "orders#fetch_orders", as: "fetch_orders"
+    end
   end
 
   resources :billings do

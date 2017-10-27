@@ -1,4 +1,17 @@
 #shop-products-list  {
+  .price-text {
+    float: left;
+    line-height: 39px;
+  }
+  .option-selected {
+    margin-top: 5px;
+  }
+  .price-setting-rate {
+    width: 100px;
+    float: left;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
   .page-content {
     .each-block-header {
       width: 100%;

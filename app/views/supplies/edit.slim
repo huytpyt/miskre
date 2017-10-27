@@ -28,19 +28,34 @@
         = f.file_field :images, multiple: true
     .columns.medium-6
       a href="#" data-open="modal_image_url" Add image from URL
-  .row.medium-up-6
+  .row.medium-up-12
     .columns.medium-3
       .field
         = f.label :name
         = f.text_field :name
-    .columns.medium-3
+    .columns.medium-2
       .field
         = f.label :price
-        = f.number_field :price
+        = f.text_field :price
+    .columns.medium-2
+      .field
+        = f.label :compare_at_price
+        = f.text_field :compare_at_price
+    .columns.medium-2
+      .field
+        = f.label :original, "Allow change price when staff update this product"
+        = f.check_box :original
     .columns.medium-3
       .field
-        = f.label :original
-        = f.check_box :original
+        = f.label :keep_custom, "Keep custom price (not apply suggest price and global price setting"
+        = f.check_box :keep_custom
+  - if product.is_bundle && product.variants == []
+    .row
+      .columns
+        hr
+            | Products: 
+            = find_product_name_from_bundle product
+        hr
   .row
     .columns
       .field
@@ -57,11 +72,38 @@
       p Weight (g): #{product.weight}
     .columns.medium-3
       p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+  
+  .page-header
+    h1 Variants
+  #variants
+    .row
+      .column
+        table
+          thead
+            tr
+              th Option 1
+              th Option 2
+              th Option 3
+              - if product.is_bundle && product.variants != []
+                th Products
+              th Price ($)
+              th SKU
+              th Edit Price
+          tbody
+            - @supply.supply_variants.each do |variant|
+              tr
+                td = variant.option1
+                td = variant.option2
+                td = variant.option3
+                - if product.is_bundle && product.variants != []
+                  td = find_product_name Variant.find_by_sku(variant.sku)
+                td = variant.price
+                td = variant.sku
+                td = link_to "Edit", supply_edit_variant_path(@supply, variant.id)
   .row
     .columns.small-1.small-centered
       .actions
         = f.submit "Save", id: "submit-product", class: 'button alert small'
-
 .reveal#modal_image_url data-reveal=""
   = form_tag upload_image_url_supply_path, method: :post do
     = label_tag :url, "Paste Image URL"

@@ -1,0 +1,58 @@
+p#notice= notice
+h2.text-center  = @product.name
+br
+br
+- if @product.persisted? && @product.images.size > 0
+  .row
+    #images-preview
+      - @product.images.each do |pi|
+        .columns.medium-3
+          = image_tag pi.file.url(:medium)
+hr
+.row
+  .column.medium-3
+    strong Weight:&nbsp;
+    = @product.weight
+  .column.medium-3
+    strong Length:&nbsp;
+    = @product.length
+  .column.medium-3
+    strong Height:&nbsp;
+    = @product.height
+  .column.medium-3
+    strong Width:&nbsp;
+    = @product.width
+hr
+.row
+  .column.medium-12
+    strong Desc:&nbsp;
+    = raw @product.desc
+hr
+.row
+  .column.medium-3
+    strong Cost:&nbsp;
+    = current_user.staff? ? @product.cost : @product.cus_cost
+    |$
+  .column.medium-3
+    strong Suggested Price:&nbsp;
+    = @product.suggest_price
+    |$
+  .column.medium-3
+    strong Compare at price:&nbsp;
+    = @product.compare_at_price
+    |$
+  .column.medium-3
+    strong Profit:&nbsp;
+    - if @product.suggest_price && @product.cus_epub && @product.cus_cost && @product.cus_epub
+      = current_user.staff? ? ((@product.suggest_price + @product.epub) - (@product.cost + @product.cus_epub)).round(2) : ((@product.suggest_price + @product.epub) - (@product.cus_cost + @product.cus_epub)).round(2)
+    |$
+hr
+br
+br
+.row
+  = render partial: "products/variants"
+.row
+  - if current_user.staff?
+    = link_to 'Edit', edit_product_path(@product)
+    |&nbsp;|&nbsp;
+  = link_to 'Back', products_path

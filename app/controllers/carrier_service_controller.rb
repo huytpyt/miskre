@@ -3,24 +3,26 @@ class CarrierServiceController < ApplicationController
   skip_before_action :authenticate_user!, only: :shipping_rates
 
   def index
-    @shops = current_user.shops
+    @shops = current_user.staff? ? Shop.all : current_user.shops
   end
 
   def lookup
     country = params[:country]
     weight = params[:weight].to_i
+    length = params[:length].to_i
+    height = params[:height].to_i
+    width = params[:width].to_i
 
     epub_cost = CarrierService.get_epub_cost(country, weight)
+
+    cal_weight = (length * height * width) / 5
+    weight = cal_weight > weight ? cal_weight : weight
+
     dhl_cost = CarrierService.get_dhl_cost(country, weight)
 
-    # BECAUSE we are already add 80% epub US cost to product price
-    epub_us_cost = CarrierService.get_epub_cost('US', weight)
-    epub_price = epub_cost - epub_us_cost * 0.8
-    dhl_price = dhl_cost - epub_us_cost * 0.8
-
     data = {
-      'epub': epub_price.round(2),
-      'dhl': dhl_price.round(2)
+      'epub': epub_cost.round(2),
+      'dhl': dhl_cost.round(2)
     }
     respond_to do |format|
       format.json do
@@ -45,25 +47,31 @@ class CarrierServiceController < ApplicationController
   end
 
   def shipping_rates
+    #get vendor to define which shop to get rate
     rate = params[:rate]
     country = rate['destination']['country']
     items = rate['items']
-
     epub_price = 0
     dhl_price = 0
     total_price = 0
     items.each do |i|
-      epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
-      dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * i['grams'])
-
-      # BECAUSE we are already add 80% epub US cost to product price
+      product = Product.find_by_sku i['sku']&.first(3)
+      cal_weight = (product.length * product.height * product.width) / 5
+      weight = cal_weight > product.weight ? cal_weight : product.weight
       epub_us_cost = CarrierService.get_epub_cost('US', i['quantity'] * i['grams'])
+      dhl_us_cost = CarrierService.get_dhl_cost('US', i['quantity'] * weight)
 
-      epub_price += (epub_cost - epub_us_cost * 0.8).round(2)
-      dhl_price += (dhl_cost - epub_us_cost * 0.8).round(2)
+      epub_cost = CarrierService.get_epub_cost(country, i['quantity'] * i['grams'])
+      diff_epub = epub_cost > epub_us_cost ? (epub_cost - epub_us_cost)*0.8 : 0
+      dhl_cost = CarrierService.get_dhl_cost(country, i['quantity'] * weight)
+      diff_dhl = dhl_cost > dhl_us_cost ? (dhl_cost - dhl_us_cost)*0.8 : 0
+
+      epub_price += (0.2*epub_cost + diff_epub).round(2)
+      dhl_price += (dhl_cost - 0.8*epub_us_cost + diff_dhl).round(2)
       # p i['quantity'], i['grams'], epub_price
       #
       total_price += i['quantity'] * i['price']
+      
     end
     if total_price > 3500
       rates = [
@@ -72,7 +80,7 @@ class CarrierServiceController < ApplicationController
           'service_name': 'Free Insured Shipping',
           # 'description': '9-12 working days',
           # 'description': '8-12 days',
-          'service_code': 'ePacket',
+          'service_code': 'ePUP',
           'currency': 'USD',
           'total_price': 0
         },
@@ -81,9 +89,9 @@ class CarrierServiceController < ApplicationController
           'service_name': 'DHL (not free)',
           # 'description': '5-8 working days',
           # 'description': '3-5 days',
-          'service_code': 'dhl',
+          'service_code': 'DHL',
           'currency': 'USD',
-          'total_price': (dhl_price * 100).round.to_s
+          'total_price': (dhl_price * 100).round(0).to_s
         }
       ]
     else
@@ -93,18 +101,18 @@ class CarrierServiceController < ApplicationController
           'service_name': 'Insured Shipping',
           # 'description': '9-12 working days',
           # 'description': '8-12 days',
-          'service_code': 'ePacket',
+          'service_code': 'ePUP',
           'currency': 'USD',
-          'total_price': (epub_price * 100).round.to_s
+          'total_price': (epub_price * 100).round(0).to_s
         },
         {
           # 'service_name': 'DHL',
           'service_name': 'Expedited Insured Shipping',
           # 'description': '5-8 working days',
           # 'description': '3-5 days',
-          'service_code': 'dhl',
+          'service_code': 'DHL',
           'currency': 'USD',
-          'total_price': (dhl_price * 100).round.to_s
+          'total_price': (dhl_price * 100).round(0).to_s
         }
       ]
     end

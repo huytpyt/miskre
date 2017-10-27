@@ -1,5 +1,5 @@
 development: &default
-  host: 'http://elasticsearch:9200'
+  host: 'http://localhost:9200'
 test:
   <<: *default
 staging:

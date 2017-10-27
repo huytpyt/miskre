@@ -1,5 +1,6 @@
 class BillingController < ApplicationController
   before_action :get_customer, only: [:index, :create, :remove, :edit, :update]
+  before_action :check_user
   def index
     @billing = @customer.sources.first
     @invoices = @customer.invoices
@@ -17,7 +18,14 @@ class BillingController < ApplicationController
       response = Stripe::Token.create(card: get_params.to_h)
       if response
         @customer.sources.create(card: response.id)
-        Stripe::Subscription.create(:customer => @customer.id, :plan => STRIPE_PLAINNING)
+        sub_first = @customer.subscriptions.first
+        if sub_first&.plan.present?
+          if  sub_first.plan.id != STRIPE_PLAINNING && sub_first.status != "active"
+            Stripe::Subscription.create(:customer => @customer.id, :plan => STRIPE_PLAINNING)
+          end
+        else
+          Stripe::Subscription.create(:customer => @customer.id, :plan => STRIPE_PLAINNING)
+        end
         redirect_to billing_index_path, notice: "Create Successfully"
       end
     rescue Stripe::InvalidRequestError, 
@@ -55,6 +63,12 @@ class BillingController < ApplicationController
   end
 
   private
+
+  def check_user
+    if current_user.staff?
+      redirect_to root_path
+    end
+  end
 
   def get_customer
     if current_user.customer_id.nil?

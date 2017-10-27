@@ -37,8 +37,8 @@ set :rbenv_ruby, '2.4.0'
 set :linked_dirs,  %w{public/system}
 
 set :default_env, {
-  secret_key_base: ENV["SECRET_KEY_BASE"],
-  shopcenter_database_password: ENV["SHOPCENTER_DATABASE_PASSWORD"]
+  secret_key_base: "e3ba32e5105fb3edf485ff800c3fa79de96006efd751357083964a388e21cf1af1e282a72a39981fdff2737b808b6af41c990e1641ce7147412a7723ce3532fe",
+  shopcenter_database_password: "12345678"
 }
 
 # Whenever config

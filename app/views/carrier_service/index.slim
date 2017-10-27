@@ -8,7 +8,9 @@
   .column
     table
       thead
-        th Shop
+        tr 
+          th Shop
+          td
       tbody
         - @shops.each do |shop|
           tr
@@ -20,6 +22,24 @@
               td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
 
 #shipping_prices
+  
+  .row
+    .medium-3.columns
+      .input-group
+        span.input-group-label Weight (g)
+        input.input-group-field v-model="weight" type="text" placeholder="enter weight"
+    .medium-3.columns
+      .input-group
+        span.input-group-label Length (cm)
+        input.input-group-field v-model="length" type="text" placeholder="enter length"
+    .medium-3.columns
+      .input-group
+        span.input-group-label Height (cm)
+        input.input-group-field v-model="height" type="text" placeholder="enter height"
+    .medium-3.columns
+      .input-group
+        span.input-group-label Width (cm)
+        input.input-group-field v-model="width" type="text" placeholder="enter width"
   .row
     .medium-5.columns
       .input-group
@@ -28,12 +48,8 @@
         select.input-group-field v-model="country"
           - ISO3166::Country.all.each do |c|
             option value="#{c.alpha2}" #{c.name}
-    .medium-5.columns
-      .input-group
-        span.input-group-label Weight (g)
-        input.input-group-field v-model="weight" type="text" placeholder="enter weight"
     .medium-2.columns
-      button.button.small @click="lookup_for_price()" Look up
+      button.button.small.pull-right @click="lookup_for_price()" Look up
   .row
     .columns
       p ePUB: ${{ epub }}

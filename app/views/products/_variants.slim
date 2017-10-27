@@ -11,41 +11,48 @@ input#productId value="#{@product.id}" type="hidden"
 #variants
   .row
     .column
-      button.button.small @click="reloadVariants()" Reset variants based on Option
+      - unless params[:action] == "show"
+        button.button.small @click="reloadVariants()" Reset variants based on Option
       table
         thead
           tr
             th Option 1
             th Option 2
             th Option 3
-            th Quantity
-            th Price
-            th SKU
-            th
+            - if current_user.staff?
+              th Quantity
+            th Price ($)
+            - if current_user.staff? || @product.user_id == current_user.id
+              th SKU
+              - unless params[:action] == "show"
+                th
         tbody
           tr.option v-for="variant in variants"
             td v-text="variant.option1"
             td v-text="variant.option2"
             td v-text="variant.option4"
-            td
-              div v-if="editMode"
-                input type="text" v-model="variant.quantity"
-                span style="color:red" {{ errors.quantity }}
-              div v-else="" {{ variant.quantity }}
+            - if current_user.staff?
+              td
+                div v-if="editMode"
+                  input type="text" v-model="variant.quantity"
+                  span style="color:red" {{ errors.quantity }}
+                div v-else="" {{ variant.quantity }}
             td
               div v-if="editMode"
                 input type="text" v-model="variant.price"
                 span style="color:red" {{ errors.price }}
               div v-else="" {{ variant.price }}
-            td
-              div v-if="editMode"
-                input type="text" v-model="variant.sku"
-                span style="color:red" {{ errors.sku}}
-              div v-else="" {{ variant.sku }}
-            td
-              /button v-if="editMode" @click="updateVariant(variant)" Save
-              /button v-else="" @click="editMode = true" Edit
-              /= link_to "Edit", edit_product_variant(@product, variant), class: 'button'
-              a.clear.button.small :href="'/products/'+ productId + '/variants/' + variant.id + '/edit'" Edit
-              br
-              button.clear.button.alert.small v-if="!editMode" @click="removeVariant(variant)" Remove
+            - if current_user.staff? || @product.user_id == current_user.id
+              td
+                div v-if="editMode"
+                  input type="text" v-model="variant.sku"
+                  span style="color:red" {{ errors.sku}}
+                div v-else="" {{ variant.sku }}
+              - unless params[:action] == "show"
+                td
+                  /button v-if="editMode" @click="updateVariant(variant)" Save
+                  /button v-else="" @click="editMode = true" Edit
+                  /= link_to "Edit", edit_product_variant(@product, variant), class: 'button'
+                  a.clear.button.small :href="'/products/'+ productId + '/variants/' + variant.id + '/edit'" Edit
+                  br
+                  button.clear.button.alert.small v-if="!editMode" @click="removeVariant(variant)" Remove

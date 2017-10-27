@@ -1,0 +1,129 @@
+- content_for :css
+  = stylesheet_link_tag "slick-carousel/slick/slick.css"
+  = stylesheet_link_tag "slick-carousel/slick/slick-theme.css"
+
+- content_for :script
+  = javascript_include_tag "products_billings/form"
+  = javascript_include_tag "slick-carousel/slick/slick.min.js"
+
+= form_for product, url: action_path do |f|
+  - if product.errors.any?
+    .row
+      #error_explanation
+        h2 #{pluralize(product.errors.count, "error")} prohibited this product from being saved:
+        ul
+          - product.errors.full_messages.each do |message|
+            li = message
+  - if product.persisted? && product.images.size > 0
+    .row
+      .columns
+        #images-preview
+          - product.images.each do |pi|
+            div
+              = image_tag pi.file.url(:medium)
+            = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
+  /.row
+    .columns
+      ul#dvPreview
+  .row
+    .columns
+      h4 Images
+    .columns
+      ul#dvPreview
+    .columns.medium-6
+      .field
+        /= f.label :images
+        = f.file_field :images, multiple: true
+    .columns.medium-6
+      - if product.persisted?
+        a href="#" data-open="modal_image_url" Add image from URL
+  .row
+    .columns.medium-3
+      .field
+        = f.label :name
+        = f.text_field :name, required: true
+    .columns.medium-3
+      .field
+        = f.label :sku
+        = f.text_field :sku, disabled: true
+    .columns.medium-3
+      .field
+        = f.label :quantity
+        = f.number_field :quantity
+    .columns.medium-3
+      .field
+        = f.label :vendor
+        = f.text_field :vendor, disabled: true
+  .row
+    .columns.medium-3
+      .field
+        = f.label :is_bundle
+        = f.check_box :is_bundle, checked: true, disabled: true
+    .columns.medium-9
+      #bundle_products
+        .field
+          = f.label :products
+          .col-lg-6
+            select.chosen-select data-placeholder=("Select frequently bought together") multiple="multiple" tabindex="6"  name="product[product_ids][]"
+              option value="" 
+              - p_ids = product.product_ids&.map{|b| b[:product_id]}
+              - v_ids = product.product_ids&.map{|b| b[:variant_id]}
+              - @products_list.find_each(batch_size: 100) do |p|
+                - if p.variants.none?
+                  - if p_ids&.include? p.id
+                    option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name
+                  - else
+                    option value="{product_id: #{p.id}, variant_id: nil}" = p.name
+                - else
+                  optgroup label=("#{p.name}") 
+                    - p.variants.each do |variant|
+                      - if v_ids&.include? variant.id
+                        option selected="true" value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
+                      - else
+                        option value="{product_id: #{p.id}, variant_id: #{variant.id}}" = variant_name p.name, variant
+  .row
+    .columns
+      .field
+        = f.label :desc
+        = f.cktext_area :desc
+  .row
+    .columns.medium-3
+      .field
+        = f.label :cost, "Cost ($)"
+        = f.text_field :cost, disabled: true
+    .columns.medium-2
+      .field
+        = f.label :weight, "Weight (g)"
+        = f.number_field :weight, disabled: true
+
+    .columns.medium-7
+      .field
+        = f.label :product_url, "Link to reference product"
+        = f.text_field :product_url
+    .columns
+      .row
+        .columns.medium-2
+          .field
+            = f.label :sale_off, "Sale off %"
+            = f.number_field :sale_off, min: 0, max: 100, required: true
+        .columns.medium-2
+          .field
+            = f.label :suggest_price, "Price"
+            = f.text_field :suggest_price, disabled: true
+        .columns.medium-8
+      /.field
+        = f.label :shipping_price
+        = f.text_field :shipping_price
+  .row
+    .columns.small-1.small-centered
+      .actions
+        = f.submit "Save", id: "submit-product", class: 'button alert small'
+
+- if product.persisted?
+  .reveal#modal_image_url data-reveal=""
+    = form_tag upload_image_url_product_path, method: :post do
+      = label_tag :url, "Paste Image URL"
+      = text_field_tag :url
+      = submit_tag 'Add Image'
+    button.close-button data-close="" aria-label="Close modal" type="button"
+      span aria-hidden="true" &times

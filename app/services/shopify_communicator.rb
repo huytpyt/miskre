@@ -1,8 +1,12 @@
 class ShopifyCommunicator
   def initialize(shop_id)
-    @shop = Shop.find(shop_id)
-    @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
-    ShopifyAPI::Base.activate_session(@session)
+    begin
+      @shop = Shop.find(shop_id)
+      @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
+      ShopifyAPI::Base.activate_session(@session)
+    rescue
+      p "UnauthorizedAccess"
+    end
   end
 
   def get_order_params(o)
@@ -20,7 +24,7 @@ class ShopifyCommunicator
     end
 
     o.shipping_lines.each do |s|
-      shipping_methods.append(s.title)
+      shipping_methods.append(s.code)
     end
 
     {
@@ -62,12 +66,14 @@ class ShopifyCommunicator
         fetched_pages += 1
         fulfillments.each do |fulfillment|
           begin
-            new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
-            if new_fulfilllment.save
-              quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
-              FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
-              fulfillment.update(fulfillment_id: new_fulfilllment.id)
-              count_fulfilled += 1
+            if fulfillment.present?
+              new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
+              if new_fulfilllment.save
+                quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
+                FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
+                fulfillment.update(fulfillment_id: new_fulfilllment.id)
+                count_fulfilled += 1
+              end
             end
           rescue NoMethodError => e
             p 'invalid fulfillment'
@@ -87,37 +93,40 @@ class ShopifyCommunicator
       created_at_min: start_date.strftime("%FT%T%:z"),
       created_at_max: end_date.strftime("%FT%T%:z")
     }
+    begin
+      count = ShopifyAPI::Order.find(:count, params: params).count
+      total_pages = count / 50 + 1
+      fetched_pages = 0
+      current_page = 0
 
-    count = ShopifyAPI::Order.find(:count, params: params).count
-    total_pages = count / 50 + 1
-    fetched_pages = 0
-    current_page = 0
+      while fetched_pages < total_pages
+        current_page = fetched_pages + 1
+        p "Fetching #{current_page} / #{total_pages} pages"
+        begin
+          params["page"] = current_page
+          orders = ShopifyAPI::Order.find(:all, params: params )
+          fetched_pages += 1
 
-    while fetched_pages < total_pages
-      current_page = fetched_pages + 1
-      p "Fetching #{current_page} / #{total_pages} pages"
-      begin
-        params["page"] = current_page
-        orders = ShopifyAPI::Order.find(:all, params: params )
-        fetched_pages += 1
-
-        orders.each do |o|
-          begin
-            order_params = get_order_params(o)
-            new_order = @shop.orders.new(order_params)
-            if new_order.save
-              add_line_items(new_order, o.line_items)
+          orders.each do |o|
+            begin
+              order_params = get_order_params(o)
+              new_order = @shop.orders.new(order_params)
+              if new_order.save
+                add_line_items(new_order, o.line_items)
+              end
+            rescue NoMethodError => e
+              p 'invalid order'
             end
-          rescue NoMethodError => e
-            p 'invalid order'
           end
-        end
 
-        sleep 0.5
-      #rescue
-      #  p "Error Connection. Try again ..."
-      #  next 
+          sleep 0.5
+        #rescue
+        #  p "Error Connection. Try again ..."
+        #  next 
+        end
       end
+    rescue
+      p "error on this shop"
     end
   end
 
@@ -149,11 +158,18 @@ class ShopifyCommunicator
 
     new_product = ShopifyAPI::Product.new
     assign(new_product, product)
-
-    Supply.create(shop_id: @shop.id,
-                  product_id: product.id,
-                  user_id: @shop.user_id,
-                  shopify_product_id: new_product.id)
+    if @shop.present?
+      supply = Supply.new(shop_id: @shop.id,
+                    product_id: product.id,
+                    user_id: @shop.user_id,
+                    shopify_product_id: new_product.id)
+      supply.copy_product_attr_add_product
+      if supply.save
+        product.variants.each do |variant|
+          supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+        end
+      end
+    end
   end
 
   def sync_product(supply_id)
@@ -162,38 +178,32 @@ class ShopifyCommunicator
     assign(shopify_product, supply.product, supply)
   end
 
-  def assign(shopify_product, product, supply=nil)
-    # if a supply is given, we will get it's name, desc, price, image
-    # to update to Shopify
-    # otherwise, we will use product's name, desc, price, image
-    source = supply || product
+  def sync_supply(supply_id)
+    supply = Supply.find(supply_id)
+    product = supply.product
 
-    shopify_product.title = source.name
-    shopify_product.vendor = product.vendor
-    shopify_product.body_html = source.desc
-    # TODO upload supply images here
-    shopify_product.images = product.images.collect do |i|
-      # p URI.join(request.url, i.file.url(:original)).to_s
-      # { "src" => URI.join(request.url, i.file.url(:original)) }
+    shopify_product = ShopifyAPI::Product.find(supply.shopify_product_id)
+    shopify_product.title = supply.name
+    shopify_product.vendor = @shop.shopify_domain
+    shopify_product.body_html = supply.desc
+    shopify_product.images = (product.images + supply.images).collect do |i|
       { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
-      # raw_content = Paperclip.io_adapters.for(i.file).read
-      # encoded_content = Base64.encode64(raw_content)
-      # { "attachment" => encoded_content }
+      raw_content = Paperclip.io_adapters.for(i.file).read
+      encoded_content = Base64.encode64(raw_content)
+      { "attachment" => encoded_content }
     end
-
-    variants = []
-    unless product.variants.empty?
+    unless supply.supply_variants.empty?
       shopify_product.options = product.options.collect do |o|
         { "name" => o.name.capitalize }
       end
-
-      variants = product.variants.collect do |v|
+      variants = supply.supply_variants.collect do |v|
         {
           'option1': v.option1,
           'option2': v.option2,
           'option3': v.option3,
           'weight': product.weight,
           'weight_unit': 'g',
+          'compare_at_price': v.compare_at_price,
           'price': v.price,
           'sku': v.sku
         }
@@ -202,7 +212,55 @@ class ShopifyCommunicator
       variants = [{
         'weight': product.weight,
         'weight_unit': 'g',
-        'price': source.price,
+        'price': supply.price,
+        'compare_at_price': supply.compare_at_price,
+        'sku': product.sku
+      }]
+    end
+
+    shopify_product.variants = variants
+    shopify_product.save
+  end
+
+  def assign(shopify_product, product, supply=nil)
+    # if a supply is given, we will get it's name, desc, price, image
+    # to update to Shopify
+    # otherwise, we will use product's name, desc, price, image
+
+    shopify_product.title = product.name
+    shopify_product.vendor = @shop.shopify_domain
+    shopify_product.body_html = product.desc
+    # TODO upload supply images here
+    shopify_product.images = product.images.collect do |i|
+      { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
+      raw_content = Paperclip.io_adapters.for(i.file).read
+      encoded_content = Base64.encode64(raw_content)
+      { "attachment" => encoded_content }
+    end
+
+    variants = []
+    unless product.variants.empty?
+      shopify_product.options = product.options.collect do |o|
+        { "name" => o.name.capitalize }
+      end
+      variants = product.variants.collect do |v|
+        {
+          'option1': v.option1,
+          'option2': v.option2,
+          'option3': v.option3,
+          'weight': product.weight,
+          'weight_unit': 'g',
+          'compare_at_price': v.compare_at_price,
+          'price': v.price,
+          'sku': v.sku
+        }
+      end
+    else
+      variants = [{
+        'weight': product.weight,
+        'weight_unit': 'g',
+        'price': product.suggest_price,
+        'compare_at_price': product.compare_at_price,
         'sku': product.sku
       }]
     end

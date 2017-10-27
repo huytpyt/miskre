@@ -3,10 +3,39 @@
     h2.text-center #{@shop.name} #{t('product_list')}
   br
   br
-  / .products.large-up-4
   .row
     .column
-      = paginate @products
+      = paginate @supplies
+
+  .row
+    .column.large-8
+      b Global price Setting:
+      br
+      = form_for @shop, url: shop_global_price_setting_path(@shop) do |f|
+        .price-text
+          | Price =  Cost x 
+        .price-setting-rate
+          = f.text_field :cost_rate
+        .price-text
+          | +
+        .price-setting-rate
+          = f.text_field :shipping_rate
+        .price-text
+          | x Epub Cost
+        |&nbsp;&nbsp;&nbsp;
+        = f.submit "Save", class: "button success"
+    .column.large-4
+      b Price setting option selected:
+      br
+      .option-selected
+        = radio_button_tag :global_setting, nil, checked = @global_settting, disabled: true
+        |&nbsp;Global price Setting
+        |&nbsp;&nbsp;&nbsp;
+        = radio_button_tag :suggested_price, nil, checked = !@global_settting, disabled: true
+        |&nbsp;Suggested Price
+  .row
+    .column.large-4.pull-left
+      = link_to @global_settting ? "Revert to suggested price" : "Change to global price setting", shop_change_price_option_path(@shop), data: { confirm: 'Are you sure?' }, class: "button"
   .row
     .column
       = form_tag(shop_path(@shop), method: :get) do
@@ -20,33 +49,48 @@
               br
               = submit_tag "Search", class: "button"
   .row.large-up-3.page-content#productspost
-    - unless @products.none?
-      - @products.includes(:supplies, :images).each do |product|
-        - supply = product.supplies.where(shop_id: @shop.id)
-        - supply.each do |s|
+    - unless @supplies.none?
+      - @supplies.each do |supply|
           .column.item
             .card
               .card-divider
                 h4.each-block-header
                   span.text-left.pull-left
-                    = s.name
+                    = supply.name
                   /span.text-right.pull-right
                     = product.price
               .card-section
-                - unless product.images.empty?
-                  = image_tag product.images.first.file.url(:medium)
+                - unless supply.product.images.empty?
+                  = image_tag supply.product.images.first.file.url(:medium)
                 - else
                   = image_tag "default.jpg"
               .card-section
-                p #{t('.price')} $#{product.price}
-                p #{t('.weight')} #{product.weight}g
-                p #{t('.size')} #{product.length}cm x #{product.height}cm x #{product.width}cm
+                p 
+                  = t('.cost')
+                  |:&nbsp;$
+                  = supply.cost
+                p
+                  = t('.price')
+                  |:&nbsp;$
+                  = supply.price 
+                p
+                  = t('.compare_at_price')
+                  |:&nbsp;$
+                  = supply.compare_at_price
+                p
+                  = t('.profit')
+                  |:&nbsp;$
+                  - if supply.price && supply.epub && supply.cost && supply.cost_epub
+                    = ((supply.price + supply.epub) - (supply.cost + supply.cost_epub)).round(2)
+                p 
+                  |Details about cost, price, shipping, profit:
+                  = link_to "Detail", shop_shipping_path(@shop, supply)
               .card-section
                 ul.menu
                   li
-                    = link_to "Customize", edit_supply_path(s), class: 'button tiny'
+                    = link_to "Customize", edit_supply_path(supply), class: 'button tiny'
                   li
-                    = link_to "Remove", supply_path(s),
+                    = link_to "Remove", supply_path(supply),
                       method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
                     /= link_to 'Remove', '#', method: :delete, data: { confirm: 'Are you sure?' }
     - else

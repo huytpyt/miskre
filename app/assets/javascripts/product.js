@@ -79,7 +79,7 @@
     var startDate = getUrlParameter('start');
     var endDate = getUrlParameter('end');
     var dataPoints = [];
-    if ($("#mk-report-product").length > 0) {
+    if ($("#tracking-product-chart").length >0) {
       $.getJSON("tracking_product?start=" + startDate + "&end=" + endDate, function (result) {
         $.each(result, function(key, value){
           dataPoints.push({x: new Date(value.x), y: value.y});
