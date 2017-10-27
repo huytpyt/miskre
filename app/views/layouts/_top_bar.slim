@@ -24,8 +24,9 @@
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email
-        li
-          = link_to "Log out", main_app.destroy_user_session_path, method: :delete
+        - unless current_user.staff?
+         li = link_to "Billing", billing_index_path
+        li = link_to "Log out", main_app.destroy_user_session_path, method: :delete
 - else
   .top-bar
     .top-bar-left

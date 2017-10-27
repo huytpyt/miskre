@@ -9,8 +9,14 @@ class User < ApplicationRecord
 
   has_many :shops
   has_many :products
-
+  after_create :create_customer
+  
   def staff?
     self.admin? || self.manager?
   end
+
+  def create_customer
+    customer = Stripe::Customer.create(:email => self.email)
+    self.update(customer_id: customer.id)
+  end    
 end

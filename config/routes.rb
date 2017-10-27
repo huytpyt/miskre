@@ -4,6 +4,13 @@ Rails.application.routes.draw do
   devise_for :users
   resources :images, only: :destroy
 
+  resources :billing, only: [:index, :new, :create] do
+    collection do 
+      get "edit", to: "billing#edit", as: "edit"
+      post "update", to: "billing#update", as: "update"
+      get "remove", to: "billing#remove", as: "remove"
+    end
+  end
   resources :shops do
     collection do
       get ":id/supply_orders_unfulfilled", to: "shops#supply_orders_unfulfilled", as: "reports"

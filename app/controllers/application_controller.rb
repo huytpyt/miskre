@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_current_shop
 
+  before_action :check_paid_monthly
+
   def set_current_shop
     if user_signed_in?
       unless current_user.shops.empty?
@@ -21,6 +23,23 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def check_paid_monthly
+    if user_signed_in?
+      if current_user.user?
+        unless current_user.is_paid == true && (current_user.period_end || Time.now) > Time.now
+          UserService.delay.update_paid_status current_user
+          if params[:controller] == "devise/sessions" && params[:action] == "destroy"
+            return
+          end
+          unless params[:controller] == "billing"
+            redirect_to billing_index_path, notice: "You must be paid for us $500 US first"
+          end
+        end
+      end
+    end
+  end
+
   def layout_by_resource
     if devise_controller?
       "devise"

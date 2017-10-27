@@ -21,8 +21,12 @@ default: &default
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+
 development:
   <<: *default
+  username: postgres
+  password: 123456
+  host: localhost
   database: shopCenter_development
 
   # The specified database role being used to connect to postgres.
@@ -84,6 +88,6 @@ production:
   database: shopCenter_production
   # username: shopCenter
   # database: miskre
+  username: postgres
+  password: 123456
   host: localhost
-  username: miskre
-  password: <%= ENV['SHOPCENTER_DATABASE_PASSWORD'] %>

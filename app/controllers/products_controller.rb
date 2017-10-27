@@ -41,6 +41,13 @@ class ProductsController < ApplicationController
   end
 
   def create_bundle
+    product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
+    @product = current_user.products.new(bundle_params)
+    @product.is_bundle = true
+    @product.product_ids = product_ids
+  end
+
+  def create_bundle
     if params[:shop_id].present?
       @shop = Shop.find(params[:shop_id])
       product_ids = @shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
