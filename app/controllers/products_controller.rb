@@ -10,8 +10,7 @@ class ProductsController < ApplicationController
   # GET /products.json
   def index
     # @products = Product.order(sku: :asc).page params[:page]
-    user_ids = User.where.not(role: ["user"]).ids
-    @products = Product.all.where(user_id: user_ids, shop_owner: false)
+    @products = Product.all.where(shop_owner: false)
     respond_to do |format|
       format.json do
         render json: @products
