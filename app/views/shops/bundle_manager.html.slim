@@ -1,0 +1,16 @@
+p#notice
+.page-header
+  h1
+    = @shop.name 
+    |&nbsp;Bundle Managerment
+input#productsResource value="#{products_path()}" type="hidden"
+#products
+  .row
+    .column
+      .row
+        .column.medium-2
+          = link_to 'New Bundle Product', shop_new_bundle_path, class: 'button primary small pull-left'
+
+    .column
+      table#product-table
+        = render "products/product", products: @products

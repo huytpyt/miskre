@@ -44,15 +44,8 @@ input#productsResource value="#{products_path()}" type="hidden"
         .column.medium-8
 
     .column
-      ul.tabs
-        li.tab-link.current data-tab="tab-1" Bundle
-        li.tab-link data-tab="tab-2" Products
-      #tab-1.tab-content.current
-        table#my-product-table
-          = render "product", products: @bundle
-      #tab-2.tab-content
-        table#product-table
-          = render "product", products: @products
+      table#product-table
+        = render "product", products: @products
 
 /#products
   .row

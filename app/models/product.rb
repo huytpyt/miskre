@@ -16,6 +16,7 @@ class Product < ApplicationRecord
   has_many :orders, through: :line_items
   belongs_to :user
   has_many :tracking_products
+  belongs_to :shop
   
   validates :suggest_price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true

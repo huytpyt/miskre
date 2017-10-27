@@ -32,6 +32,14 @@ class VariantsController < ApplicationController
   end
 
   def edit
+    if  @product.shop_owner == true
+      @shop = @product.shop
+      product_ids = @shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
+      product_ids = product_ids.compact
+      @product_list = Product.where(id: product_ids).select(:id, :name)
+    else
+      @product_list = Product.where(is_bundle: false).select(:id, :name)
+    end
   end
 
   # PATCH/PUT /variants/1

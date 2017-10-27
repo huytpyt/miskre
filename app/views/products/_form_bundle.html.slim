@@ -68,7 +68,7 @@
               option value="" 
               - p_ids = product.product_ids&.map{|b| b[:product_id]}
               - v_ids = product.product_ids&.map{|b| b[:variant_id]}
-              - @products_list.find_each(batch_size: 100) do |p|
+              - @product_list.find_each(batch_size: 100) do |p|
                 - if p.variants.none?
                   - if p_ids&.include? p.id
                     option value="{product_id: #{p.id}, variant_id: nil}" selected="true" = p.name

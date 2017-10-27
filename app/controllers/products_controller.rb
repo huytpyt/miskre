@@ -11,10 +11,7 @@ class ProductsController < ApplicationController
   def index
     # @products = Product.order(sku: :asc).page params[:page]
     user_ids = User.where.not(role: ["user"]).ids
-    user_ids.push(current_user.id)
-    product = Product.all
-    @products = product.where(is_bundle: false)
-    @bundle = current_user.staff? ? product.where(is_bundle: true) : product.where(is_bundle: true, user_id: user_ids)
+    @products = Product.all.where(user_id: user_ids, shop_owner: false)
     respond_to do |format|
       format.json do
         render json: @products
@@ -40,7 +37,7 @@ class ProductsController < ApplicationController
 
   def new_bundle
     @product = Product.new
-    @products_list = Product.where(is_bundle: false).select(:id, :name)
+    @product_list = Product.where(is_bundle: false).select(:id, :name)
   end
 
   def create_bundle
@@ -48,6 +45,29 @@ class ProductsController < ApplicationController
     @product = current_user.products.new(bundle_params)
     @product.is_bundle = true
     @product.product_ids = product_ids
+  end
+
+  def create_bundle
+    if params[:shop_id].present?
+      @shop = Shop.find(params[:shop_id])
+      product_ids = @shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
+      product_ids = product_ids.compact
+      @product_list = Product.where(id: product_ids).select(:id, :name)
+    else
+      @product_list = Product.where(is_bundle: false).select(:id, :name)
+    end
+
+    product_ids = []
+    if params[:product][:product_ids].present?
+      product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
+    end
+    @product = current_user.products.new(bundle_params)
+    @product.is_bundle = true
+    @product.product_ids = product_ids
+    if params[:shop_id].present?
+      @product.shop_id = @shop.id
+      @product.shop_owner = true
+    end
 
     total_weight = 0
     total_cost = 0
@@ -61,12 +81,16 @@ class ProductsController < ApplicationController
 
       cal_weight = (length * height * width) / 5
       weight = cal_weight > weight ? cal_weight : weight
-      total_weight += width
+      total_weight += weight
+      if params[:shop_id].present?
+        total_price += product.supplies.find_by_shop_id(@shop).price
+      else
+        total_price += product.suggest_price
+      end
       total_cost += product.cost
-      total_price += product.suggest_price
     end
 
-    @product.width = total_weight
+    @product.weight = total_weight
     @product.cost = total_cost
     @product.suggest_price = (total_price * (100 - params[:sale_off].to_i))/100
     respond_to do |format|
@@ -140,7 +164,6 @@ class ProductsController < ApplicationController
         end
       end
       if @product.save
-        
         if params[:product][:images]
           params[:product][:images].each do |img|
         #params[:images].each do |key, value|
@@ -159,6 +182,14 @@ class ProductsController < ApplicationController
 
   # GET /products/1/edit
   def edit
+    if  @product.shop_owner == true
+      @shop = @product.shop
+      product_ids = @shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
+      product_ids = product_ids.compact
+      @product_list = Product.where(id: product_ids).select(:id, :name)
+    else
+      @product_list = Product.where(is_bundle: false).select(:id, :name)
+    end
     unless current_user.staff? || @product.user_id == current_user.id
       redirect_to @product
     end

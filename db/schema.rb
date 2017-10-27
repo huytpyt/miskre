@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171023035545) do
+ActiveRecord::Schema.define(version: 20171027073643) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -152,6 +152,8 @@ ActiveRecord::Schema.define(version: 20171023035545) do
     t.float    "suggest_price"
     t.float    "cus_cost"
     t.integer  "sale_off"
+    t.boolean  "shop_owner",           default: false
+    t.integer  "shop_id"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
   end
