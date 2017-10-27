@@ -9,6 +9,9 @@ Rails.application.routes.draw do
       get ":id/supply_orders_unfulfilled", to: "shops#supply_orders_unfulfilled", as: "reports"
       get ":id/reports", to: "shops#reports", as: "report_view"
     end
+    get "bundle_manager", to: "shops#bundle_manager", as: "bundle_manager"
+    get "new_bundle", to: "shops#new_bundle", as: "new_bundle"
+    post "create_bundle", to: "products#create_bundle", as: "create_bundle"
     get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
     patch "global_price_setting", to: "shops#global_price_setting", as: "global_price_setting"
     get "change_price_option", to: "shops#change_price_option", as: "change_price_option"

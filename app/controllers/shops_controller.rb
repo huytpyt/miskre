@@ -64,9 +64,25 @@ class ShopsController < ApplicationController
     @weight = cal_weight > @product.weight ? cal_weight : @product.weight
   end
 
+  def bundle_manager
+    @shop = Shop.find(params[:shop_id])
+    @products = @shop.products.where(is_bundle: true, shop_owner: true)
+  end
+
+  def new_bundle
+    @shop = Shop.find(params[:shop_id])
+    @product = Product.new
+    product_ids = @shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
+    product_ids = product_ids.compact
+    @product_list = Product.where(id: product_ids).select(:id, :name)
+  end
+
   private
 
   def global_price_setting_params
     params.require(:shop).permit(:cost_rate, :shipping_rate)
+  end
+
+  def check_is_shop_owner_or_staff
   end
 end
