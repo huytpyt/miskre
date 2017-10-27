@@ -25,12 +25,16 @@ class ApplicationController < ActionController::Base
   private
 
   def check_paid_monthly
-    if current_user.user?
-      customer = Stripe::Customer.retrieve(current_user.customer_id)
-      invoice = customer.invoices&.first
-      unless invoice&.paid == false && Time.at(invoice&.lines&.first&.period&.end) > Time.now
-        unless params[:controller] == "billing"
-          redirect_to billing_index_path, notice: "You must be paid for us $500 US first"
+    if user_signed_in?
+      if current_user.user?
+        unless current_user.is_paid == true && (current_user.period_end || Time.now) > Time.now
+          UserService.delay.update_paid_status current_user
+          if params[:controller] == "devise/sessions" && params[:action] == "destroy"
+            return
+          end
+          unless params[:controller] == "billing"
+            redirect_to billing_index_path, notice: "You must be paid for us $500 US first"
+          end
         end
       end
     end
