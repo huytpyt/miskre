@@ -6,6 +6,7 @@ class Shop < ActiveRecord::Base
 
   has_many :supplies
   has_many :products, through: :supplies
+  has_many :products
   has_many :orders
 
   validates :name, uniqueness: true

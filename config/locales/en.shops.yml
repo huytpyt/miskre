@@ -3,6 +3,7 @@ en:
     index:
       product_list: 'Products List'
       disconnect: "Disconnect"
+      bundle_manager: "Bundle managerment"
     products:
       product_list: "Products List"
       price: "Price:"
