@@ -9,33 +9,49 @@
 
   .row
     .column.large-8
-      b Global price Setting:
-      br
       = form_for @shop, url: shop_global_price_setting_path(@shop) do |f|
-        .price-text
-          | Price =  Cost x 
-        .price-setting-rate
-          = f.text_field :cost_rate
-        .price-text
-          | +
-        .price-setting-rate
-          = f.text_field :shipping_rate
-        .price-text
-          | x Epub Cost
-        |&nbsp;&nbsp;&nbsp;
-        = f.submit "Save", class: "button success"
+        .row
+          .column.large-12
+            b Global price Setting:
+            br
+            
+              .price-text
+                | Price =  Cost x 
+              .price-setting-rate
+                = f.text_field :cost_rate
+              .price-text
+                | +
+              .price-setting-rate
+                = f.text_field :shipping_rate
+              .price-text
+                | x Epub Cost
+             
+        .row
+          .column.large-12
+            .price-text
+                | Compare at price =  Price x Random(
+            .price-setting-rate
+                = f.text_field :random_from
+            .price-text ,
+            .price-setting-rate
+                = f.text_field :random_to
+            .price-text )
+            |&nbsp;&nbsp;&nbsp;
+            = f.submit "Save", class: "button success"
     .column.large-4
-      b Price setting option selected:
-      br
-      .option-selected
-        = radio_button_tag :global_setting, nil, checked = @global_settting, disabled: true
-        |&nbsp;Global price Setting
-        |&nbsp;&nbsp;&nbsp;
-        = radio_button_tag :suggested_price, nil, checked = !@global_settting, disabled: true
-        |&nbsp;Suggested Price
-  .row
-    .column.large-4.pull-left
-      = link_to @global_settting ? "Revert to suggested price" : "Change to global price setting", shop_change_price_option_path(@shop), data: { confirm: 'Are you sure?' }, class: "button"
+      .row
+        .column.large-12
+          b Price setting option selected:
+          br
+          .option-selected
+            = radio_button_tag :global_setting, nil, checked = @global_settting, disabled: true
+            |&nbsp;Global price Setting
+            |&nbsp;&nbsp;&nbsp;
+            = radio_button_tag :suggested_price, nil, checked = !@global_settting, disabled: true
+            |&nbsp;Suggested Price
+      .row
+        .column.large-12.pull-left
+          = link_to @global_settting ? "Revert to suggested price" : "Change to global price setting", shop_change_price_option_path(@shop), data: { confirm: 'Are you sure?' }, class: "button"
   .row
     .column
       = form_tag(shop_path(@shop), method: :get) do

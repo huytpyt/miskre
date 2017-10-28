@@ -40,7 +40,7 @@ class ShopService
       shop.supplies.each do |supply|
         unless supply.keep_custom == true
           price = (supply.cost * shop.cost_rate + supply.cost_epub * shop.shipping_rate).round(2)
-          random = rand(2.25 .. 2.75)
+          random = rand(shop.random_from .. shop.random_to)
           compare_at_price = (price * random/ 5).round(0) * 5
           supply.supply_variants.each do |variant|
             variant.update(price: price, compare_at_price: compare_at_price)
@@ -57,7 +57,8 @@ class ShopService
         unless supply.keep_custom == true
           product = supply.product
           price = product.suggest_price
-          compare_at_price = product.compare_at_price
+          random = rand(shop.random_from .. shop.random_to)
+          compare_at_price = (price * random/ 5).round(0) * 5
           supply.supply_variants.each do |variant|
             variant.update(price: price, compare_at_price: compare_at_price)
           end
@@ -72,15 +73,15 @@ class ShopService
       shop.supplies.includes(:product).each do |supply|
         unless supply.keep_custom == true
           product = supply.product
+          random = rand(shop.random_from .. shop.random_to)
           supply.update(epub: (1 - shop.shipping_rate)*product.cus_epub, dhl: product.cus_dhl - shop.shipping_rate*product.cus_epub)
           if shop.global_setting_enable == true
             price = (supply.cost * shop.cost_rate + supply.cost_epub * shop.shipping_rate).round(2)
-            random = rand(2.25 .. 2.75)
             compare_at_price = (price * random/ 5).round(0) * 5
           else
             product = supply.product
             price = product.suggest_price
-            compare_at_price = product.compare_at_price
+            compare_at_price = (price * random/ 5).round(0) * 5
           end
           supply.supply_variants.each do |variant|
             variant.update(price: price, compare_at_price: compare_at_price)

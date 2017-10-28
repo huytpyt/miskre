@@ -80,7 +80,7 @@ class ShopsController < ApplicationController
   private
 
   def global_price_setting_params
-    params.require(:shop).permit(:cost_rate, :shipping_rate)
+    params.require(:shop).permit(:cost_rate, :shipping_rate, :random_from, :random_to)
   end
 
   def check_is_shop_owner_or_staff
