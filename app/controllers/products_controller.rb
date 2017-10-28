@@ -35,6 +35,10 @@ class ProductsController < ApplicationController
   end
 
   def new_bundle
+    unless params[:shop_id].present? || current_user.staff?
+      redirect_to root_path
+      return
+    end
     @product = Product.new
     @product_list = Product.where(is_bundle: false).select(:id, :name)
   end
@@ -53,7 +57,12 @@ class ProductsController < ApplicationController
       product_ids = product_ids.compact
       @product_list = Product.where(id: product_ids).select(:id, :name)
     else
-      @product_list = Product.where(is_bundle: false).select(:id, :name)
+      if current_user.staff?
+        @product_list = Product.where(is_bundle: false).select(:id, :name)
+      else
+        redirect_to root_path
+        return
+      end
     end
 
     product_ids = []
