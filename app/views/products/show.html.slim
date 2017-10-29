@@ -23,6 +23,12 @@ hr
     strong Width:&nbsp;
     = @product.width
 hr
+- if @product.is_bundle && @product.variants == []
+    .row
+      .columns
+        | Products: 
+        = find_product_name_from_bundle @product
+    hr
 .row
   .column.medium-12
     strong Desc:&nbsp;
@@ -49,8 +55,35 @@ hr
 hr
 br
 br
-.row
-  = render partial: "products/variants"
+.page-header
+    h1 Variants
+#variants
+  .row
+    .column
+      table
+        thead
+          tr
+            th Option 1
+            th Option 2
+            th Option 3
+            - if @product.is_bundle && @product.variants != []
+              th Products
+            - if current_user.staff?
+              th Quantity
+            th Price ($)
+            th SKU
+        tbody
+          - @product.variants.each do |variant|
+            tr
+              td = variant.option1
+              td = variant.option2
+              td = variant.option3
+              - if @product.is_bundle && @product.variants != []
+                td = find_product_name Variant.find_by_sku(variant.sku)
+              - if current_user.staff?
+                td = variant.quantity
+              td = variant.price
+              td = variant.sku
 .row
   - if current_user.staff?
     = link_to 'Edit', edit_product_path(@product)
