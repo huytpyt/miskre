@@ -85,9 +85,9 @@
       .field
         = f.label :price
         - if @product.is_bundle
-          = f.number_field :price, disabled: true
+          = f.text_field :price, disabled: true
         - else 
-          = f.number_field :price
+          = f.text_field :price
     .columns.medium-4
       .field
         = f.label :sku
