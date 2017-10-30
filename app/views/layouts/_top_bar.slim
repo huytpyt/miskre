@@ -21,6 +21,8 @@
         - if current_user.staff?
           li class=(params[:controller] == 'reports' ? 'active' : '')
             = link_to "Report", reports_path
+        li class=(params[:controller] == 'shipping' ? 'active' : '')
+          = link_to "Shipping Setting", shippings_path
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email

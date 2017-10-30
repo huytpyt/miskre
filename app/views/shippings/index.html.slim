@@ -1,0 +1,41 @@
+.row
+  .column.text-center
+    h3 Shipping Settings
+  .column  
+    = link_to "Create", new_shipping_path, class: "button success" unless @shipping.last.max_price == "infinity"
+    table
+      thead
+        tr 
+          th Min of price
+          th Max of price
+          th DHL service name
+          th ePUB service name
+          th DHL percent 
+          th ePUB percent
+          th  
+          th
+      tbody
+        - @shipping.each do |shipping|
+          tr
+            td = shipping.min_price
+            td = shipping.max_price
+            td = shipping.name_epub
+            td = shipping.name_dhl
+            td = shipping.percent_epub 
+            td = shipping.percent_dhl
+            td = link_to "Edit", edit_shipping_path(shipping)
+            td = link_to "Delete", shipping_path(shipping), method: :delete, data: { confirm: "Are you sure?" } 
+
+  .column
+    - @shipping.each do |shipping|
+      p
+        b if  $#{shipping.min_price} < Total Price <= #{shipping.max_price == 'infinity' ? "" : '$'}#{shipping.max_price} then:
+        br
+        | DHL service name: #{shipping.name_dhl}
+        br
+        | DHL price = #{shipping.percent_dhl}% of total DHL price
+        br
+        | ePUB service name: #{shipping.name_epub}
+        br
+        | ePUB price = #{shipping.percent_epub}% of total ePUB price
+        br
