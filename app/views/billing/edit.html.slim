@@ -1,7 +1,7 @@
 #edit-billing
   p#notice
-  .page-header
-    h4.text-center Edit your payment information
-  hr
   .row
-    = render "form", type: "Update", path: update_billing_index_path 
+    .column
+      h3 Pick a plan for your store
+      hr
+      = render "form", type: "Update", path: update_billing_index_path 

@@ -2,26 +2,42 @@
   h1 Billing
 hr
 .row
-  .column.medium-4
-    h5 Billing information
-  .column.medium-8
-      - if @billing.nil?
-        .row
-          = link_to "Create Credit Card", new_billing_path, class: "button success"
-      - else 
-        .row
-          |This account is billed to:&nbsp;
-          b
-            = @billing.brand
-            |&nbsp;
-            |ending in&nbsp;
-            = @billing.last4
-          br
-          br
-        .row  
-          = link_to "Update Credit Card", edit_billing_index_path, class: "button"
-          |&nbsp;&nbsp;&nbsp;
-          = link_to "Remove Credit Card", remove_billing_index_path, data: { confirm: "Are you sure?" }, class: "button alert"
+  .column.medium-6
+    .row
+      h5 Current plan
+    .row
+      - if @customer.subscriptions&.first&.present?
+        .text-center
+          b = @customer.subscriptions.first.plan.name
+          h4 $500.00 / month
+      - else
+        |Please select below plan to use our system
+        h4 $500.00 / month
+        - if @billing.nil?
+          = link_to "Choose this plan", new_billing_path, class: "button success"
+        - else
+          = link_to "Choose this plan", edit_billing_index_path, class: "button"
+    
+  .column.medium-6
+    .row
+      h5 Billing information
+    - if @billing.nil?
+      .row
+        = link_to "Create Credit Card", new_billing_path, class: "button success"
+    - else 
+      .row
+        |This account is billed to:&nbsp;
+        b
+          = @billing.brand
+          |&nbsp;
+          |ending in&nbsp;
+          = @billing.last4
+        br
+        br
+      .row  
+        = link_to "Update Credit Card", edit_billing_index_path, class: "button"
+        |&nbsp;&nbsp;&nbsp;
+        = link_to "Remove Credit Card", remove_billing_index_path, data: { confirm: "Are you sure?" }, class: "button alert"
 hr
 .row
   .column.medium-4
