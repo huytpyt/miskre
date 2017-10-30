@@ -26,6 +26,7 @@
 //= require chosen-jquery
 //= require daterangepicker
 //= require product
+//= require shipping
 // require_tree .
 
 $(function(){ $(document).foundation(); });
