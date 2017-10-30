@@ -12,6 +12,9 @@ class Supply < ApplicationRecord
   after_update :sync_this_supply
   before_destroy :remove_shopify_product
 
+  validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
+  validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}
+
   def sync_this_supply
     JobsService.delay.sync_this_supply self.id
   end

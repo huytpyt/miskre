@@ -90,7 +90,7 @@
     .columns.medium-3
       .field
         = f.label :cost, "Cost ($)"
-        = f.number_field :cost, step: 0.01
+        = f.text_field :cost
     .columns.medium-9
       .row
         .columns.medium-3
@@ -100,15 +100,15 @@
         .columns.medium-3
           .field
             = f.label :length, "Length (cm)"
-            = f.number_field :length
+            = f.text_field :length
         .columns.medium-3
           .field
             = f.label :height, "Height (cm)"
-            = f.number_field :height
+            = f.text_field :height
         .columns.medium-3
           .field
             = f.label :width, "Width (cm)"
-            = f.number_field :width
+            = f.text_field :width
     .columns.medium-12
       .field
         = f.label :product_url, "Link to reference product"
