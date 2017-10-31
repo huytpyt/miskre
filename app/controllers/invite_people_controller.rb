@@ -1,5 +1,8 @@
 class InvitePeopleController < ApplicationController
   def index
+    unless current_user.enable_ref == true
+      redirect_to root_path
+    end
   end
 
   def invite

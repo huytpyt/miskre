@@ -23,8 +23,9 @@
             = link_to "Report", reports_path
         li class=(params[:controller] == 'shipping' ? 'active' : '')
           = link_to "Shipping Setting", shippings_path
-        li class=(params[:controller] == 'invite_people' ? 'active' : '')
-          = link_to "Invite People", invite_people_path
+        - if current_user.enable_ref == true
+          li class=(params[:controller] == 'invite_people' ? 'active' : '')
+            = link_to "Invite People", invite_people_path
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email
