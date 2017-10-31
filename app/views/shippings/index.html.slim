@@ -19,10 +19,10 @@
           tr
             td = shipping.min_price
             td = shipping.max_price
-            td = shipping.name_epub
             td = shipping.name_dhl
-            td = shipping.percent_epub 
+            td = shipping.name_epub
             td = shipping.percent_dhl
+            td = shipping.percent_epub
             td = link_to "Edit", edit_shipping_path(shipping)
             td = link_to "Delete", shipping_path(shipping), method: :delete, data: { confirm: "Are you sure?" } 
 
@@ -31,11 +31,12 @@
       p
         b if  $#{shipping.min_price} < Total Price <= #{shipping.max_price == 'infinity' ? "" : '$'}#{shipping.max_price} then:
         br
-        | DHL service name: #{shipping.name_dhl}
-        br
-        | DHL price = #{shipping.percent_dhl}% of total DHL price
-        br
         | ePUB service name: #{shipping.name_epub}
         br
         | ePUB price = #{shipping.percent_epub}% of total ePUB price
         br
+        | DHL service name: #{shipping.name_dhl}
+        br
+        | DHL price = #{shipping.percent_dhl}% of total DHL price
+        br
+
