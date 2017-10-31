@@ -1,0 +1,20 @@
+.row
+  = form_for @user do |f|
+    .form-group
+      .column.large-6
+        = f.label :name
+        = f.text_field :name
+    .form-group
+      .column.large-6
+        = f.label :fb_link
+        = f.text_field :fb_link
+    .form-group
+      .column.large-6
+        = f.label :password
+        = f.password_field :password
+    .form-group
+      .column.large-6
+        = f.label :password_confirmation
+        = f.password_field :password_confirmation
+    .column
+      = f.submit "Update", class: "button pull-right"

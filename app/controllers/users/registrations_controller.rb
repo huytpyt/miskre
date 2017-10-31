@@ -42,13 +42,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  def edit
-    render :edit
-  end
-
-  def update
-  end
-
   protected
   
   def build_resource(hash=nil)
