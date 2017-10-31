@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
       if current_user.user?
         unless current_user.is_paid == true && (current_user.period_end || Time.now) > Time.now
           UserService.delay.update_paid_status current_user
-          if params[:controller] == "devise/sessions" && params[:action] == "destroy"
+          if params[:controller] == "users/sessions" && params[:action] == "destroy"
             return
           end
           unless params[:controller] == "billing"

@@ -1,8 +1,38 @@
 Rails.application.routes.draw do
 
+  resources :invite_people, only: [:index] do 
+    collection do 
+      post "invite"
+    end
+  end
+
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   root to: 'home#index'
-  devise_for :users
+  devise_scope :user do
+    get 'sign_up' => 'users/registrations#new', as: :new_user_registration
+    post 'sign_up/conf' => 'users/registrations#confirm', as: :user_confirm_registration
+    post 'sign_up' => 'users/registrations#create', as: :user_registration
+    patch 'sign_up' => 'users/registrations#update', as: :user_registration_update
+    get 'sign_up/comp' => 'users/registrations#comp', as: :user_complete_registration
+    get 'sign_up/mail_comp' => 'users/registrations#mail_comp', as: :user_mail_complete_registration
+    get 'forgetpass' => 'users/passwords#new', as: :new_user_password
+    post 'forgetpass' => 'users/passwords#create', as: :user_password
+    get 'forgetpass/send_comp' => 'users/passwords#send_comp', as: :send_comp
+
+    get 'forgetpass/set_pass' => 'users/passwords#edit', as: :edit_user_password
+    patch 'forgetpass' => 'users/passwords#update', as: :user_password_patch
+    put 'forgetpass' => 'users/passwords#update', as: :user_password_put
+    get 'forgetpass/set_comp' => 'users/passwords#set_comp', as: :set_comp
+  
+    get 'logout' => 'users/sessions#logout', as: :logout
+    get 'signout' => 'users/sessions#destroy', as: :user_signout
+    get 'sign_in' => 'users/sessions#new', as: :new_user_session
+    post 'sign_in' => 'users/sessions#create', as: :user_session
+  end
+  devise_for :users, skip: [:sessions, :registrations, :passwords, :confirmations]
+
+
+
 
   resources :shippings
   resources :images, only: :destroy

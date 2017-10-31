@@ -23,12 +23,14 @@
             = link_to "Report", reports_path
         li class=(params[:controller] == 'shipping' ? 'active' : '')
           = link_to "Shipping Setting", shippings_path
+        li class=(params[:controller] == 'invite_people' ? 'active' : '')
+          = link_to "Invite People", invite_people_path
     .top-bar-right
       ul.menu
         li.menu-text = current_user.email
         - unless current_user.staff?
          li = link_to "Billing", billing_index_path
-        li = link_to "Log out", main_app.destroy_user_session_path, method: :delete
+        li = link_to "Log out", user_signout_path
 - else
   .top-bar
     .top-bar-left

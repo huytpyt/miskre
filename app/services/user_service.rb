@@ -1,4 +1,8 @@
 class UserService
+  def generate_ref_code
+    SecureRandom.uuid
+  end
+
   def self.update_paid_status current_user
     customer = Stripe::Customer.retrieve(current_user.customer_id)
     invoice = customer.invoices&.first
