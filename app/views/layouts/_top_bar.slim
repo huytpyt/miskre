@@ -28,7 +28,7 @@
             = link_to "Invite People", invite_people_path
     .top-bar-right
       ul.menu
-        li.menu-text = current_user.email
+        li = link_to current_user.name, users_path
         - unless current_user.staff?
          li = link_to "Billing", billing_index_path
         li = link_to "Log out", user_signout_path

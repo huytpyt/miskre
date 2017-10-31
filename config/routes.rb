@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   root to: 'home#index'
+  resources :users, only: [:index, :update]
   devise_scope :user do
     get 'sign_up' => 'users/registrations#new', as: :new_user_registration
     post 'sign_up/conf' => 'users/registrations#confirm', as: :user_confirm_registration
@@ -30,9 +31,6 @@ Rails.application.routes.draw do
     post 'sign_in' => 'users/sessions#create', as: :user_session
   end
   devise_for :users, skip: [:sessions, :registrations, :passwords, :confirmations]
-
-
-
 
   resources :shippings
   resources :images, only: :destroy
