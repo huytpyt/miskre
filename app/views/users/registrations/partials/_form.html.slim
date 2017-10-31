@@ -1,0 +1,27 @@
+#mk-signup
+  = form_for(resource, as: resource_name, url: form_target, html: {class: "form fv-form fv-form-bootstrap form-registration"}) do |f|
+    - if @errors
+      - @errors.each do |error|
+            = error
+      h4 = type
+    .content
+      label
+        | Email
+        = f.email_field :email, class: "form-control", placeholder: "Enter your email"
+      label
+        | Password
+        = f.password_field :password, class: "form-control", placeholder: "Password...", maxlength: "16"
+      label
+        | Password confirmation
+        = f.password_field :password_confirmation, class: "form-control", placeholder: "Password confirmation...", maxlength: "16"
+      label
+        | Full name
+        = f.text_field :name, class: "form-control", placeholder: "Your full name...", maxlength: "40"
+      label
+        | Your Facebook link
+        = f.text_field :fb_link, class: "form-control", placeholder: "Your Facebook link...", maxlength: "100"
+
+      button class=("btn btn-round btn-#{headerColor} btn-lg") type="submit" Submit
+      br
+      br
+      = link_to "Sign In", previous, class: 'btn btn-simple btn-default btn-lg'

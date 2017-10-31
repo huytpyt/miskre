@@ -1,0 +1,9 @@
+p#notice
+.row
+  .column
+    h4 Invite Member
+    = form_for :invite, url: invite_invite_people_path do
+      .form-group
+        = label_tag :email
+        = email_field_tag :email
+        = submit_tag "Send Invitations", class: "button"

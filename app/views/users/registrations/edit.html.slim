@@ -1,0 +1,113 @@
+.container
+  .row
+    .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
+      .card.card-signup
+        = form_for(resource, as: resource_name, url: user_edit_confirm_registration_path(ref: params["ref"]), html: {class: "form fv-form fv-form-bootstrap update-user-form", method: :patch}) do |f|
+          - if @errors
+            #notifications.section.cd-section.section-notifications
+              - @errors.each do |error|
+                .alert.alert-danger.col-md-10.col-md-offset-1
+                  div
+                    .alert-icon
+                      i.material-icons = t(".error")
+                    button.close aria-label="Close" data-dismiss="alert" type="button"
+                      span aria-hidden="true"
+                        i.material-icons = t(".clear")
+                    b = t(".alert")
+                    = error
+          div class=("header header-orange text-center") 
+            h4 = t('users.profile.edit')
+          .content
+            .input-group
+              span.input-group-addon
+                i.material-icons email
+              = f.email_field :email, class: "form-control", placeholder: t("users.email")
+            .input-group
+              span.input-group-addon
+                i.material-icons email
+              input type="text" name="user[confirm_email]" class="form-control" placeholder="#{t('users.email')} (#{t('users.confirm_notice')})"
+            .input-group
+              span.input-group-addon
+                i.material-icons face
+              = f.text_field :last_name, class: "form-control", placeholder: "#{t('users.first_name')}..."
+            .input-group
+              span.input-group-addon
+                i.material-icons face
+              = f.text_field :first_name, class: "form-control", placeholder: "#{t('users.first_name')}..."
+            .input-group
+              span.input-group-addon
+                i.material-icons face
+              = f.text_field :last_name_kana, class: "form-control", placeholder: "#{t('users.last_name_kana')}..."
+            .input-group
+              span.input-group-addon
+                i.material-icons face
+              = f.text_field :first_name_kana, class: "form-control", placeholder: "#{t('users.first_name_kana')}..."
+            .input-group.date data-toggle="date-picker" 
+              span.input-group-addon data-placement="top" data-toggle="tooltip" title="#{t("users.date_birth")}" 
+                i.material-icons event_note
+              = f.text_field :date_birth, placeholder: "#{t("users.date_birth")}...", class: "form-control", "data-date-format": "YYYY/MM/DD", "data-date-min-date": "#{Time.current.year-100}/01/01", "data-date-max-date": "#{Time.current.year-5}/12/31", "data-date-use-current": false
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons send
+              = f.text_field :zip_number, placeholder: "#{t("users.zip_code")}...", class: "form-control"
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons location_on
+              = f.text_field :prefectures_date, placeholder: "#{t("users.prefectures_date")}...", class: "form-control"
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons location_city
+              = f.text_field :street1, placeholder: "#{t("users.city")}...", class: "form-control"
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons home
+              = f.text_field :street2, placeholder: "#{t("users.street_number")}...", class: "form-control"
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons domain
+              = f.text_field :ather, placeholder: "#{t("users.building_name")}...", class: "form-control"
+            .input-group data-toggle="zip-code" 
+              span.input-group-addon
+                i.material-icons phone_iphone
+              = f.text_field :mobile_number, placeholder: "#{t("users.mobile_number")}...", class: "form-control"
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :name_bank, class: "form-control", placeholder: t("users.register.name_bank")
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :name_branch, class: "form-control", placeholder: t("users.register.name_branch")
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :number_branch, class: "form-control", placeholder: t("users.register.number_branch")
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :deposit_item, class: "form-control", placeholder: t("users.register.deposit_item")
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :account_number, class: "form-control", placeholder: t("users.register.account_number")
+            .input-group
+              span.input-group-addon
+                i.material-icons account_balance
+              = f.text_field :name_account_holder, class: "form-control", placeholder: t("users.register.name_account_holder")
+            .org-password-input
+              .input-group
+                span.input-group-addon
+                  i.material-icons lock_outline
+                = f.password_field :password, class: "form-control user_password", placeholder: "#{t("users.password")}...", maxlength: "16"
+              .input-group
+                span.input-group-addon
+                  i.material-icons lock_outline
+                = f.password_field :password_confirmation, class: "form-control user_password_confirmation", placeholder: "#{t("users.password")}...", maxlength: "16"
+          .footer.text-center
+            .btn.btn-round.btn-orange.btn-lg.change-password-btn = t("users.edit.edit_password")
+            = link_to mypage_url, class: 'btn btn-simple btn-default btn-lg' do
+              i.material-icons arrow_back
+              = t('users.form.back')
+            button class=("btn btn-round btn-orange btn-lg") type="submit" 
+              = t('users.form.confirm')
+              i.material-icons arrow_forward

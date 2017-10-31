@@ -1,0 +1,6 @@
+p
+  |Hi there!
+p
+  |You have been invited to join  Miskre Ecommerce platform by #{@user.email}. To get started, click the link below:
+p
+  = link_to "#{ENV['DEFAULT_URL_OPTION']}/sign_up?ref=#{@user.reference_code}", "#{ENV['DEFAULT_URL_OPTION']}/sign_up?ref=#{@user.reference_code}"

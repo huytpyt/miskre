@@ -1,0 +1,11 @@
+.row
+  = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "form" }) do |f|
+    .column
+      h4 Enter your email address to reset your password
+    label
+      | Email
+      = f.email_field :email, class: "form-control", placeholder: "your email", required: true, autofocus: true
+    .column
+      = link_to "Sign In", new_user_session_path, class: 'btn btn-round btn-default'
+    br
+    button type="submit" Submit

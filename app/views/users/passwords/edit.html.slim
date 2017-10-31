@@ -1,0 +1,10 @@
+= form_for(resource, as: resource_name, url: password_path(resource_name), html: {method: :put, class: 'form set-password-form' }, data: { toggle: 'validator'}) do |f|
+  = f.hidden_field :reset_password_token
+  h4 How to reset your password
+  label
+    |Password  
+    = f.password_field :password, class: "form-control", placeholder: "enter new password", maxlength: "16"
+  label
+    |Password Confirmation
+    = f.password_field :password_confirmation, class: "form-control", placeholder: "password confirmation", maxlength: "16"
+  button type="submit" Submit

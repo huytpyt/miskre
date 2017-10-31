@@ -10,9 +10,14 @@ class User < ApplicationRecord
   has_many :shops
   has_many :products
   has_many :shippings
+  has_many :childs, class_name: "Users", foreign_key: "parent_id"
   
   after_create :create_customer
   
+  # def send_devise_notification(notification, *args)
+  #   devise_mailer.send(notification, self, *args).deliver_later
+  # end
+
   def staff?
     self.admin? || self.manager?
   end

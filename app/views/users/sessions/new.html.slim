@@ -1,0 +1,18 @@
+.card.card-signup
+  = form_for(resource, as: resource_name, url: session_path(resource_name), html: {class: "form sigin-form"}, data: { toggle: 'validator'}) do |f|
+    label
+      | Email
+      = f.text_field :email, required: false, autofocus: true
+    label
+      | Password
+      = f.password_field :password, required: false 
+    label
+      input.mk-checkbox name="user[remember_me]" type="checkbox"
+      |remember
+    .column
+      p
+        = link_to "Forgot password", new_user_password_path
+      - if flash[:alert] == HAVE_TO_CONFIRM
+        p
+          = link_to t("users.signIn.resend_link"), new_user_confirmation_path
+    button type="submit" Login
