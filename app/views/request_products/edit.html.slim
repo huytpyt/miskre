@@ -1,0 +1,7 @@
+.row
+  .column
+    h4 Editing Request Product
+    = render 'form', request_product: @request_product
+    = link_to 'Show', @request_product
+    |&nbsp;|&nbsp;
+    = link_to 'Back', products_path

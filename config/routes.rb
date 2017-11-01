@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :request_products
+
   resources :invite_people, only: [:index] do 
     collection do 
       post "invite"

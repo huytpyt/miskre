@@ -11,7 +11,7 @@ class User < ApplicationRecord
   has_many :products
   has_many :shippings
   has_many :childs, class_name: "Users", foreign_key: "parent_id"
-  
+  has_many :request_products
   after_create :create_customer
   
   # def send_devise_notification(notification, *args)

@@ -11,6 +11,8 @@ class ProductsController < ApplicationController
   def index
     # @products = Product.order(sku: :asc).page params[:page]
     @products = Product.all.where(shop_owner: false)
+    @request_products = current_user.request_products
+    @my_products = current_user.products
     respond_to do |format|
       format.json do
         render json: @products

@@ -1,0 +1,15 @@
+.row
+  .column
+    p#notice
+    p
+      strong Product name:
+      = @request_product.product_name
+    p
+      strong Link:
+      = @request_product.link
+    p
+      strong Status:
+      = @request_product.status
+    = link_to 'Edit', edit_request_product_path(@request_product)
+    |&nbsp;|&nbsp;
+    = link_to 'Back', products_path
