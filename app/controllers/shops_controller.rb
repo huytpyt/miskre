@@ -1,6 +1,6 @@
 class ShopsController < ApplicationController
   load_and_authorize_resource :shop
-
+  before_action :authorization, only: [:show, :destroy]
   # GET /shops
   # GET /shops.json
   def index
@@ -67,6 +67,10 @@ class ShopsController < ApplicationController
   def bundle_manager
     @shop = Shop.find(params[:shop_id])
     @products = @shop.products.where(is_bundle: true, shop_owner: true)
+    unless current_user.admin? || @shop.user == current_user
+      redirect_to root_path
+      return
+    end
   end
 
   def new_bundle
@@ -78,6 +82,13 @@ class ShopsController < ApplicationController
   end
 
   private
+
+  def authorization
+    unless current_user.admin? || @shop.user == current_user
+      redirect_to root_path
+      return
+    end
+  end
 
   def global_price_setting_params
     params.require(:shop).permit(:cost_rate, :shipping_rate, :random_from, :random_to)
