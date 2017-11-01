@@ -1,7 +1,7 @@
 # config valid only for current version of Capistrano
 lock "3.9.0"
 
-set :repo_url,        'git@github.com:NamNguyen911/shop-center.git'
+set :repo_url,        'git@github.com:huytpyt/miskre.git'
 set :application,     'shopCenter'
 set :user,            'ubuntu'
 set :puma_threads,    [4, 16]
