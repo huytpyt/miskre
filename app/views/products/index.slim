@@ -41,11 +41,31 @@ input#productsResource value="#{products_path()}" type="hidden"
             = link_to 'New Bundle Product', new_bundle_products_path, class: 'button primary small pull-left'
           .column.medium-2
             = link_to 'New Product', new_product_path, class: 'button primary small pull-left'
+        - else
+          .column.medium-2
+            = link_to 'New Request Product', new_request_product_path, class: 'button primary small pull-left'
+
         .column.medium-8
 
     .column
-      table#product-table
-        = render "product", products: @products
+      - if current_user.user?
+        ul.tabs
+           li.tab-link.current data-tab="tab-1" Miskre Products
+           li.tab-link data-tab="tab-2" My Products
+           li.tab-link data-tab="tab-3" Product Requested
+        #tab-1.tab-content.current
+          table#my-product-table
+            = render "product", products: @products
+        #tab-2.tab-content
+          table#product-table
+            = render "product", products: @my_products
+        #tab-3.tab-content
+          = render "request_product"
+      - else
+        table#product-table
+          = render "product", products: @products
+
+        
 
 /#products
   .row
