@@ -9,7 +9,7 @@ p#notice
       .column
         .row
           .column.medium-3
-            = link_to 'Import Orders', new_billing_path, class: 'button primary small'
+            = link_to 'Import Orders', new_billings_path, class: 'button primary small'
     .column
       = form_tag(billings_path, method: :get) do
         .row
@@ -43,6 +43,6 @@ p#notice
           - @billings.each do |billing|
             tr 
               td = billing.id 
-              td = number_to_currency @order_service.sum_money_per_bill(billing), precision: 0, unit: "VND",  format: "%n %u"
+              td = number_to_currency @order_service.sum_money_per_bill(billing), precision: 0, unit: "$",  format: "%u %n"
               td = billing.status
               td = link_to "Show", billing_path(billing.id)
