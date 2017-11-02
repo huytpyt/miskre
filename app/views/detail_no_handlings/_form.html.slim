@@ -1,0 +1,12 @@
+= form_for(@detail_no_handling, url: path) do |f|
+  .form-inputs
+    = f.label :weight_from
+    = f.number_field :weight_from
+
+    = f.label :weight_to
+    = f.number_field :weight_to
+
+    = f.label :cost
+    = f.text_field :cost
+  .form-actions
+    = f.button :submit, class: "button"

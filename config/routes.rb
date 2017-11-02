@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  resources :nations do 
+    resources :shipping_types do
+      resources :detail_shipping_types
+      resources :detail_no_handlings
+    end
+  end
   resources :request_products
 
   resources :invite_people, only: [:index] do 

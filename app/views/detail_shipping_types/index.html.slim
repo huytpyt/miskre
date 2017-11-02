@@ -1,0 +1,25 @@
+.row
+  .column
+    p#notice
+    h4 #{@nation.name} > #{@shipping_type.code} > Detail Shipping Types
+    table
+      thead
+        tr
+          th Weight from
+          th Weight to
+          th Cost
+          th Handling fee
+          th colspan="2" 
+      tbody
+        - @detail_shipping_types.each do |detail_shipping_type|
+          tr
+            td= detail_shipping_type.weight_from
+            td= detail_shipping_type.weight_to
+            td= detail_shipping_type.cost
+            td= detail_shipping_type.handling_fee
+            td= link_to 'Edit', edit_nation_shipping_type_detail_shipping_type_path(params[:nation_id], params[:shipping_type_id], detail_shipping_type)
+            td= link_to 'Destroy', nation_shipping_type_detail_shipping_type_path(params[:nation_id], params[:shipping_type_id], detail_shipping_type), method: :delete, data:  {confirm: 'Are you sure?'}
+    br
+    = link_to 'New Detail Shipping Type', new_nation_shipping_type_detail_shipping_type_path(params[:nation_id], params[:shipping_type_id])
+    |&nbsp;|&nbsp;
+    = link_to "Back", nation_shipping_types_path(@nation, @shipping_type)
