@@ -1,0 +1,22 @@
+.row
+  .column
+    p#notice
+    h4 #{@nation.name} > Shipping Types
+    table
+      thead
+        tr
+          th Code
+          th Time range
+          th colspan="3" 
+      tbody
+        - @shipping_types.each do |shipping_type|
+          tr
+            td= shipping_type.code
+            td= shipping_type.time_range
+            td = link_to "Details", shipping_type.has_handling ? nation_shipping_type_detail_shipping_types_path(params[:nation_id], shipping_type) : nation_shipping_type_detail_no_handlings_path(params[:nation_id], shipping_type)
+            td= link_to 'Edit', edit_nation_shipping_type_path(params[:nation_id], shipping_type)
+            td= link_to 'Destroy', nation_shipping_type_path(params[:nation_id], shipping_type), method: :delete, data: {confirm: 'Are you sure?'}
+    br
+    = link_to 'New Shipping Type', new_nation_shipping_type_path
+    |&nbsp;|&nbsp;
+    = link_to "Back", nations_path

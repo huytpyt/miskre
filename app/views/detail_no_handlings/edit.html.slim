@@ -1,0 +1,6 @@
+.row
+  .column
+    h4 Editing Detail No Handling
+    = render 'form', detail_no_handling: @detail_no_handling, path: nation_shipping_type_detail_no_handling_path(params[:nation_id], params[:shipping_type_id], params[:id])
+    = link_to 'Back',  nation_shipping_type_detail_no_handlings_path(params[:nation_id], params[:shipping_type_id])
+

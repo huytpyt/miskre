@@ -1,0 +1,6 @@
+.row
+  .column
+    h4 New Detail Shipping Type
+    = render 'form', detail_shipping_type: @detail_shipping_type, path: nation_shipping_type_detail_shipping_types_path(params[:nation_id], params[:shipping_type_id])
+    = link_to 'Back', nation_shipping_type_detail_shipping_types_path(params[:nation_id], params[:shipping_type_id])
+      

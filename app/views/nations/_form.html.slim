@@ -1,0 +1,9 @@
+= simple_form_for(@nation) do |f|
+  = f.error_notification
+  .form-inputs
+    select.input-group-field v-model="country" name="name"
+      - ISO3166::Country.all.each do |c|
+        option value="#{c.name}" #{c.name}
+  br
+  .form-actions
+    = f.button :submit

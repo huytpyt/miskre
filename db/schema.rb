@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171101132358) do
+ActiveRecord::Schema.define(version: 20171102093053) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,27 @@ ActiveRecord::Schema.define(version: 20171101132358) do
     t.integer  "order_id"
     t.index ["billing_id"], name: "index_billings_orders_on_billing_id", using: :btree
     t.index ["order_id"], name: "index_billings_orders_on_order_id", using: :btree
+  end
+
+  create_table "detail_no_handlings", force: :cascade do |t|
+    t.integer  "weight_from"
+    t.integer  "weight_to"
+    t.float    "cost"
+    t.integer  "shipping_type_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["shipping_type_id"], name: "index_detail_no_handlings_on_shipping_type_id", using: :btree
+  end
+
+  create_table "detail_shipping_types", force: :cascade do |t|
+    t.float    "weight_from"
+    t.float    "weight_to"
+    t.float    "cost"
+    t.float    "handling_fee"
+    t.integer  "shipping_type_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["shipping_type_id"], name: "index_detail_shipping_types_on_shipping_type_id", using: :btree
   end
 
   create_table "fulfillments", force: :cascade do |t|
@@ -88,6 +109,13 @@ ActiveRecord::Schema.define(version: 20171101132358) do
     t.string   "line_item_id"
     t.index ["order_id"], name: "index_line_items_on_order_id", using: :btree
     t.index ["product_id"], name: "index_line_items_on_product_id", using: :btree
+  end
+
+  create_table "nations", force: :cascade do |t|
+    t.string   "code"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "options", force: :cascade do |t|
@@ -177,6 +205,16 @@ ActiveRecord::Schema.define(version: 20171101132358) do
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.index ["user_id"], name: "index_request_products_on_user_id", using: :btree
+  end
+
+  create_table "shipping_types", force: :cascade do |t|
+    t.text     "code"
+    t.text     "time_range"
+    t.integer  "nation_id"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "has_handling", default: true
+    t.index ["nation_id"], name: "index_shipping_types_on_nation_id", using: :btree
   end
 
   create_table "shippings", force: :cascade do |t|

@@ -1,0 +1,12 @@
+= form_for @shipping_type, url: path do |f|
+  .form-inputs
+    = f.label :code
+    = f.text_field :code
+
+    = f.label :time_range
+    = f.text_field :time_range
+ 
+    = f.check_box :has_handling
+    |&nbsp; Caculator by cost(USD/Gam) and handling fee
+  .form-actions
+    = f.button :submit, class: "button"

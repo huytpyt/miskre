@@ -26,6 +26,9 @@
         - if current_user.enable_ref == true
           li class=(params[:controller] == 'invite_people' ? 'active' : '')
             = link_to "Invite People", invite_people_path
+        - if current_user.staff?
+          li 
+            = link_to "Shipping management", nations_path
     .top-bar-right
       ul.menu
         li = link_to current_user.name, users_path

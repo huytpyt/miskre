@@ -1,0 +1,15 @@
+= form_for(@detail_shipping_type, url: path) do |f|
+  .form-inputs
+    = f.label :weight_from
+    = f.number_field :weight_from
+
+    = f.label :weight_to
+    = f.number_field :weight_to
+
+    = f.label :cost
+    = f.text_field :cost
+
+    = f.label :handling_fee
+    = f.text_field :handling_fee
+  .form-actions
+    = f.button :submit, class: "button"

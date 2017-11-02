@@ -1,0 +1,19 @@
+.row
+  .column
+    p#notice
+    h4 Nations
+    table
+      thead
+        tr
+          th Code
+          th Name
+          th colspan="2" 
+      tbody
+        - @nations.each do |nation|
+          tr
+            td = nation.code
+            td = nation.name
+            td = link_to "Shipping types", nation_shipping_types_path(nation)
+            td = link_to 'Destroy', nation, method: :delete, data:  {confirm: 'Are you sure?' }
+    br
+    = link_to 'New Nation', new_nation_path
