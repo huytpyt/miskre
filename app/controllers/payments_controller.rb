@@ -1,4 +1,4 @@
-class BillingController < ApplicationController
+class PaymentsController < ApplicationController
   before_action :get_customer, only: [:index, :create, :remove, :edit, :update]
   before_action :check_user
   def index

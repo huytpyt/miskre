@@ -14,16 +14,16 @@ hr
         |Please select below plan to use our system
         h4 $500.00 / month
         - if @billing.nil?
-          = link_to "Choose this plan", new_billing_path, class: "button success"
+          = link_to "Choose this plan", new_payment_path, class: "button success"
         - else
-          = link_to "Choose this plan", edit_billing_index_path, class: "button"
+          = link_to "Choose this plan", edit_payments_path, class: "button"
     
   .column.medium-6
     .row
       h5 Billing information
     - if @billing.nil?
       .row
-        = link_to "Create Credit Card", new_billing_path, class: "button success"
+        = link_to "Create Credit Card", new_payment_path, class: "button success"
     - else 
       .row
         |This account is billed to:&nbsp;
@@ -35,9 +35,9 @@ hr
         br
         br
       .row  
-        = link_to "Update Credit Card", edit_billing_index_path, class: "button"
+        = link_to "Update Credit Card", edit_payments_path, class: "button"
         |&nbsp;&nbsp;&nbsp;
-        = link_to "Remove Credit Card", remove_billing_index_path, data: { confirm: "Are you sure?" }, class: "button alert"
+        = link_to "Remove Credit Card", remove_payments_path, data: { confirm: "Are you sure?" }, class: "button alert"
 hr
 .row
   .column.medium-4
