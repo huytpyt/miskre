@@ -5,7 +5,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_current_shop
 
-  before_action :check_paid_monthly
+  # untill december
+  # before_action :check_paid_monthly
 
   def set_current_shop
     if user_signed_in?

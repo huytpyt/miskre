@@ -32,8 +32,9 @@
     .top-bar-right
       ul.menu
         li = link_to current_user.name, users_path
-        - unless current_user.staff?
-         li = link_to "Billing", billing_index_path
+        / untill december
+        / - unless current_user.staff?
+        /  li = link_to "Billing", payments_path
         li = link_to "Log out", user_signout_path
 - else
   .top-bar
