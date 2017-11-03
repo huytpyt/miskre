@@ -1,25 +1,24 @@
 class RequestProductsController < ApplicationController
   before_action :set_request_product, only: [:show, :edit, :update, :destroy]
 
-  # GET /request_products
-  # GET /request_products.json
+  def index
+    unless current_user.staff?
+      redirect_to root_path
+      return
+    end
+    @request_products = RequestProduct.all
+  end
 
-  # GET /request_products/1
-  # GET /request_products/1.json
   def show
   end
 
-  # GET /request_products/new
   def new
     @request_product = current_user.request_products.new
   end
 
-  # GET /request_products/1/edit
   def edit
   end
 
-  # POST /request_products
-  # POST /request_products.json
   def create
     @request_product = current_user.request_products.new(request_product_params)
 
@@ -34,8 +33,6 @@ class RequestProductsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /request_products/1
-  # PATCH/PUT /request_products/1.json
   def update
     respond_to do |format|
       if @request_product.update(request_product_params)
@@ -48,8 +45,6 @@ class RequestProductsController < ApplicationController
     end
   end
 
-  # DELETE /request_products/1
-  # DELETE /request_products/1.json
   def destroy
     @request_product.destroy
     respond_to do |format|
@@ -59,12 +54,10 @@ class RequestProductsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_request_product
       @request_product = RequestProduct.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def request_product_params
       params.require(:request_product).permit(:product_name, :link)
     end

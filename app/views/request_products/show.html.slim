@@ -10,6 +10,9 @@
     p
       strong Status:
       = @request_product.status
-    = link_to 'Edit', edit_request_product_path(@request_product)
-    |&nbsp;|&nbsp;
-    = link_to 'Back', products_path
+    - if current_user.staff?
+      = link_to "Create product", new_user_product_products_path(@request_product.id, @request_product.user.id)
+      |&nbsp;|&nbsp;
+      = link_to 'Back', request_products_path
+    - else
+      = link_to 'Back', products_path
