@@ -7,6 +7,8 @@
   / = javascript_include_tag "slick-carousel/slick/slick.min.js"
 
 = form_for product do |f|
+  = hidden_field_tag :user_id, params[:user_id]
+  = hidden_field_tag :request_id, params[:request_id]
   - if product.errors.any?
     .row
       #error_explanation

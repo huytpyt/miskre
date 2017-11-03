@@ -11,6 +11,11 @@ table
         td= request_product.product_name
         td= request_product.link
         td= request_product.status ? "Confirmed" : "Pending"
-        td= link_to 'Show', request_product
-        td= link_to 'Edit', edit_request_product_path(request_product)
-        td= link_to 'Destroy', request_product, method: :delete, data: {confirm: 'Are you sure?' }
+        - unless request_product.status
+          td= link_to 'Show', request_product
+          td= link_to 'Edit', edit_request_product_path(request_product)
+          td= link_to 'Destroy', request_product, method: :delete, data: {confirm: 'Are you sure?' }
+        - else
+          td 
+          td 
+          td

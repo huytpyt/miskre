@@ -29,6 +29,8 @@
         - if current_user.staff?
           li 
             = link_to "Shipping management", nations_path
+          li
+            = link_to "Requested products", request_products_path
     .top-bar-right
       ul.menu
         li = link_to current_user.name, users_path

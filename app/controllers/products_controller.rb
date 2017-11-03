@@ -9,8 +9,9 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
+    staff_ids = User.where.not(role: "user").ids
     # @products = Product.order(sku: :asc).page params[:page]
-    @products = Product.all.where(shop_owner: false)
+    @products = Product.all.where(shop_owner: false, user_id: staff_ids)
     @request_products = current_user.request_products
     @my_products = current_user.products.where(shop_owner: false)
     respond_to do |format|
@@ -209,10 +210,12 @@ class ProductsController < ApplicationController
   # POST /products.json
   def create
     product_ids = params[:product][:product_ids]&.map {|a| eval(a)} || []
-    @product = current_user.products.new(product_params)
+    @product = params[:user_id].present? ? Product.new(product_params) : current_user.products.new(product_params)
+    @product.user_id = params[:user_id] if params[:user_id].present?
     @product.product_ids = product_ids
     respond_to do |format|
       if @product.save
+        RequestProduct.find(params[:request_id]).update(status: true) if params[:request_id].present?
         ProductService.new.tracking_product_quantity(@product.quantity, @product)
         if params[:product][:images]
           params[:product][:images].each do |img|

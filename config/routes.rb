@@ -74,6 +74,8 @@ Rails.application.routes.draw do
   end
   resources :products do
     collection do
+      get ":request_id/:user_id/new_product", to: "products#new", as: "new_user_product"
+
       get "new_bundle", to: "products#new_bundle"
       post "create_bundle", to: "products#create_bundle"
     end

@@ -1,9 +1,11 @@
 .row
   .column
-    h1 Request Products
+    h4 Requested Products from users
     table
       thead
         tr
+          th User name
+          th User email
           th Product name
           th Link
           th Status
@@ -11,11 +13,9 @@
       tbody
         - @request_products.each do |request_product|
           tr
-            td= request_product.product_name
-            td= request_product.link
-            td= request_product.status
-            td= link_to 'Show', request_product
-            td= link_to 'Edit', edit_request_product_path(request_product)
-            td= link_to 'Destroy', request_product, method: :delete, data: {confirm: 'Are you sure?' }
-    br
-    = link_to 'New Request Product', new_request_product_path
+            td = request_product.user&.name
+            td = request_product.user&.email
+            td = request_product.product_name
+            td = request_product.link
+            td = request_product.status
+            td = link_to 'Show', request_product
