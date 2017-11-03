@@ -12,7 +12,7 @@ class ProductsController < ApplicationController
     # @products = Product.order(sku: :asc).page params[:page]
     @products = Product.all.where(shop_owner: false)
     @request_products = current_user.request_products
-    @my_products = current_user.products
+    @my_products = current_user.products.where(shop_owner: false)
     respond_to do |format|
       format.json do
         render json: @products
