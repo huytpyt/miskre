@@ -16,8 +16,6 @@ class SupplyService
     end
   end
 
-
-
   def update_fulfilable_quantity_increase sku, quantity, shop_id
     product = Product.find_by_sku(sku&.first(3))
     if product.present?

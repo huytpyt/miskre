@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171102093053) do
+ActiveRecord::Schema.define(version: 20171104095941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,6 +207,17 @@ ActiveRecord::Schema.define(version: 20171102093053) do
     t.index ["user_id"], name: "index_request_products_on_user_id", using: :btree
   end
 
+  create_table "shipping_settings", force: :cascade do |t|
+    t.integer  "user_shipping_type_id"
+    t.float    "min_price"
+    t.text     "max_price"
+    t.integer  "percent"
+    t.text     "packet_name"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["user_shipping_type_id"], name: "index_shipping_settings_on_user_shipping_type_id", using: :btree
+  end
+
   create_table "shipping_types", force: :cascade do |t|
     t.text     "code"
     t.text     "time_range"
@@ -297,6 +308,24 @@ ActiveRecord::Schema.define(version: 20171102093053) do
     t.index ["product_id"], name: "index_tracking_products_on_product_id", using: :btree
   end
 
+  create_table "user_nations", force: :cascade do |t|
+    t.text     "code"
+    t.text     "name"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_nations_on_user_id", using: :btree
+  end
+
+  create_table "user_shipping_types", force: :cascade do |t|
+    t.integer  "user_nation_id"
+    t.integer  "shipping_type_id"
+    t.boolean  "active",           default: true
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.index ["user_nation_id"], name: "index_user_shipping_types_on_user_nation_id", using: :btree
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "",    null: false
     t.string   "encrypted_password",     default: "",    null: false
@@ -343,8 +372,11 @@ ActiveRecord::Schema.define(version: 20171102093053) do
   add_foreign_key "options", "products"
   add_foreign_key "options", "users"
   add_foreign_key "orders", "shops"
+  add_foreign_key "shipping_settings", "user_shipping_types"
   add_foreign_key "shops", "users"
   add_foreign_key "supplies", "users"
+  add_foreign_key "user_nations", "users"
+  add_foreign_key "user_shipping_types", "user_nations"
   add_foreign_key "variants", "products"
   add_foreign_key "variants", "users"
 end

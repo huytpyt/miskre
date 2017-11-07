@@ -1,6 +1,3 @@
-- content_for :script
-  = javascript_include_tag "shipping_rates"
-
 .page-header
   h1 Shipping Rate Provider
 
@@ -22,35 +19,21 @@
               td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
 
 #shipping_prices
-  
-  .row
-    .medium-3.columns
-      .input-group
-        span.input-group-label Weight (g)
-        input.input-group-field v-model="weight" type="text" placeholder="enter weight"
-    .medium-3.columns
-      .input-group
-        span.input-group-label Length (cm)
-        input.input-group-field v-model="length" type="text" placeholder="enter length"
-    .medium-3.columns
-      .input-group
-        span.input-group-label Height (cm)
-        input.input-group-field v-model="height" type="text" placeholder="enter height"
-    .medium-3.columns
-      .input-group
-        span.input-group-label Width (cm)
-        input.input-group-field v-model="width" type="text" placeholder="enter width"
-  .row
-    .medium-5.columns
-      .input-group
-        span.input-group-label Country
+  = form_tag  find_ship_cost_path, remote: true do
+    .row
+      .medium-3.columns
+        .input-group
+          span.input-group-label Weight (g)
+          input.input-group-field name="weight" type="text" placeholder="enter weight"
+      .medium-5.columns
+        .input-group
+          span.input-group-label Country
 
-        select.input-group-field v-model="country"
-          - ISO3166::Country.all.each do |c|
-            option value="#{c.alpha2}" #{c.name}
-    .medium-2.columns
-      button.button.small.pull-right @click="lookup_for_price()" Look up
+          select.input-group-field name="country"
+            - Nation.all.each do |c|
+              option value="#{c.code}" #{c.name}
+      .medium-2.columns
+        button.button.small.pull-right Look up
   .row
     .columns
-      p ePUB: ${{ epub }}
-      p DHL: ${{ dhl }}
+      .shipping-cost

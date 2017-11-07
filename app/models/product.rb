@@ -52,20 +52,29 @@ class Product < ApplicationRecord
   end
 
   def calculate_price
-    cal_weight = (self.length * self.height * self.width) / 5
-    weight = cal_weight > self.weight ? cal_weight : self.weight
+    # cal_weight = (self.length * self.height * self.width) / 5
+    # weight = cal_weight > self.weight ? cal_weight : self.weight
 
-    epub_us_cost = CarrierService.get_epub_cost('US', self.weight)
-    dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
+    us_nation = Nation.find_by_code "US"
+    shipping_type = us_nation.shipping_types.find_by_code "BEUS"
+    weight = self.weight
+    if self.weight < 10
+      weight = 10
+    end
+    if self.weight > 4000
+      weight = 4000
+    end
+    beus_us_cost = CarrierService.cal_cost(shipping_type, weight)
+    # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
     self.cus_cost = self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
     random = rand(2.25 .. 2.75)
     self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
     
-    self.epub = (0.2 * epub_us_cost).round(2)
-    self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
+    self.epub = (0.2 * beus_us_cost).round(2)
+    # self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
 
-    self.cus_epub = epub_us_cost
-    self.cus_dhl = dhl_us_cost
+    self.cus_epub = beus_us_cost
+    # self.cus_dhl = dhl_us_cost
 
     self.price = self.cost*4 + 0.8*self.cus_epub
   end

@@ -1,0 +1,37 @@
+.row
+  .column.text-center
+    h3 Advanced settings
+  .column  
+    = link_to "Create", new_shipping_setings_path(params[:shipping_type_id]), class: "button success" unless @shipping.last&.max_price == "infinity"
+    table
+      thead
+        tr 
+          th Min of price
+          th Max of price
+          th Packet name
+          th Percent per total cost
+          th  
+          th
+      tbody
+        - @shipping.each do |shipping|
+          tr
+            td = shipping.min_price
+            td = shipping.max_price
+            td = shipping.packet_name
+            td 
+              = shipping.percent
+              |%
+            td = link_to "Edit", edit_shipping_setings_path(params[:shipping_type_id], shipping)
+            td = link_to "Delete", delete_shipping_setings_path(params[:shipping_type_id], shipping), method: :delete, data: { confirm: "Are you sure?" } 
+
+  .column
+    - @shipping.each do |shipping|
+      p
+        b if  $#{shipping.min_price} < Total Price <= #{shipping.max_price == 'infinity' ? "" : '$'}#{shipping.max_price} then:
+        br
+        | Packet name: #{shipping.packet_name}
+        br
+        | Shipping cost = #{shipping.percent}% of total shipping cost
+  /       br
+  .column
+    = link_to "Back", shipping_setings_path

@@ -21,15 +21,16 @@
         - if current_user.staff?
           li class=(params[:controller] == 'reports' ? 'active' : '')
             = link_to "Report", reports_path
-        li class=(params[:controller] == 'shipping' ? 'active' : '')
-          = link_to "Shipping Setting", shippings_path
+        - if current_user.user?
+          li class=(params[:controller] == 'shipping_setings' ? 'active' : '')
+            = link_to "Shipping Setting", shipping_setings_path
         - if current_user.enable_ref == true
           li class=(params[:controller] == 'invite_people' ? 'active' : '')
             = link_to "Invite People", invite_people_path
         - if current_user.staff?
-          li 
+          li class=(params[:controller] == 'nations' ? 'active' : '')
             = link_to "Shipping management", nations_path
-          li
+          li class=(params[:controller] == 'request_products' ? 'active' : '')
             = link_to "Requested products", request_products_path
     .top-bar-right
       ul.menu

@@ -22,10 +22,10 @@ tbody
       td = p.sku
       - if current_user.staff?
         td = p.quantity
-      td = current_user.staff? ? p.cost : p.cus_cost
+      td = p.cus_cost
       td = p.suggest_price
       - if p.suggest_price && p.epub && p.cus_cost && p.cus_epub
-        td = current_user.staff? ? ((p.suggest_price + p.epub) - (p.cost + p.cus_epub)).round(2) : ((p.suggest_price + p.epub) - (p.cus_cost + p.cus_epub)).round(2)
+        td = ((p.suggest_price + p.epub) - (p.cus_cost + p.cus_epub)).round(2)
       - else 
         td
       td 
@@ -35,8 +35,8 @@ tbody
           li
             = link_to "Add To Shops", add_to_shop_product_path(p)
           li
-            = link_to "Edit", edit_product_path(p) if current_user.staff? || p.user_id == current_user.id
-      - if current_user.staff? || p.user_id == current_user.id
+            = link_to "Edit", edit_product_path(p) if current_user.staff? || (p.user_id == current_user.id && p.shop_owner == true)
+      - if current_user.staff? || (p.user_id == current_user.id && p.shop_owner == true)
         td
           ul.menu
             li

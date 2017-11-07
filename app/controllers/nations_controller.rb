@@ -29,6 +29,11 @@ class NationsController < ApplicationController
     end
   end
 
+  def sync_shipping
+    ShippingService.sync_shipping
+    redirect_to nations_path
+  end
+
   private
 
     def authorization

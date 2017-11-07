@@ -201,7 +201,7 @@ class ProductsController < ApplicationController
     else
       @product_list = Product.where(is_bundle: false).select(:id, :name)
     end
-    unless current_user.staff? || @product.user_id == current_user.id
+    unless current_user.staff? || (@product.user_id == current_user.id && @product.shop_owner == true)
       redirect_to @product
     end
   end
@@ -284,14 +284,15 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
-    unless current_user.staff? || @product.user_id == current_user.id
+    unless current_user.staff? || (@product.user_id == current_user.id && @product.shop_owner == true)
       redirect_to @product
+      return
     end
     if @product.destroy
       @product.supplies&.destroy_all
     end
     respond_to do |format|
-      format.html { redirect_to products_url, notice: 'Product was successfully destroyed.' }
+      format.html { redirect_to :back, notice: 'Product was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
