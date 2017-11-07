@@ -21,7 +21,6 @@ class Product < ApplicationRecord
   validates :suggest_price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
   validates :sku, presence: true, uniqueness: true
-  validates :product_url, presence: true
   validates :quantity, numericality: { only_integer: true}
   validates :cost, numericality: { greater_than_or_equal_to: 0}
   validates :weight, presence: true, numericality: { only_integer: true,
