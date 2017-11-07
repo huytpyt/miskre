@@ -99,6 +99,6 @@ input#productsResource value="#{products_path()}" type="hidden"
 
 javascript:
   $(document).ready(function() {
-    $('.chosen-select-country').val("#{params[:nation] || 'US'}");
+    $('.chosen-select-country').val("#{@national.code}");
     $('.chosen-select-country').trigger("chosen:updated");
   });
