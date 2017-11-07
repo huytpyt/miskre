@@ -105,6 +105,8 @@
                 ul.menu
                   li
                     = link_to "Customize", edit_supply_path(supply), class: 'button tiny'
+                  - if supply.product.product_url.present?
+                    li = link_to "Download resources", supply.product.product_url, class: 'button tiny success', target: '_blank'
                   li
                     = link_to "Remove", supply_path(supply),
                       method: :delete, data: { confirm: 'Are you sure?'}, class: 'button alert tiny'
