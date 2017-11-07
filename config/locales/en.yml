@@ -26,3 +26,10 @@ en:
     attributes:
       product:
         product_ids: "Products reference"
+        product_url: "Link to product resources"
+    errors:
+      models:
+        product:
+          attributes:
+            product_url:
+              blank: "can't be blank"
