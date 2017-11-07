@@ -31,7 +31,7 @@ class ProductsController < ApplicationController
     @product = Product.find(params[:product_id])
     cal_weight = (@product.length * @product.height * @product.width) / 5
     @weight = cal_weight > @product.weight ? cal_weight : @product.weight
-    @national = Nation.find_by_code(params[:national] || 'US')
+    @national = Nation.find_by_code(params[:nation] || 'US')
   end
   # GET /products/new
   def new

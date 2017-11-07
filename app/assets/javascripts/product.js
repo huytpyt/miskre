@@ -120,7 +120,7 @@
     $(".chosen-select-country").chosen().change(function (event) {
       country = $(event.target).val();
       //history.pushState(null, null, '/products?c=' + country);
-      window.location.search = '&national=' + country;
+      window.location.search = '&nation=' + country;
     });
   }
 

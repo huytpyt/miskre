@@ -10,7 +10,7 @@ p#notice
 	    table
 		    thead
 		      tr
-		        th Type
+		        th Shipping Type
 		        th Cost
 		        th Shipping Cost 100%
 		        th Suggested Price
@@ -22,13 +22,18 @@ p#notice
 		    tbody
 		    	- @national.shipping_types.each do |shipping_type|
 			    	tr
-			    		td = shipping_type.code
-			    		td = cost = current_user.staff? ? @product.cost : @product.cus_cost
-			    		td 
-			    			= beus_cost = CarrierService.cal_cost(shipping_type, @product.weight)
+			    		- beus_cost = CarrierService.cal_cost(shipping_type, @product.weight)
+			    		- if beus_cost.nil?
+			    				td = shipping_type.code
+			    				td.text-center colspan="7" Weight Not Valid
+			    		- else
 			    			- diff_cost = beus_cost > @product.cus_epub ? (beus_cost - @product.cus_epub)*0.8 : 0
-			    		td = price = @product.suggest_price
-			    		td = epub_price = (0.2*beus_cost + diff_cost).round(2)
-			    		td = total_cost = (cost + beus_cost).round(2)
-			    		td = total_price = (price + epub_price).round(2)
-			    		td = (total_price - total_cost).round(2)
+				    		td = shipping_type.code
+				    		td = cost = current_user.staff? ? @product.cost : @product.cus_cost
+				    		td 
+				    			= beus_cost
+				    		td = price = @product.suggest_price
+				    		td = beus_price = (0.2*beus_cost + diff_cost).round(2)
+				    		td = total_cost = (cost + beus_cost).round(2)
+				    		td = total_price = (price + beus_price).round(2)
+				    		td = (total_price - total_cost).round(2)
