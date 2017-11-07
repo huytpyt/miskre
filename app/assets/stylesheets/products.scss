@@ -91,3 +91,17 @@ ul#dvPreview
     height: 500px;
   }
 }
+
+.products.products-index {
+  .chosen-container-single .chosen-single {
+    height: 30px;
+    border-radius: 3px;
+    border: 1px solid #CCCCCC;
+  }
+  .chosen-container-single .chosen-single span {
+    padding-top: 2px;
+  }
+  .chosen-container-single .chosen-single div b {
+    margin-top: 2px;
+  }
+}

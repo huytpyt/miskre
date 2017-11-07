@@ -10,6 +10,7 @@
     createChart();
     xDatePicker();
     submitDateChoosen();
+    selectCountry();
   }
 
   var dataTable = function() {
@@ -113,6 +114,14 @@
       }]
     });
     chart.render();
+  }
+
+  var selectCountry =  function() {
+    $(".chosen-select-country").chosen().change(function (event) {
+      country = $(event.target).val();
+      //history.pushState(null, null, '/products?c=' + country);
+      window.location.search = '&national=' + country;
+    });
   }
 
 }).call(this);
