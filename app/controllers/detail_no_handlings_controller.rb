@@ -5,7 +5,7 @@ class DetailNoHandlingsController < ApplicationController
 
   def index
     @nation = Nation.find params[:nation_id]
-    @detail_no_handlings = @shipping_type.detail_no_handlings.all
+    @detail_no_handlings = @shipping_type.detail_no_handlings.order(weight_from: :asc)
   end
 
   def new
