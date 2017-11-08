@@ -92,7 +92,7 @@
     .columns.medium-3
       .field
         = f.label :cost, "Cost ($)"
-        = f.text_field :cost
+        = f.number_field :cost, step: :any
     .columns.medium-9
       .row
         .columns.medium-3
@@ -124,8 +124,9 @@
         .columns.medium-3
           .field
             = f.label :suggest_price, "Suggested Price"
-            = f.text_field :suggest_price
+            = f.number_field :suggest_price, step: :any
         .columns.medium-9
+          h6.p_profit_inline
       /.field
         = f.label :shipping_price
         = f.text_field :shipping_price
