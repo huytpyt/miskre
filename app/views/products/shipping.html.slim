@@ -29,7 +29,7 @@ p#notice
 			    		- else
 			    			- diff_cost = beus_cost > @product.cus_epub ? (beus_cost - @product.cus_epub)*0.8 : 0
 				    		td = shipping_type.code
-				    		td = cost = current_user.staff? ? @product.cost : @product.cus_cost
+				    		td = cost = @product.cus_cost
 				    		td 
 				    			= beus_cost
 				    		td = price = @product.suggest_price

@@ -1,6 +1,6 @@
 javascript:
 	$(document).ready(function() {
-    var cost = "#{current_user.staff? ? @product.cost : @product.cus_cost}";
+    var cost = "#{@product.cus_cost}";
     var weight = "#{@product.weight}";
     var suggest_price = "#{@product.suggest_price}";
     var product_cus_epub = "#{@product.cus_epub}";
