@@ -133,6 +133,12 @@ Rails.application.routes.draw do
   get 'activate_carrier_service', to: 'carrier_service#activate'
   get 'deactivate_carrier_service', to: 'carrier_service#deactivate'
 
+  namespace :api, defaults: {format: :json}, :except => [:edit, :new] do
+    resource :product, only: :index do
+      get :profit_calculator
+    end
+  end
+
   mount ShopifyApp::Engine, at: '/shopify'
 
   require 'sidekiq/web'
