@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :nations do
     collection do 
       get 'sync_shipping', to: "nations#sync_shipping"
+      get 'sync_nation/:nation_id', to: "nations#sync_nation", as: "sync_nation"
     end 
     resources :shipping_types do
       resources :detail_shipping_types

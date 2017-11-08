@@ -30,7 +30,13 @@ class NationsController < ApplicationController
   end
 
   def sync_shipping
-    ShippingService.sync_shipping
+    ShippingService.delay.sync_shipping
+    redirect_to nations_path
+  end
+
+  def sync_nation
+    nation = Nation.find_by_id params[:nation_id]
+    ShippingService.delay.sync_this_nation(nation)
     redirect_to nations_path
   end
 
