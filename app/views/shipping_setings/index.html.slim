@@ -3,48 +3,49 @@
     h4 Shipping settings
 - @nations.each do |nation|
   - main_nation = Nation.find_by_code(nation.code)
-  .row
-    .column.large-3
-      b= nation.name
-    .column.large-9
-      .row.large-up-3.page-content#productspost
-        - nation.user_shipping_types.each do |user_shipping_type|
-          - shipping_type = user_shipping_type&.shipping_type
-          - if shipping_type.present?
-            - detail = shipping_type.has_handling ? shipping_type.detail_shipping_types : shipping_type.detail_no_handlings
-            .column.item
-              .card
-                .card-divider
-                  h4.each-block-header
-                    span.text-left.pull-left
-                      = shipping_type.code
-                      |&nbsp;[
-                      = link_to user_shipping_type.active ? "Enabled" : "Disabled", change_status_shipping_setings_path(user_shipping_type)
-                      |]
-                      
-                .card-section
-                  = shipping_type.time_range
-                  br
-                  |weight: #{detail.first&.weight_from&.round}g -> #{detail.last&.weight_to&.round}g
-                  br
-                  - if shipping_type.has_handling
-                    |Cost + handling fee: 
+  - if main_nation.present?
+    .row
+      .column.large-3
+        b= nation.name
+      .column.large-9
+        .row.large-up-3.page-content#productspost
+          - nation.user_shipping_types.each do |user_shipping_type|
+            - shipping_type = user_shipping_type&.shipping_type
+            - if shipping_type.present?
+              - detail = shipping_type.has_handling ? shipping_type.detail_shipping_types : shipping_type.detail_no_handlings
+              .column.item
+                .card
+                  .card-divider
+                    h4.each-block-header
+                      span.text-left.pull-left
+                        = shipping_type.code
+                        |&nbsp;[
+                        = link_to user_shipping_type.active ? "Enabled" : "Disabled", change_status_shipping_setings_path(user_shipping_type)
+                        |]
+                        
+                  .card-section
+                    = shipping_type.time_range
                     br
-                    - if detail.size == 1
-                      - if detail.first&.handling_fee.present?
-                        |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5}
+                    |weight: #{detail.first&.weight_from&.round}g -> #{detail.last&.weight_to&.round}g
+                    br
+                    - if shipping_type.has_handling
+                      |Cost + handling fee: 
+                      br
+                      - if detail.size == 1
+                        - if detail.first&.handling_fee.present?
+                          |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5}
+                      - else
+                        - if detail.first&.handling_fee.present? && detail.last&.handling_fee.present?
+                          |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5} -> $#{detail.last&.cost} + $#{detail.last&.handling_fee + 0.5}
                     - else
-                      - if detail.first&.handling_fee.present? && detail.last&.handling_fee.present?
-                        |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5} -> $#{detail.last&.cost} + $#{detail.last&.handling_fee + 0.5}
-                  - else
-                    - if detail.size == 1
-                      - if detail.first&.cost.present?
-                        |Cost: $#{detail.first&.cost + 0.5}
-                    - else
-                      - if detail.first&.cost.present? && detail.last&.cost.present?
-                        |Cost: $#{detail.first&.cost + 0.5} -> $#{detail.last&.cost + 0.5}
-                  br
-                  = link_to "Detail", shipping_type.has_handling ? nation_shipping_type_detail_shipping_types_path(main_nation, shipping_type) : nation_shipping_type_detail_no_handlings_path(main_nation, shipping_type)
-                  br
-                  = link_to "Advanced settings", setting_shipping_setings_path(user_shipping_type)
+                      - if detail.size == 1
+                        - if detail.first&.cost.present?
+                          |Cost: $#{detail.first&.cost + 0.5}
+                      - else
+                        - if detail.first&.cost.present? && detail.last&.cost.present?
+                          |Cost: $#{detail.first&.cost + 0.5} -> $#{detail.last&.cost + 0.5}
+                    br
+                    = link_to "Detail", shipping_type.has_handling ? nation_shipping_type_detail_shipping_types_path(main_nation, shipping_type) : nation_shipping_type_detail_no_handlings_path(main_nation, shipping_type)
+                    br
+                    = link_to "Advanced settings", setting_shipping_setings_path(user_shipping_type)
   hr
