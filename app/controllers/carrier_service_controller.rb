@@ -60,9 +60,10 @@ class CarrierServiceController < ApplicationController
       total_grams += i['quantity'] * i['grams']
       vendor = i['vendor']
     end
-    user_id = Shop.find_by_shopify_domain(vendor)&.user&.id
+    shop = Shop.find_by_shopify_domain(vendor)
+    user_id = shop&.user&.id
     shipping_cost = []
-    shipping_cost = CarrierService.get_cost(country, total_grams, total_price, user_id) if user_id.present?
+    shipping_cost = CarrierService.get_cost(country, total_grams, total_price, user_id, shop) if user_id.present?
     render :json => {"rates": shipping_cost}
   end
 end
