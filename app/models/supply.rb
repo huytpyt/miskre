@@ -10,7 +10,6 @@ class Supply < ApplicationRecord
   has_many :supply_variants
 
   after_update :sync_this_supply
-  before_destroy :remove_shopify_product
 
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}
@@ -66,9 +65,5 @@ class Supply < ApplicationRecord
 
     # TODO sync images
     # self.images = product.images
-  end
-
-  def remove_shopify_product
-    JobsService.remove_shopify_product self.shop.id, self.shopify_product_id
   end
 end

@@ -5,7 +5,7 @@ class DetailShippingTypesController < ApplicationController
 
   def index
     @nation = Nation.find params[:nation_id]
-    @detail_shipping_types = @shipping_type.detail_shipping_types.all
+    @detail_shipping_types = @shipping_type.detail_shipping_types.order(weight_from: :asc)
   end
 
   def new
