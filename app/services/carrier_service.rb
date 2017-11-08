@@ -18,7 +18,7 @@ class CarrierService
         total_original_cost = ((detail.cost  + 0.5) * 100).round(0) if detail.present?
       end
       beus_type = Nation.find_by_code("US").shipping_types.find_by_code("BEUS")
-      beus_cost = cal_cost(beus_type, weight)
+      beus_cost = (cal_cost(beus_type, weight) * 100).round(0)
       diff_cost = total_original_cost  != beus_cost ? (total_original_cost - beus_cost)*shop.shipping_rate : 0
       shipping_price = ((1 - shop.shipping_rate)*total_original_cost + diff_cost).round(2).to_s
       if detail.present?
