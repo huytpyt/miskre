@@ -14,4 +14,14 @@ class ShippingService
       end
     end
   end
+
+  def self.sync_shipping_for_user user
+    Nation.all.each do |nation|
+      nation.shipping_types.each do |shipping_type|
+        user_nation = user.user_nations.find_by_code(nation.code) || user.user_nations.create(code: nation.code, name: nation.name)
+        user_shipping_type = user_nation.user_shipping_types.find_by_shipping_type_id(shipping_type.id) || user_nation.user_shipping_types.create(shipping_type_id: shipping_type.id)
+        user_shipping_type.shipping_settings.create(min_price: 0, max_price: "infinity", percent: 100, packet_name: "#{shipping_type.code} (#{shipping_type.time_range})") unless user_shipping_type.shipping_settings.present?
+      end
+    end
+  end
 end
