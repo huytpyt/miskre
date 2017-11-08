@@ -40,7 +40,11 @@ class SuppliesController < ApplicationController
 
   def destroy
     shop = @supply.shop
-    @supply.destroy
+    @supply.is_deleted = true
+    @supply.shop_id = nil
+    if @supply.save
+      JobsService.delay.remove_shopify_product shop.id, @supply.shopify_product_id
+    end
     redirect_to shop_url(shop), notice: 'Product was successfully removed from shop.'
   end
 
