@@ -1,7 +1,7 @@
 class DetailShippingTypesController < ApplicationController
   before_action :set_detail_shipping_type, only: [:show, :edit, :update, :destroy]
   before_action :set_shipping_type
-  before_action :authorization
+  before_action :authorization, except: [:index]
 
   def index
     @nation = Nation.find params[:nation_id]

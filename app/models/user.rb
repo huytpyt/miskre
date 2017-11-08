@@ -13,7 +13,8 @@ class User < ApplicationRecord
   has_many :childs, class_name: "Users", foreign_key: "parent_id"
   has_many :request_products
   after_create :create_customer
-  
+
+  has_many :user_nations
   # def send_devise_notification(notification, *args)
   #   devise_mailer.send(notification, self, *args).deliver_later
   # end
@@ -23,8 +24,9 @@ class User < ApplicationRecord
   end
 
   def create_customer
-    self.shippings.create(min_price: 0, max_price: 35, name_epub: "Insured Shipping", name_dhl: "Expedited Insured Shipping", percent_epub: 100, percent_dhl: 100)
-    self.shippings.create(min_price: 35, max_price: "infinity", name_epub: "Free Insured Shipping", name_dhl: "DHL (not free)", percent_epub: 0, percent_dhl: 100)
+    if self.user?
+      ShippingService.sync_shipping_for_user self
+    end
     customer = Stripe::Customer.create(:email => self.email)
     self.update(customer_id: customer.id)
   end    

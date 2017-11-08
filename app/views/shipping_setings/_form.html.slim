@@ -1,0 +1,21 @@
+= form_for @shipping, url: path do |f| 
+  .form-group.column.medium-6
+    = f.label :min_price
+    = f.text_field :min_price
+  .column.medium-6
+    .row
+      .form-group.column.medium-3
+        = check_box_tag :mark_infinity, :checked, @shipping.max_price == "infinity" ? true : false
+        |&nbsp;is infinity
+      .form-group.column.medium-9
+        = f.label :max_price
+        = f.text_field :max_price
+  .form-group.column.medium-6
+    = f.label :packet_name
+    = f.text_field :packet_name
+  .form-group.column.medium-6
+    = f.label :percent
+    = f.number_field :percent, min: 0, max: 100
+  .form-group.column.medium-6
+    = f.submit class: "button pull-right success"
+    = link_to "Back", setting_shipping_setings_path(params[:shipping_type_id]), class: "button pull-right"

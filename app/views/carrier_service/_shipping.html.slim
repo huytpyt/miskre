@@ -1,0 +1,9 @@
+b Shipping cost by shipping types:
+br
+br
+- @shipping_types.each do |shipping_type|
+  p 
+    = shipping_type.code
+    |:&nbsp;$
+    = CarrierService.cal_cost(shipping_type, @weight) || "Weight invalid"
+

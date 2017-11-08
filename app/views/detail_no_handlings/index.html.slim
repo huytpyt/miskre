@@ -14,7 +14,7 @@
           tr
             td= detail_no_handling.weight_from
             td= detail_no_handling.weight_to
-            td= detail_no_handling.cost
+            td= current_user.staff? ? detail_no_handling.cost : detail_no_handling.cost + 0.5
             td= link_to 'Edit', edit_nation_shipping_type_detail_no_handling_path(params[:nation_id], params[:shipping_type_id], detail_no_handling)  
             td= link_to 'Destroy', nation_shipping_type_detail_no_handling_path(params[:nation_id], params[:shipping_type_id], detail_no_handling), method: :delete, data: {confirm: 'Are you sure?'}
 

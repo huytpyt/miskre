@@ -56,11 +56,14 @@
     .column
       = form_tag(shop_path(@shop), method: :get) do
         .row
-          .columns.large-8
+          .column.medium-3
+            | Select country:
+            = select_tag "Country", options_from_collection_for_select(Nation.all, "code", "name"), class: 'chosen-select-country'
+          .columns.large-7
             label
               | Enter SKU or product name:
               = text_field_tag :search
-          .columns.large-4
+          .columns.large-2
             label
               br
               = submit_tag "Search", class: "button"
@@ -100,7 +103,9 @@
                     = ((supply.price + supply.epub) - (supply.cost + supply.cost_epub)).round(2)
                 p 
                   |Details about cost, price, shipping, profit:
-                  = link_to "Detail", shop_shipping_path(@shop, supply)
+                  - product_shipping_url = shop_shipping_path(@shop, supply)
+                  - product_shipping_url = params[:nation].present? ? "#{product_shipping_url}?nation=#{params[:nation]}" : product_shipping_url
+                  = link_to "Detail", product_shipping_url
               .card-section
                 ul.menu
                   li
@@ -122,3 +127,8 @@ javascript:
       itemSelector : '.item'
     });
   });
+  $(document).ready(function() {
+    $('.chosen-select-country').val("#{@national.code}");
+    $('.chosen-select-country').trigger("chosen:updated");
+  });
+  

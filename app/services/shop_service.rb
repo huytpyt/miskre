@@ -74,7 +74,7 @@ class ShopService
         unless supply.keep_custom == true
           product = supply.product
           random = rand(shop.random_from .. shop.random_to)
-          supply.update(epub: (1 - shop.shipping_rate)*product.cus_epub, dhl: product.cus_dhl - shop.shipping_rate*product.cus_epub)
+          supply.update(epub: (1 - shop.shipping_rate)*product.cus_epub)
           if shop.global_setting_enable == true
             price = (supply.cost * shop.cost_rate + supply.cost_epub * shop.shipping_rate).round(2)
             compare_at_price = (price * random/ 5).round(0) * 5

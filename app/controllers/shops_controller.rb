@@ -1,6 +1,7 @@
 class ShopsController < ApplicationController
   load_and_authorize_resource :shop
   before_action :authorization, only: [:show, :destroy]
+  before_action :prepare_nation, only: [:show, :shipping]
   # GET /shops
   # GET /shops.json
   def index
@@ -82,6 +83,11 @@ class ShopsController < ApplicationController
   end
 
   private
+
+  def prepare_nation
+    @national = Nation.find_by_code(params[:nation] || 'US')
+    @national ||= Nation.first
+  end
 
   def authorization
     unless current_user.admin? || @shop.user == current_user

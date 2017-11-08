@@ -17,6 +17,11 @@
       font-weight: 100;
     }
   }
+  .p_profit_inline {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 35px;
+  }
 }
 #products {
   ul.tabs{
@@ -89,5 +94,27 @@ ul#dvPreview
   }
   #tracking-product-chart {
     height: 500px;
+  }
+}
+
+.products.products-index, .shops-show {
+  .chosen-container-single .chosen-single {
+    height: 30px;
+    border-radius: 3px;
+    border: 1px solid #CCCCCC;
+  }
+  .chosen-container-single .chosen-single span {
+    padding-top: 2px;
+  }
+  .chosen-container-single .chosen-single div b {
+    margin-top: 2px;
+  }
+}
+.shops-show {
+  .chosen-container-single .chosen-single {
+    height: 2.4375rem;
+  }
+  .chosen-container-single .chosen-single span {
+    padding-top: 7px;
   }
 }

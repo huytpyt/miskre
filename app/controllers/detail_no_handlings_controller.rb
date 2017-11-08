@@ -1,7 +1,7 @@
 class DetailNoHandlingsController < ApplicationController
   before_action :set_detail_no_handling, only: [:show, :edit, :update, :destroy]
   before_action :set_shipping_type
-  before_action :authorization
+  before_action :authorization, except: [:index]
 
   def index
     @nation = Nation.find params[:nation_id]

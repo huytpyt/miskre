@@ -1,6 +1,21 @@
 Rails.application.routes.draw do
 
-  resources :nations do 
+  resources 'shipping_setings', only: [:index] do 
+    collection do
+      get ":shipping_type_id/setting", to: "shipping_setings#setting", as: "setting"
+      get ":shipping_type_id/setting/new", to: "shipping_setings#new", as: "new"
+      post ":shipping_type_id/setting/create", to: "shipping_setings#create", as: "create"
+      get ":shipping_type_id/setting/change_status", to: "shipping_setings#change_status", as: "change_status"
+      get ":shipping_type_id/setting/:id", to: "shipping_setings#edit", as: "edit"
+      patch ":shipping_type_id/setting/:id", to: "shipping_setings#update", as: "update"
+      delete ":shipping_type_id/setting/:id", to: "shipping_setings#destroy", as: "delete"
+    end
+  end
+
+  resources :nations do
+    collection do 
+      get 'sync_shipping', to: "nations#sync_shipping"
+    end 
     resources :shipping_types do
       resources :detail_shipping_types
       resources :detail_no_handlings
@@ -114,9 +129,15 @@ Rails.application.routes.draw do
   post 'shipping_rates', to: 'carrier_service#shipping_rates'
 
   get 'carrier_service', to: 'carrier_service#index'
-  get 'find_ship_cost', to: 'carrier_service#lookup'
+  post 'find_ship_cost', to: 'carrier_service#lookup'
   get 'activate_carrier_service', to: 'carrier_service#activate'
   get 'deactivate_carrier_service', to: 'carrier_service#deactivate'
+
+  namespace :api, defaults: {format: :json}, :except => [:edit, :new] do
+    resource :product, only: :index do
+      get :profit_calculator
+    end
+  end
 
   mount ShopifyApp::Engine, at: '/shopify'
 

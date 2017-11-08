@@ -4,26 +4,21 @@ class OrderService
     skus_array = order.skus.split(",").map {|a| a.split("*")[0].strip}
     quantities = order.skus.split(",").map {|a| a.split("*")[1].strip}
     shipping_method = order.shipping_method.upcase
-    ship_country =  ISO3166::Country.find_by_name(order.ship_country)[0] || "US"
+    ship_country =  ISO3166::Country.find_by_name(order.ship_country)[0]
+    nation = Nation.find_by_code ship_country
+    shipping_type = nation&.shipping_types&.find_by_code shipping_method
     index = 0
     sum = 0
-    skus_array.each do |sku|
-      product = Product.find_by_sku(sku.first(3))
-      if product.present?
-        user = shop.user
-
-        if shipping_method == "DHL"
-          cal_weight = (product.length * product.height * product.width) / 5
-          weight = cal_weight > product.weight ? cal_weight : product.weight
-          cost = CarrierService.get_dhl_cost(ship_country, weight)
-        elsif shipping_method == "EPUB"
-          cost = CarrierService.get_epub_cost(ship_country, product.weight)
-        else
-          cost = CarrierService.get_epub_cost(ship_country, product.weight)
+    if shipping_type.present?
+      skus_array.each do |sku|
+        product = Product.find_by_sku(sku.first(3))
+        if product.present?
+          user = shop.user
+          shipping_cost = CarrierService.cal_cost(shipping_type, product.weight)
+          supply_cost = product.cus_cost
+          sum += (quantities[index].to_i * (supply_cost + shipping_cost))
+          index += 1
         end
-        supply_cost = user.staff? ? product.cost : product.cus_cost
-        sum += (quantities[index].to_i * (supply_cost + cost))
-        index += 1
       end
     end
     return sum.round(2)

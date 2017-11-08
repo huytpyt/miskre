@@ -1,7 +1,7 @@
 = form_for(@detail_shipping_type, url: path) do |f|
   .form-inputs
     = f.label :weight_from
-    = f.number_field :weight_from
+    = f.number_field :weight_from, value: @shipping_type.detail_shipping_types.last.present? ? (@shipping_type.detail_shipping_types.last.weight_to + 1) : nil
 
     = f.label :weight_to
     = f.number_field :weight_to
