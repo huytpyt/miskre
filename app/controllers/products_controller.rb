@@ -299,7 +299,7 @@ class ProductsController < ApplicationController
   def add_to_shop
     if @product.suggest_price.present?
       @available_shops = current_user.shops - @product.shops
-      @supplies = @product.supplies.where(user_id: current_user.id)
+      @supplies = @product.supplies.where(user_id: current_user.id, is_deleted: false)
     else
       redirect_to products_path, notice: 'Add suggest price please'
     end
