@@ -22,18 +22,18 @@ p#notice
 		    tbody
 		    	- @national.shipping_types.each do |shipping_type|
 			    	tr
-			    		- beus_cost = CarrierService.cal_cost(shipping_type, @product.weight)
-			    		- if beus_cost.nil?
+			    		- shipping_cost = CarrierService.cal_cost(shipping_type, @product.weight)
+			    		- if shipping_cost.nil?
 			    				td = shipping_type.code
 			    				td.text-center colspan="7" Weight Not Valid
 			    		- else
-			    			- diff_cost = beus_cost > @product.cus_epub ? (beus_cost - @product.cus_epub)*0.8 : 0
+			    			- diff_cost = shipping_cost  != @product.cus_epub ? (shipping_cost - @product.cus_epub)*0.8 : 0
 				    		td = shipping_type.code
 				    		td = cost = @product.cus_cost
 				    		td 
-				    			= beus_cost
+				    			= shipping_cost
 				    		td = price = @product.suggest_price
-				    		td = beus_price = (0.2*beus_cost + diff_cost).round(2)
-				    		td = total_cost = (cost + beus_cost).round(2)
-				    		td = total_price = (price + beus_price).round(2)
+				    		td = shipping_price = (0.2*shipping_cost + diff_cost).round(2)
+				    		td = total_cost = (cost + shipping_cost).round(2)
+				    		td = total_price = (price + shipping_price).round(2)
 				    		td = (total_price - total_cost).round(2)

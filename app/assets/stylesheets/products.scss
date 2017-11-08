@@ -97,7 +97,7 @@ ul#dvPreview
   }
 }
 
-.products.products-index {
+.products.products-index, .shops-show {
   .chosen-container-single .chosen-single {
     height: 30px;
     border-radius: 3px;
@@ -108,5 +108,13 @@ ul#dvPreview
   }
   .chosen-container-single .chosen-single div b {
     margin-top: 2px;
+  }
+}
+.shops-show {
+  .chosen-container-single .chosen-single {
+    height: 2.4375rem;
+  }
+  .chosen-container-single .chosen-single span {
+    padding-top: 7px;
   }
 }

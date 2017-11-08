@@ -22,7 +22,7 @@ class Supply < ApplicationRecord
     product = self.product
     shop = self.shop
     self.name = product&.name
-    self.cost = User.find(self.user_id).user? ? product.cus_cost : product.cost
+    self.cost = product.cus_cost
     self.cost_epub = product.cus_epub
 
     if shop.global_setting_enable == true
@@ -41,7 +41,7 @@ class Supply < ApplicationRecord
     product = self.product
     shop = self.shop
     self.name = product&.name
-    self.cost = User.find(self.user_id).user? ? product.cus_cost : product.cost
+    self.cost = product.cus_cost
     self.cost_epub = product.cus_epub
     
     if shop.global_setting_enable == true

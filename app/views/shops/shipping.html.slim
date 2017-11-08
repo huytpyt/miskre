@@ -1,48 +1,41 @@
-.row
-  .column
-    h2.text-center = @supply.name
-    br
-    br
-    table
-      thead
-        tr
-          th Country
-          th Cost ($)
-          th Shipping Cost 100% (ePUB | DHL) ($)
-          th Price ($)
-          th Shipping Price (ePUB | DHL) ($)
-          th Total Cost (ePUB | DHL) ($)
-          th Total Price (ePUB | DHL) ($)
-          th Profit ($)
-      tbody
-        -if @supply.cost_epub && @supply.cost_dhl
-          - ISO3166::Country.all.each do |country|
-            tr 
-              td 
-                = country.name
-              td 
-                = cost = @supply.cost
-              td
-                = epub_cost = CarrierService.get_epub_cost(country.alpha2, @product.weight)
-                - diff_epub = epub_cost > @supply.cost_epub ? (epub_cost - @supply.cost_epub)*@shop.shipping_rate : 0
-                |&nbsp;|&nbsp;
-                = dhl_cost = CarrierService.get_dhl_cost(country.alpha2, @weight)
-                - diff_dhl = dhl_cost > @supply.cost_dhl ? (dhl_cost - @supply.cost_dhl)*@shop.shipping_rate : 0
-              td 
-                = price = @supply.price
-              td 
-                =  epub_price = ((1 - @shop.shipping_rate)*epub_cost + diff_epub).round(2)
-                |&nbsp;|&nbsp;
-                = dhl_price = (dhl_cost - @shop.shipping_rate*epub_cost + diff_dhl).round(2)
-              td 
-                = total_cost_epub = (cost + epub_cost).round(2)
-                |&nbsp;|&nbsp;
-                = total_cost_dhl = (cost + dhl_cost).round(2)
-              td 
-                = total_price_epub = (price + epub_price).round(2)
-                |&nbsp;|&nbsp;
-                = total_price_dhl = (price + dhl_price).round(2)
-              td 
-                = (total_price_epub - total_cost_epub).round(2)
+p#notice
+.page-header
+  h3.text-center Shipping Detail: #{@national.name}
+
+- if @supply.cost && @supply.cost_epub && @supply.price
+  .row
+    .column
+      br
+      br
+      table
+        thead
+          tr
+            th Shipping Type
+            th Cost
+            th Shipping Cost 100%
+            th Suggested Price
+            th Shipping Price
+            th Total Cost
+            th Total Price
+            th Profit
+
+        tbody
+          - @national.shipping_types.each do |shipping_type|
+            tr
+              - shipping_cost = CarrierService.cal_cost(shipping_type, @product.weight)
+              - if shipping_cost.nil?
+                  td = shipping_type.code
+                  td.text-center colspan="7" Weight Not Valid
+              - else
+                - diff_cost = shipping_cost  != @supply.cost_epub ? (shipping_cost - @supply.cost_epub)*@shop.shipping_rate : 0
+                td = shipping_type.code
+                td = cost = @supply.cost
+                td = shipping_cost
+                td = price = @supply.price
+                td = shipping_price = ((1 - @shop.shipping_rate)*shipping_cost + diff_cost).round(2)
+                td = total_cost = (cost + shipping_cost).round(2)
+                td = total_price = (price + shipping_price).round(2)
+                td = (total_price - total_cost).round(2)
+
 
     = link_to "Back", :back
