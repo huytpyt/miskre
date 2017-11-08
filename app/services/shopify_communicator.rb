@@ -108,14 +108,19 @@ class ShopifyCommunicator
           fetched_pages += 1
 
           orders.each do |o|
-            begin
-              order_params = get_order_params(o)
-              new_order = @shop.orders.new(order_params)
-              if new_order.save
-                add_line_items(new_order, o.line_items)
+            select_items = o.line_items.select do |o_item|
+              o_item if Product.exists?(sku: o_item.sku)
+            end
+            unless select_items.empty?
+              begin
+                order_params = get_order_params(o)
+                new_order = @shop.orders.new(order_params)
+                if new_order.save
+                  add_line_items(new_order, select_items)
+                end
+              rescue NoMethodError => e
+                p 'invalid order'
               end
-            rescue NoMethodError => e
-              p 'invalid order'
             end
           end
 
