@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
                                      :upload_image_url,
                                      :add_to_shop, :assign, :remove_shop]
   before_action :check_is_staff, except: [:index, :show, :add_to_shop, :shipping, :assign, :new_bundle, :create_bundle, :update_bundle, :edit, :destroy]
+  before_action :prepare_nation, only: [:index, :shipping]
 
   # GET /products
   # GET /products.json
@@ -397,5 +398,10 @@ class ProductsController < ApplicationController
       unless current_user.staff?
         redirect_to :back
       end
+    end
+
+    def prepare_nation
+      @national = Nation.find_by_code(params[:nation] || 'US')
+      @national ||= Nation.first
     end
 end

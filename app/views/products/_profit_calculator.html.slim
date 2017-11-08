@@ -1,0 +1,25 @@
+javascript:
+	$(document).ready(function() {
+    var cost = "#{@product.cus_cost}";
+    var weight = "#{@product.weight}";
+    var suggest_price = "#{@product.suggest_price}";
+    var product_cus_epub = "#{@product.cus_epub}";
+    $.ajax({
+        url : "#{profit_calculator_api_product_url}",
+        type : "GET",
+        dataType:"json",
+        data : {
+          cost: cost,
+          weight: weight,
+          suggest_price: suggest_price,
+          product_cus_epub: product_cus_epub
+        },
+        success : function (result){
+          if (result.status) {
+          	var txt_display = "Profit: " + result.product.profit;
+          	$('.p_profit_inline').text(txt_display);
+          }
+        }
+    });
+
+  });

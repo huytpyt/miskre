@@ -29,7 +29,9 @@ tbody
       - else 
         td
       td 
-        = link_to "Detail", product_shipping_path(p)
+        - product_shipping_url = product_shipping_path(p)
+        - product_shipping_url = params[:nation].present? ? "#{product_shipping_url}?nation=#{params[:nation]}" : product_shipping_url
+        = link_to "Detail", product_shipping_url
       td
         ul.menu
           li
