@@ -2,12 +2,13 @@
   .column
     p#notice
     h4 Nations
-    table
+    table.shipping-manager
       thead
         tr
           th Code
           th Name
-          th colspan="2" 
+          th
+          th
       tbody
         - @nations.each do |nation|
           tr

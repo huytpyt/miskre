@@ -5,6 +5,14 @@
 
   var init = function () {
     markInfinity();
+    dataTable();
+  }
+
+  var dataTable = function() {
+    $('table.shipping-manager').DataTable( {
+      destroy: true,
+      "order": [[ 0, "asc" ]]
+    } );
   }
 
   var markInfinity = function() {
