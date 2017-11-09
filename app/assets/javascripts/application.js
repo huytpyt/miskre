@@ -27,6 +27,7 @@
 //= require daterangepicker
 //= require product
 //= require shipping
+//= require requested_products
 // require_tree .
 
 $(function(){ $(document).foundation(); });

@@ -13,18 +13,25 @@ class ProductsController < ApplicationController
     staff_ids = User.where.not(role: "user").ids
     # @products = Product.order(sku: :asc).page params[:page]
     @products = Product.all.where(shop_owner: false, user_id: [staff_ids, nil])
-    if params[:no_link].present?
-      @products = @products.where(product_url: [nil, ""])
-    end
-    if params[:no_weight].present?
-      @products = @products.where("weight <= 10")
-    end
-    if params[:negative_quantity].present?
-      @products = @products.where("quantity <= 0")
-    end
 
     @request_products = current_user.request_products
     @my_products = current_user.products.where(shop_owner: false)
+    if current_user.staff?
+      user_ids = User.where(role: "user")
+      @user_products = Product.where(shop_owner: false, user_id: user_ids)
+    end
+    if params[:no_link].present?
+      @products = @products.where(product_url: [nil, ""])
+      @user_products = @user_products.where(product_url: [nil, ""])
+    end
+    if params[:no_weight].present?
+      @products = @products.where("weight <= 10")
+      @user_products = @user_products.where("weight <= 10")
+    end
+    if params[:negative_quantity].present?
+      @products = @products.where("quantity <= 0")
+      @user_products = @user_products.where("quantity <= 0")
+    end
     respond_to do |format|
       format.json do
         render json: @products

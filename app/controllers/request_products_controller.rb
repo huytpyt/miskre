@@ -6,7 +6,7 @@ class RequestProductsController < ApplicationController
       redirect_to root_path
       return
     end
-    @request_products = RequestProduct.all
+    @request_products = RequestProduct.all.order(created_at: :desc)
   end
 
   def show

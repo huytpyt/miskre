@@ -1,5 +1,6 @@
 thead
   tr
+    th User name
     th Id
     th Name
     th SKU
@@ -14,6 +15,7 @@ thead
 tbody
   - products.each do |p|
     tr
+      td = "#{p.user.name}(#{p.user.email})"
       td = p.id
       - if p.is_bundle
         th = link_to p.name + " [Bundle]", product_path(p)

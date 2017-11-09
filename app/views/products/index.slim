@@ -80,9 +80,15 @@ input#productsResource value="#{products_path()}" type="hidden"
             = submit_tag "Search", class: "button pull-right"
 
         hr
-        table#product-table
-          = render "product", products: @products
-
+        ul.tabs
+           li.tab-link.current data-tab="tab-1" Miskre Products
+           li.tab-link data-tab="tab-2" User's Products
+        #tab-1.tab-content.current
+          table#product-table
+            = render "product", products: @products
+        #tab-2.tab-content
+          table#product-table
+            = render "user_products", products: @user_products
         
 
 /#products
