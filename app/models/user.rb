@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include HasAccessToken
   extend Enumerize
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
