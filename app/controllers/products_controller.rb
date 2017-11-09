@@ -43,6 +43,11 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
+    unless @product.user.nil? || @product.user&.admin?
+      unless (@product.user == current_user) || current_user.staff?
+        redirect_to root_path
+      end
+    end
   end
 
   def shipping
