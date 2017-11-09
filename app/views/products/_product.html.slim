@@ -5,7 +5,7 @@ thead
     th SKU
     - if current_user.staff?
       th Quantity
-    th Cost ($)
+    th Total Cost ($)
     th Suggested Price ($)
     th Profit ($)
     th Details about cost, price, shipping, profit
@@ -22,7 +22,7 @@ tbody
       td = p.sku
       - if current_user.staff?
         td = p.quantity
-      td = p.cus_cost
+      td = p.cus_cost + p.cus_epub
       td = p.suggest_price
       - if p.suggest_price && p.epub && p.cus_cost && p.cus_epub
         td = ((p.suggest_price + p.epub) - (p.cus_cost + p.cus_epub)).round(2)
