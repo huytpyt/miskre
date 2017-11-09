@@ -29,7 +29,7 @@
                     |weight: #{detail.first&.weight_from&.round}g -> #{detail.last&.weight_to&.round}g
                     br
                     - if shipping_type.has_handling
-                      |Cost + handling fee: 
+                      |Cost Per KG + Handling Fee:
                       br
                       - if detail.size == 1
                         - if detail.first&.handling_fee.present?
