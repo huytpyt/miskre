@@ -48,7 +48,6 @@ input#productsResource value="#{products_path()}" type="hidden"
         .column.medium-3
           = select_tag "Country", options_from_collection_for_select(Nation.all, "code", "name"), class: 'chosen-select-country'
         .column.medium-5
-
     .column
       - if current_user.user?
         ul.tabs
@@ -64,6 +63,23 @@ input#productsResource value="#{products_path()}" type="hidden"
         #tab-3.tab-content
           = render "request_product"
       - else
+        hr
+        b Filter box
+        .row
+          = form_tag products_path, method: :get
+          .column.large-4
+            = label_tag :no_link, "Select products don't have google drive link"
+            = params[:no_link].present? ? check_box_tag(:no_link, true, :checked) : check_box_tag(:no_link)
+          .column.large-3
+            = label_tag :no_weight, "Select products with weight < 10g"
+            = params[:no_weight].present? ? check_box_tag(:no_weight, true, :checked) : check_box_tag(:no_weight)
+          .column.large-3
+            = label_tag :negative_quantity, "Select products with quantity < 0"
+            = params[:negative_quantity].present? ? check_box_tag(:negative_quantity, true, :checked) : check_box_tag(:negative_quantity)
+          .column.large-2
+            = submit_tag "Search", class: "button pull-right"
+
+        hr
         table#product-table
           = render "product", products: @products
 
