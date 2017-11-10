@@ -1,0 +1,67 @@
+p#notice= notice
+h2.text-center  = @product.name
+br
+br
+- if @product.images.size > 0
+  .row
+    #images-preview
+      - @product.images.each do |pi|
+        .columns.medium-3
+          = image_tag pi.file.url(:medium)
+hr
+.row
+  .column.medium-3
+    strong Weight:&nbsp;
+    = @product.weight
+  .column.medium-3
+    strong Length:&nbsp;
+    = @product.length
+  .column.medium-3
+    strong Height:&nbsp;
+    = @product.height
+  .column.medium-3
+    strong Width:&nbsp;
+    = @product.width
+hr
+.row
+  .column.medium-12
+    strong Desc:&nbsp;
+    = raw @product.desc
+hr
+.row
+  .column.medium-3
+    strong Compare at price:&nbsp;
+    = @product.compare_at_price
+    |$
+hr
+br
+br
+.page-header
+    h1 Variants
+#variants
+  .row
+    .column
+      table
+        thead
+          tr
+            th Option 1
+            th Option 2
+            th Option 3
+            th Quantity
+            th Price ($)
+            th SKU
+        tbody
+          - @product.user_variants.each do |variant|
+            tr
+              td = variant.option1
+              td = variant.option2
+              td = variant.option3
+              td = variant.quantity
+              td = variant.price
+              td = variant.sku
+.row
+  - if current_user.staff?
+    - if @product.status != "approved"
+      = link_to "Approve", approve_user_product_path(@product), method: :post, data: { confirm: 'Are you sure?' }
+      |&nbsp;|&nbsp;
+  = link_to 'Back', request_products_path

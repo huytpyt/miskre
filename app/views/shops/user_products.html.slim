@@ -73,7 +73,8 @@ tbody
                         td = variant.price
                         td = variant.sku
 
-        = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny', remote: true, method: :post, data: { confirm: 'Are you sure?' }
+        - unless product.is_request
+          = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny', remote: true, method: :post, data: { confirm: 'Are you sure?' }
     tr
       td colspan="5"
         hr

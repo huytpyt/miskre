@@ -128,6 +128,12 @@ Rails.application.routes.draw do
     collection { post :import }
   end
 
+  resources :user_products do
+    member do
+      post :approve
+    end
+  end
+
   post 'selectShop', to: 'home#selectShop'
 
   post 'shipping_rates', to: 'carrier_service#shipping_rates'

@@ -56,4 +56,14 @@ class UserProduct < ApplicationRecord
   rescue
     false
   end
+
+  def approve!
+    update(is_request: true, status: 'approved')
+  rescue
+    false
+  end
+
+  def self.requested
+    where(is_request: true, status: 'requested')
+  end
 end

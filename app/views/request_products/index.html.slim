@@ -1,21 +1,58 @@
 .row
   .column
     h4 Requested Products from users
-    table
-      thead
-        tr
-          th User name
-          th User email
-          th Product name
-          th Link
-          th Status
-          th colspan="3" 
-      tbody
-        - @request_products.each do |request_product|
-          tr
-            td = request_product.user&.name
-            td = request_product.user&.email
-            td = request_product.product_name
-            td = request_product.link
-            td = request_product.status
-            td = link_to 'Show', request_product
+    ul#requested-products-tabs.tabs data-tabs="" 
+      li.tabs-title.is-active
+        a aria-selected="true" href="#panel1" 
+          h5 Miskre's products
+      li.tabs-title
+        a data-tabs-target="panel2" href="#panel2" 
+          h5 User's products
+    .tabs-content data-tabs-content="requested-products-tabs" 
+      #panel1.tabs-panel.is-active
+        table
+          thead
+            tr
+              th User name
+              th User email
+              th Product name
+              th Link
+              th Status
+              th colspan="3" 
+          tbody
+            - @request_products.each do |request_product|
+              tr
+                td = request_product.user&.name
+                td = request_product.user&.email
+                td = request_product.product_name
+                td = request_product.link
+                td = request_product.status
+                td = link_to 'Show', request_product
+      #panel2.tabs-panel
+        table
+          thead
+            tr
+              th Shop
+              th User
+              th Product name
+              th Shopify product ID
+              th SKU
+              th Price ($)
+              th
+
+          tbody
+            - @user_products.each do |product|
+              tr
+                td = product.shop.name
+                td = product.user.name.blank? ? product.user.email : product.user.name
+                td = product.name
+                td = product.shopify_product_id
+                td
+                  - if product.user_variants.empty?
+                    = product.sku
+                  - else
+                    - product.user_variants.each do |v|
+                      = "#{v.sku}"
+                      br
+                td = product.price
+                td = link_to 'Show', user_product_path(product)

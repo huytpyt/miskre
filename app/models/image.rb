@@ -27,4 +27,8 @@ class Image < ApplicationRecord
   def file_remote_url=(url_value)
     self.file = URI.parse(url_value)
   end
+
+  def file_url
+    file.url(:medium)
+  end
 end
