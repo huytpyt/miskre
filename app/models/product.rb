@@ -107,7 +107,7 @@ class Product < ApplicationRecord
     if self.weight > 4000
       weight = 4000
     end
-    beus_us_cost = CarrierService.cal_cost(shipping_type, weight)
+    beus_us_cost = CarrierService.cal_cost(shipping_type, weight).to_f
     # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
     self.cus_cost = self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
     random = rand(2.25 .. 2.75)

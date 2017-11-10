@@ -1,9 +1,10 @@
 class ShippingSetingsController < ApplicationController
   before_action :get_shipping, only: [:edit, :update, :destroy]
-  before_action :check_authorization, except: [:index]
+  before_action :check_authorization, except: [:index, :update_carrier_service]
 
   def index
     @nations = current_user.user_nations
+    @shops = current_user.shops
   end
 
   def setting
@@ -51,6 +52,17 @@ class ShippingSetingsController < ApplicationController
     if shipping_type.save
       redirect_to shipping_setings_path
     end
+  end
+
+  def update_carrier_service
+    shop = Shop.find params[:shop_id]
+    result = ShopService.reset_carrier_service(shop)
+    if result == true
+      notice = 'Update succesfully.' 
+    else
+      notice = result
+    end
+    redirect_to shipping_setings_path, notice: notice
   end
 
   private

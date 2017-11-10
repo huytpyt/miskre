@@ -10,6 +10,7 @@ class CarrierService
     user_shipping_types.each do |user_shipping_type|
       shipping_type = user_shipping_type.shipping_type
       user_shipping_settings = user_shipping_type.shipping_settings.where("min_price < ?", total_price).last
+      percent = user_shipping_settings.percent
       if shipping_type.has_handling
         detail = shipping_type.detail_shipping_types.where("weight_from <= ? AND ? <= weight_to", weight, weight).last
         total_original_cost = ((detail.cost * (weight.to_f/1000) + detail.handling_fee + 0.5)* 100).round(0) if detail.present?
@@ -20,7 +21,7 @@ class CarrierService
       beus_type = Nation.find_by_code("US").shipping_types.find_by_code("BEUS")
       beus_cost = (cal_cost(beus_type, weight) * 100).round(0)
       diff_cost = total_original_cost  != beus_cost ? (total_original_cost - beus_cost)*shop.shipping_rate : 0
-      shipping_price = ((1 - shop.shipping_rate)*total_original_cost + diff_cost).round(2).to_s
+      shipping_price = (((1 - shop.shipping_rate)*total_original_cost + diff_cost)*(percent/100)).round(2).to_s
       if detail.present?
         item = {'service_name': user_shipping_settings.packet_name, 'service_code': shipping_type.code, 'currency': 'USD', 'total_price': shipping_price} 
         rates.push(item)

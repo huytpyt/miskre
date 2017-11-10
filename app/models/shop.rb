@@ -52,42 +52,11 @@ class Shop < ActiveRecord::Base
   end
 
   def activate_carrier_service
-    begin
-      session = ShopifyAPI::Session.new(self.shopify_domain, self.shopify_token)
-      ShopifyAPI::Base.activate_session(session)
-      shop = ShopifyAPI::Shop.current
-
-      unless self.carrier_service_id.nil?
-        carrier_service = ShopifyAPI::CarrierService.find(self.carrier_service_id)
-        carrier_service.active = true
-        carrier_service.save
-      else
-        carrier_service = ShopifyAPI::CarrierService.new
-        carrier_service.name = "Miskre"
-        carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
-        carrier_service.service_discovery = false
-        carrier_service.save
-        self.update(carrier_service_id: carrier_service.id)
-      end
-
-      self.update(use_carrier_service: true)
-    rescue 
-      "You need to add payment methods on shopify first!"
-    end
+    ShopService.activate_carrier_service self
   end
 
   def deactivate_carrier_service
-    session = ShopifyAPI::Session.new(self.shopify_domain, self.shopify_token)
-    ShopifyAPI::Base.activate_session(session)
-    begin
-      shop = ShopifyAPI::Shop.current
-      carrier_service = ShopifyAPI::CarrierService.find(self.carrier_service_id)
-      carrier_service.active = false
-      carrier_service.save
-    rescue
-      p"errors"
-    end
-    self.update(use_carrier_service: false, carrier_service_id: nil)
+    ShopService.deactivate_carrier_service self
   end
 
   private

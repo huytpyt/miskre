@@ -9,14 +9,13 @@ class ShopifyCommunicator
     end
   end
 
-  def get_order_params(o)
+  def get_order_params(o, line_items)
     quantity = 0
     skus = []
     unit_prices = []
     shipping_methods = []
     products = []
-
-    o.line_items.each do |item|
+    line_items.each do |item|
       quantity += item.quantity
       skus.append("#{item.sku} * #{item.quantity}")
       unit_prices.append(item.price)
@@ -109,11 +108,11 @@ class ShopifyCommunicator
 
           orders.each do |o|
             select_items = o.line_items.select do |o_item|
-              o_item if Product.exists?(sku: o_item.sku)
+              o_item if Product.exists?(sku: o_item.sku.first(3))
             end
             unless select_items.empty?
               begin
-                order_params = get_order_params(o)
+                order_params = get_order_params(o, select_items)
                 new_order = @shop.orders.new(order_params)
                 if new_order.save
                   add_line_items(new_order, select_items)
