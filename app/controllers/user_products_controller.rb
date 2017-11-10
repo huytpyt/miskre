@@ -33,6 +33,7 @@ class UserProductsController < ApplicationController
 
 				assign_product = Product.new(name: name, weight: weight, sku: sku, desc: desc, cost: price, quantity: quantity, suggest_price: (price.to_f * 1.5), compare_at_price: compare_at_price, user_id: user_id)
 				if assign_product.save!
+					supply = create_suppy(assign_product, shop_id, user_id, shopify_product_id)
 					product.user_variants.each do |va|
 						option1 = v.option1
   					option2 = v.option2
@@ -51,5 +52,20 @@ class UserProductsController < ApplicationController
 					end
 				end
 			end
+		end
+
+		def create_suppy(product, shop_id, user_id, shopify_product_id)
+			supply = Supply.new(
+				product_id: product.id, 
+				shop_id: shop_id, 
+				shopify_product_id: shopify_product_id,
+				price: product.price,
+				compare_at_price: product.compare_at_price)
+			supply.copy_product_attr_add_product
+      if supply.save
+        product.variants.each do |variant|
+          supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+        end
+      end
 		end
 end
