@@ -109,7 +109,7 @@ class ShopifyCommunicator
 
           orders.each do |o|
             select_items = o.line_items.select do |o_item|
-              o_item if Product.exists?(sku: o_item.sku)
+              o_item if Product.exists?(sku: o_item.sku.first(3))
             end
             unless select_items.empty?
               begin
