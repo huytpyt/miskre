@@ -49,7 +49,7 @@ class Api::ProductsController < Api::ApiController
 				render json: {status: false, message: 'Not found!'}, status: 404
 			else
 				user_id = Shop.find(shop_id)&.user_id
-				sync_products = save_sync_products(products, user_id)
+				sync_products = save_sync_products(products, user_id, shop_id)
 				if sync_products.empty?
 					render json: {status: false, message: "Can not save sync products!"}, status: 500
 				else
@@ -68,8 +68,7 @@ class Api::ProductsController < Api::ApiController
       @national ||= Nation.first
     end
 
-    def save_sync_products(sync_products, user_id)
-    	STDERR.puts sync_products.first.inspect 
+    def save_sync_products(sync_products, user_id, shop_id)
     	sync_products.each do |pro|
     		pro_name = pro.title
     		pro_desc = pro.body_html
@@ -78,7 +77,6 @@ class Api::ProductsController < Api::ApiController
 	    		variant = variants.first
 	  			variant_product_id = variant.product_id
 	  			variant_title = variant.title
-	  			pro_name = variant_title == "Default Title" ? pro_name : "#{pro_name} - #{variant_title}"
 	  			variant_price = variant.price
 	  			variant_sku = variant.sku
 	  			variant_grams = variant.grams
@@ -86,35 +84,38 @@ class Api::ProductsController < Api::ApiController
 	  			variant_weight = variant.weight
 	  			variant_weight_unit = variant.weight_unit
 	  			variant_compare_at_price = variant.compare_at_price
-	  			new_product = Product.new(name: pro_name, weight: convert_to_gram(variant_weight, variant_weight_unit), sku: variant_sku, desc: pro_desc, cost: variant_price, quantity: variant_inventory_quantity, suggest_price: (variant_price.to_f * 1.5), compare_at_price: variant_compare_at_price, user_id: user_id)
-	  			new_product.save!
+	  			ActiveRecord::Base.transaction do
+		  			unless UserProduct.exists?(shopify_product_id: variant_product_id)
+			  			user_product = UserProduct.new(shopify_product_id: variant_product_id,name: pro_name, weight: convert_to_gram(variant_weight, variant_weight_unit), sku: variant_sku, desc: pro_desc, price: variant_price, quantity: variant_inventory_quantity, compare_at_price: variant_compare_at_price, user_id: user_id, shop_id: shop_id)
+			  			user_product.save!
+			    		if user_product
+			    			if variants.count > 1
+			    				sku_str = ""
+				  				variants.each_with_index do |v, index|
+				  					option1 = v.option1
+				  					option2 = v.option2
+				  					option3 = v.option3
+				  					quantity = v.inventory_quantity > 0 ? v.inventory_quantity : 0
+				  					price = v.price
+				  					sku = v.sku
+				  					sku_str += (index+1 == variants.count) ? sku : "#{sku}-"
+				  					compare_at_price = v.compare_at_price
+				  					new_variant = UserVariant.new(option1: option1, option2: option2, option3: option3, quantity: quantity, price: price, sku: sku, compare_at_price: compare_at_price, user_product_id: user_product.id)
+				  					new_variant.save!
+				  					user_product.update(sku: sku_str)
+				  				end
+				  			end
 
-	    		if new_product
-	    			if variants.count > 1
-	    				sku_str = ""
-		  				variants.each_with_index do |v, index|
-		  					option1 = v.option1
-		  					option2 = v.option2
-		  					option3 = v.option3
-		  					quantity = v.inventory_quantity > 0 ? v.inventory_quantity : 0
-		  					price = v.price
-		  					sku = v.sku
-		  					sku_str += (index+1 == variants.count) ? sku : "#{sku}_"
-		  					compare_at_price = v.compare_at_price
-		  					new_variant = Variant.new(option1: option1, option2: option2, option3: option3, quantity: quantity, price: price, sku: sku, compare_at_price: compare_at_price, product_id: new_product.id)
-		  					new_variant.save!
-		  					new_product.update(sku: sku_str)
-		  				end
-		  			end
-
-		  			#Save image
-	    			img = pro.image
-	    			if img && img.src
-		    			image = new_product.images.new
-					    image.file_remote_url= img.src
-					    image.save!
-					  end
-	    		end
+				  			#Save image
+			    			img = pro.image
+			    			if img && img.src
+				    			image = user_product.images.new
+							    image.file_remote_url= img.src
+							    image.save!
+							  end
+			    		end
+			    	end
+		    	end
 	    	end
     	end
     end

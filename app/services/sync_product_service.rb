@@ -23,7 +23,7 @@ class SyncProductService
 	  		products.each do |product|
 	  			product_variants = product.variants
 	  			select_product_variants = product_variants.select do |pv|
-	  				pv unless Product.exists?(sku: pv.sku)
+	  				pv unless Product.exists?(sku: pv.sku) || Variant.exists?(sku: pv.sku)
 	  			end
 	  			unless select_product_variants.empty?
 		  			# STDERR.puts select_product_variants.inspect
