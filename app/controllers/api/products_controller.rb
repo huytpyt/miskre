@@ -48,12 +48,13 @@ class Api::ProductsController < Api::ApiController
 			if products.empty?
 				render json: {status: false, message: 'Not found!'}, status: 404
 			else
-				user_id = Shop.find(shop_id)&.user_id
+				shop = Shop.find(shop_id)
+				user_id = shop.user_id
 				sync_products = save_sync_products(products, user_id, shop_id)
-				if sync_products.empty?
-					render json: {status: false, message: "Can not save sync products!"}, status: 500
+				if sync_products
+					render json: {status: true, user_products_url: user_products_shop_url(shop), message: 'Successfully!'}, status: 200
 				else
-					render json: {status: true, products: sync_products, message: 'Successfully!'}, status: 200
+					render json: {status: false, message: "Can not save sync products!"}, status: 500
 				end
 			end
 		else
@@ -118,6 +119,9 @@ class Api::ProductsController < Api::ApiController
 		    	end
 	    	end
     	end
+    	true
+    rescue
+    	false
     end
 
     def convert_to_gram(weight, weight_unit)

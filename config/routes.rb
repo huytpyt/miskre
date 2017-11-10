@@ -77,6 +77,9 @@ Rails.application.routes.draw do
     get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
     patch "global_price_setting", to: "shops#global_price_setting", as: "global_price_setting"
     get "change_price_option", to: "shops#change_price_option", as: "change_price_option"
+    member do
+      get :user_products
+    end
   end
   resources :supplies, only: [:edit, :update, :destroy] do
     get "edit_variant/:variant_id", to: "supplies#edit_variant", as: "edit_variant"
