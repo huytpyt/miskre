@@ -112,7 +112,7 @@ class ShopifyCommunicator
             end
             unless select_items.empty?
               begin
-                order_params = get_order_params(o, line_items, select_items)
+                order_params = get_order_params(o, select_items)
                 new_order = @shop.orders.new(order_params)
                 if new_order.save
                   add_line_items(new_order, select_items)
