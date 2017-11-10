@@ -331,13 +331,18 @@ class ProductsController < ApplicationController
 
   def assign
     shop_ids = params[:product][:shops]
+    notice = 'Product has been added to shops.'
     unless shop_ids.empty?
       shop_ids.each do |id|
-        c = ShopifyCommunicator.new(id)
-        c.add_product(@product.id)
+        begin
+          c = ShopifyCommunicator.new(id)
+          c.add_product(@product.id)
+        rescue Exception => e
+          notice = e.message
+        end
       end
     end
-    redirect_to add_to_shop_product_path(@product), notice: 'Product has been added to shops.'
+    redirect_to add_to_shop_product_path(@product), notice: notice
   end
 
   def purchases
