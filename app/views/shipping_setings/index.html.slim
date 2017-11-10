@@ -1,5 +1,16 @@
 .row
   .column
+    table
+      thead
+        tr 
+          th Shop
+          td
+      tbody
+        - @shops.each do |shop|
+          tr
+            td = shop.name
+            td = link_to 'Update carrier service', update_carrier_shipping_setings_path(shop_id: shop.id)
+  .column
     h4 Shipping settings
 - @nations.each do |nation|
   - main_nation = Nation.find_by_code(nation.code)

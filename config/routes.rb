@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   resources 'shipping_setings', only: [:index] do 
     collection do
+      get "update_carrier_service/:shop_id", to: "shipping_setings#update_carrier_service", as: "update_carrier"
       get ":shipping_type_id/setting", to: "shipping_setings#setting", as: "setting"
       get ":shipping_type_id/setting/new", to: "shipping_setings#new", as: "new"
       post ":shipping_type_id/setting/create", to: "shipping_setings#create", as: "create"
