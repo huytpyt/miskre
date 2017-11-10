@@ -62,6 +62,15 @@ class Api::ProductsController < Api::ApiController
 		end
 	end
 
+	def request_user_product
+    @user_product = UserProduct.find(params[:id])
+    if @user_product.request!
+    	render json: {status: true, message: "This product has been requested successfully!"}, status: 200
+    else
+    	render json: {status: false, message: "Can not request this products!"}, status: 500
+    end
+  end
+
 	private
 
 		def prepare_nation

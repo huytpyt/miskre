@@ -142,6 +142,7 @@ Rails.application.routes.draw do
       get :profit_calculator
       collection do
         post 'sync_products/:shop_id', to: 'products#sync_products', as: :sync_products_from_shop
+        post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
       end
     end
   end

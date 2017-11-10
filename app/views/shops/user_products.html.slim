@@ -4,7 +4,7 @@ thead
     th Shopify product ID
     th SKU
     th Price
-    th
+    th Request
 tbody
   - @user_products.each do |product|
     tr
@@ -12,8 +12,9 @@ tbody
       td = product.shopify_product_id
       td = product.sku
       td = product.price
+      td = product.is_request ? "Requested" : "Not yet"
     tr.hide
-      td colspan="4"
+      td colspan="5"
         - if product.images.size > 0
           .row
             #images-preview
@@ -72,8 +73,8 @@ tbody
                         td = variant.price
                         td = variant.sku
 
-        = link_to "Request this product", "#", class: 'button tiny'
+        = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny', remote: true, method: :post, data: { confirm: 'Are you sure?' }
     tr
-      td colspan="4"
+      td colspan="5"
         hr
 

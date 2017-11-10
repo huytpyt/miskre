@@ -50,4 +50,10 @@ class UserProduct < ApplicationRecord
       weight = 4000
     end
  	end
+
+  def request!
+    update(is_request: true, status: 'requested')
+  rescue
+    false
+  end
 end
