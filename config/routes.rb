@@ -137,6 +137,9 @@ Rails.application.routes.draw do
   namespace :api, defaults: {format: :json}, :except => [:edit, :new] do
     resource :product, only: :index do
       get :profit_calculator
+      collection do
+        post 'sync_products/:shop_id', to: 'products#sync_products', as: :sync_products_from_shop
+      end
     end
   end
 

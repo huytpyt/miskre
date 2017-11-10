@@ -68,7 +68,9 @@ class Product < ApplicationRecord
     # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
     self.cus_cost = self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
     random = rand(2.25 .. 2.75)
-    self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
+    if self.compare_at_price.nil?
+      self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
+    end
     
     self.epub = (0.2 * beus_us_cost).round(2)
     # self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
@@ -80,9 +82,13 @@ class Product < ApplicationRecord
   end
 
   def generate_sku
+    return if self.sku.present?
     p = Product.last
     if p
       last_sku_idx = SKU.index(p.sku)
+      if last_sku_idx.nil?
+        last_sku_idx = -1
+      end
     else
       last_sku_idx = -1
     end

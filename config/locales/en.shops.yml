@@ -4,6 +4,7 @@ en:
       product_list: 'Products List'
       disconnect: "Disconnect"
       bundle_manager: "Bundle managerment"
+      sync_products: "Sync products"
     products:
       product_list: "Products List"
       price: "Price:"

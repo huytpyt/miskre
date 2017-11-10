@@ -28,4 +28,14 @@
               td = link_to t('.disconnect'), shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
               td = link_to t(".product_list"), shop_path(shop), class: "button tiny success"
               td = link_to t(".bundle_manager"), shop_bundle_manager_path(shop), class: "button tiny"
+              td = link_to t(".sync_products"), sync_products_from_shop_api_product_path(shop), class: "button tiny success sync_products", method: :post, remote: true
               td = link_to t(".report"), report_view_shops_path(shop), class: "button tiny"
+
+javascript:
+  $(document).ready(function() {
+    $('.sync_products').on('ajax:success', function(e, data, status, xhr){
+      console.log(data);
+    }).on('ajax:error',function(e, xhr, status, error){
+      console.log(error);
+    });
+  });
