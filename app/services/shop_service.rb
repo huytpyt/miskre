@@ -1,4 +1,41 @@
 class ShopService
+  def self.reset_carrier_service shop
+    if shop.carrier_service_id.nil?
+      result = activate_carrier_service shop
+    else
+      result = deactivate_carrier_service shop
+    end
+    result
+  end
+
+  def self.activate_carrier_service shop
+    begin
+      session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+      ShopifyAPI::Base.activate_session(session)
+      ShopifyAPI::Shop.current
+      carrier_service = ShopifyAPI::CarrierService.new
+      carrier_service.name = "MiskreCarrier"
+      carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
+      carrier_service.service_discovery = false
+      carrier_service.save
+      shop.update(carrier_service_id: carrier_service.id, use_carrier_service: true)
+    rescue 
+      "You need to add payment methods on shopify first!"
+    end
+  end
+
+  def self.deactivate_carrier_service shop
+    session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+    ShopifyAPI::Base.activate_session(session)
+    ShopifyAPI::Shop.current
+    begin
+      ShopifyAPI::CarrierService.delete(shop.carrier_service_id)
+    rescue
+      "You need to add payment methods on shopify first!"
+    end
+    shop.update(use_carrier_service: false, carrier_service_id: nil)
+  end
+
   def self.sync_orders
     Shop.all.each do |shop|
       p shop.name
