@@ -44,6 +44,10 @@
 require 'elasticsearch/model'
 class Product < ApplicationRecord
   include ShopifyApp::SessionStorage
+
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
+  Product.import(force: true)
   # has_many :images, dependent: :destroy
   has_many :images, as: :imageable, dependent: :destroy
 

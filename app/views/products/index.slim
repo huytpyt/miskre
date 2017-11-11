@@ -55,7 +55,19 @@ input#productsResource value="#{products_path()}" type="hidden"
            li.tab-link data-tab="tab-2" My Products
            li.tab-link data-tab="tab-3" Product Requested
         #tab-1.tab-content.current
-          table#my-product-table
+          .row
+            = form_tag products_path, method: :get
+              .column.large-4
+                = label_tag :search, "Enter keywords"
+                = text_field_tag :search
+              .column.large-1
+                = label_tag :search, "."
+                = submit_tag "Search", class: "button pull-right"
+              .column.large-6
+
+          hr
+          = paginate @products
+          table
             = render "product", products: @products
         #tab-2.tab-content
           table#product-table
@@ -68,12 +80,15 @@ input#productsResource value="#{products_path()}" type="hidden"
         .row
           = form_tag products_path, method: :get
           .column.large-4
+            = label_tag :search, "Enter keywords"
+            = text_field_tag :search
+          .column.large-2
             = label_tag :no_link, "Select products don't have google drive link"
             = params[:no_link].present? ? check_box_tag(:no_link, true, :checked) : check_box_tag(:no_link)
-          .column.large-3
+          .column.large-2
             = label_tag :no_weight, "Select products with weight < 10g"
             = params[:no_weight].present? ? check_box_tag(:no_weight, true, :checked) : check_box_tag(:no_weight)
-          .column.large-3
+          .column.large-2
             = label_tag :negative_quantity, "Select products with quantity < 0"
             = params[:negative_quantity].present? ? check_box_tag(:negative_quantity, true, :checked) : check_box_tag(:negative_quantity)
           .column.large-2
@@ -84,7 +99,8 @@ input#productsResource value="#{products_path()}" type="hidden"
            li.tab-link.current data-tab="tab-1" Miskre Products
            li.tab-link data-tab="tab-2" User's Products
         #tab-1.tab-content.current
-          table#product-table
+          = paginate @products
+          table
             = render "product", products: @products
         #tab-2.tab-content
           table#product-table

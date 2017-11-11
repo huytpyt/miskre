@@ -1,10 +1,12 @@
-table
+table#product-table
   thead
     tr
       th Product name
       th Link
       th Status
-      th colspan="3" 
+      th
+      th
+      th
   tbody
     - @request_products.each do |request_product|
       tr

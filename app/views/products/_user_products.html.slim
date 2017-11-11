@@ -1,5 +1,6 @@
 thead
   tr
+    th Photo
     th User name
     th Id
     th Name
@@ -15,6 +16,7 @@ thead
 tbody
   - products.each do |p|
     tr
+      td = image_tag p.images&.first&.file&.url(:medium) || "default.jpg", width: "200"
       td = "#{p.user.name}(#{p.user.email})"
       td = p.id
       - if p.is_bundle

@@ -1,5 +1,6 @@
 thead
   tr
+    th Photo
     th Id
     th Name
     th SKU
@@ -14,6 +15,7 @@ thead
 tbody
   - products.each do |p|
     tr
+      td = image_tag p.images.first&.file&.url(:medium) || "default.jpg", width: "200"
       td = p.id
       - if p.is_bundle
         th = link_to p.name + " [Bundle]", product_path(p)
