@@ -6,8 +6,9 @@ class UserProductsController < ApplicationController
 
 	def approve
 		if @product.approve!
-			if assgin_product(@product)
-				redirect_to request_products_path, notice: 'Successfully!'
+			assgin_product = assgin_product(@product)
+			if assgin_product
+				redirect_to product_path(assgin_product)
 			end
 		end
 	end
@@ -31,7 +32,7 @@ class UserProductsController < ApplicationController
 				quantity = product.quantity
 				compare_at_price = product.compare_at_price
 
-				assign_product = Product.new(name: name, weight: weight, sku: sku, desc: desc, cost: price, quantity: quantity, suggest_price: (price.to_f * 1.5), compare_at_price: compare_at_price, user_id: user_id)
+				assign_product = Product.new(name: name, weight: weight, desc: desc, cost: price, quantity: quantity, suggest_price: (price.to_f * 1.5), compare_at_price: compare_at_price, user_id: user_id)
 				if assign_product.save!
 					supply = create_suppy(assign_product, shop_id, user_id, shopify_product_id)
 					product.user_variants.each do |v|
@@ -50,6 +51,7 @@ class UserProductsController < ApplicationController
 				    image.file_remote_url= "#{request.base_url}/#{img.file_url}"
 				    image.save!
 					end
+					assign_product
 				end
 			end
 		end
