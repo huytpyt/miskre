@@ -12,13 +12,13 @@ class ProductsController < ApplicationController
   def index
     staff_ids = User.where.not(role: "user").ids
     # @products = Product.order(sku: :asc).page params[:page]
-    @products = Product.all.where(shop_owner: false, user_id: [staff_ids, nil])
+    @products = Product.all.where(shop_owner: false, user_id: [staff_ids, nil]).order(id: :desc).page(params[:page])
 
     @request_products = current_user.request_products
-    @my_products = current_user.products.where(shop_owner: false)
+    @my_products = current_user.products.where(shop_owner: false).order(id: :desc)
     if current_user.staff?
       user_ids = User.where(role: "user")
-      @user_products = Product.where(shop_owner: false, user_id: user_ids)
+      @user_products = Product.where(shop_owner: false, user_id: user_ids).order(id: :desc)
     end
     if params[:no_link].present?
       @products = @products.where(product_url: [nil, ""])

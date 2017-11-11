@@ -1,6 +1,9 @@
 p#notice= notice
 h2.text-center  = @product.name
 br
+.row
+  .column
+    = link_to "Add To Shops", add_to_shop_product_path(@product), class: "button pull-right success"
 br
 - if @product.persisted? && @product.images.size > 0
   .row
@@ -13,15 +16,19 @@ hr
   .column.medium-3
     strong Weight:&nbsp;
     = @product.weight
+    |(g)
   .column.medium-3
     strong Length:&nbsp;
     = @product.length
+    |(cm)
   .column.medium-3
     strong Height:&nbsp;
     = @product.height
+    |(cm)
   .column.medium-3
     strong Width:&nbsp;
     = @product.width
+    |(cm)
 hr
 - if @product.is_bundle && @product.variants == []
     .row
@@ -41,17 +48,17 @@ hr
     |$
   .column.medium-3
     strong Suggested Price:&nbsp;
-    = @product.suggest_price
     |$
+    = @product.suggest_price
   .column.medium-3
     strong Compare at price:&nbsp;
-    = @product.compare_at_price
     |$
+    = @product.compare_at_price
   .column.medium-3
     strong Profit:&nbsp;
+    |$
     - if @product.suggest_price && @product.cus_epub && @product.cus_cost && @product.cus_epub
       = current_user.staff? ? ((@product.suggest_price + @product.epub) - (@product.cost + @product.cus_epub)).round(2) : ((@product.suggest_price + @product.epub) - (@product.cus_cost + @product.cus_epub)).round(2)
-    |$
 hr
 br
 br
