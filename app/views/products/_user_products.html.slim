@@ -17,7 +17,7 @@ tbody
   - products.each do |p|
     tr
       - if p.images&.first.present?
-        td = image_tag p.images&.first&.link&.url(:medium) || "default.jpg", width: "200"
+        td = image_tag p.images&.first&.file&.url(:medium) || "default.jpg", width: "200"
       - else
         td = image_tag "default.jpg", width: "200"
       td = "#{p.user.name}(#{p.user.email})"

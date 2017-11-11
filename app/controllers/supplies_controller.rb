@@ -65,7 +65,7 @@ class SuppliesController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
 
   def variant_params
-    params.require(:supply_variant).permit(:price, :compare_at_price)
+    params.require(:supply_variant).permit(:price, :compare_at_price, :option1, :option2, :option3)
   end
   def supply_params
     params.require(:supply).permit(:name, :price, :desc, :original, :keep_custom, :compare_at_price)
