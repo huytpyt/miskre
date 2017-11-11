@@ -55,7 +55,8 @@ input#productsResource value="#{products_path()}" type="hidden"
            li.tab-link data-tab="tab-2" My Products
            li.tab-link data-tab="tab-3" Product Requested
         #tab-1.tab-content.current
-          table#my-product-table
+          = paginate @products
+          table
             = render "product", products: @products
         #tab-2.tab-content
           table#product-table
@@ -84,7 +85,8 @@ input#productsResource value="#{products_path()}" type="hidden"
            li.tab-link.current data-tab="tab-1" Miskre Products
            li.tab-link data-tab="tab-2" User's Products
         #tab-1.tab-content.current
-          table#product-table
+          = paginate @products
+          table
             = render "product", products: @products
         #tab-2.tab-content
           table#product-table
