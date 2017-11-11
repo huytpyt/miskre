@@ -65,7 +65,15 @@ table
                               td = variant.sku
 
           - unless product.is_request
-            = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny', remote: true, method: :post, data: { confirm: 'Are you sure?' }
+            = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny request-product', remote: true, method: :post, data: { confirm: 'Are you sure?' }
       tr
         td colspan="4"
           hr
+
+javascript:
+    $('.request-product').on('ajax:success', function(e, data, status, xhr){
+      alert('Request Successfully Processed');
+    }).on('ajax:error',function(e, xhr, status, error){
+      alert('Error');
+    });
+  
