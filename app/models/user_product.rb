@@ -20,6 +20,8 @@
 #  status             :string           default("")
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  cost               :float            default(0.0)
+#  suggest_price      :float            default(0.0)
 #
 # Indexes
 #
@@ -65,5 +67,23 @@ class UserProduct < ApplicationRecord
 
   def self.requested
     where(is_request: true, status: 'requested')
+  end
+
+  def cus_cost
+    self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
+  end
+
+  def cus_epub
+    us_nation = Nation.find_by_code "US"
+    shipping_type = us_nation.shipping_types.find_by_code "BEUS"
+    weight = self.weight
+    if self.weight < 10
+      weight = 10
+    end
+    if self.weight > 4000
+      weight = 4000
+    end
+    beus_us_cost = CarrierService.cal_cost(shipping_type, weight).to_f
+    (0.2 * beus_us_cost).round(2)
   end
 end

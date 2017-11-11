@@ -1,7 +1,18 @@
 class UserProductsController < ApplicationController
-	before_action :prepare_user_product, only: [:show, :approve]
+	before_action :prepare_user_product, only: [:show, :edit, :update, :approve]
 
 	def show
+	end
+
+	def edit
+	end
+
+	def update
+		if @product.update(user_product_params)
+			redirect_to edit_user_product_path(@product), notice: 'User\'s product was successfully updated.'
+		else
+			render :edit
+		end
 	end
 
 	def approve
@@ -30,9 +41,10 @@ class UserProductsController < ApplicationController
 				weight = product.weight
 				desc = product.desc
 				quantity = product.quantity
-				compare_at_price = product.compare_at_price
+				cost = product.cost
+				suggest_price = product.suggest_price
 
-				assign_product = Product.new(name: name, weight: weight, desc: desc, cost: price, quantity: quantity, suggest_price: (price.to_f * 1.5), compare_at_price: compare_at_price, user_id: user_id)
+				assign_product = Product.new(name: name, weight: weight, desc: desc, cost: cost, quantity: quantity, suggest_price: suggest_price, user_id: user_id)
 				if assign_product.save!
 					supply = create_suppy(assign_product, shop_id, user_id, shopify_product_id)
 					product.user_variants.each do |v|
@@ -69,5 +81,9 @@ class UserProductsController < ApplicationController
           supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
         end
       end
+		end
+
+		def user_product_params
+			params.require(:user_product).permit(:cost, :suggest_price)
 		end
 end

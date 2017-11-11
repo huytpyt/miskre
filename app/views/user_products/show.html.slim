@@ -27,12 +27,14 @@ hr
   .column.medium-12
     strong Desc:&nbsp;
     = raw @product.desc
-hr
-.row
-  .column.medium-3
-    strong Compare at price:&nbsp;
-    = @product.compare_at_price
-    |$
+
+- if @product.user_variants.empty?
+  hr
+  .row
+    .column.medium-3
+      strong Price:&nbsp;
+      = @product.price
+      |$
 hr
 br
 br
@@ -59,9 +61,11 @@ br
               td = variant.quantity
               td = variant.price
               td = variant.sku
+
+br
 .row
   - if current_user.staff?
     - if @product.status != "approved"
-      = link_to "Approve", approve_user_product_path(@product), method: :post, data: { confirm: 'Are you sure?' }
-      |&nbsp;|&nbsp;
+      = link_to "Edit & Approve", edit_user_product_path(@product), class: 'button tiny' 
+      br
   = link_to 'Back', request_products_path

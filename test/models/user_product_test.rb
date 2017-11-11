@@ -20,6 +20,8 @@
 #  status             :string           default("")
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  cost               :float            default(0.0)
+#  suggest_price      :float            default(0.0)
 #
 # Indexes
 #

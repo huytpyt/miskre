@@ -1,0 +1,20 @@
+= form_for product, url: user_product_path(product), method: :put do |f|
+  .row
+    .columns.medium-3
+      .field
+        = f.label :cost, "Cost ($)"
+        = f.number_field :cost, step: :any
+  .row
+    .columns.medium-3
+      .field
+        = f.label :suggest_price, "Suggested Price ($)"
+        = f.number_field :suggest_price, step: :any, :value => f.object.suggest_price.zero? ? product.price : f.object.suggest_price
+    .columns.medium-9
+      h6.p_profit_inline
+
+  .row
+    .columns.small-2.small-centered
+      .actions
+        = f.submit "Save", id: "submit-product", class: 'button alert small'
+        - unless product.cost.zero?
+          = link_to 'Approve', approve_user_product_path(product), class: 'button tiny small', method: :post, data: { confirm: 'Are you sure?' }
