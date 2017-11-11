@@ -34,7 +34,7 @@
               td = link_to t(".report"), report_view_shops_path(shop), class: "button tiny"
 
 #sync_products_modal.reveal.reveal-modal aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
-  h2#modalTitle Sync products
+  h3#modalTitle External products
   .modal_content.hide
   button.close-button data-close="" aria-label="Close modal" type="button"
       span aria-hidden="true" &times
@@ -43,12 +43,12 @@ javascript:
   $(document).ready(function() {
     $('.sync_products').on('ajax:success', function(e, data, status, xhr){
       if (data.status) {
-        console.log(data);
         $.ajax({
           url: data.user_products_url,
           type: "GET",
           dataType: "html",
           success: function (data) {
+            $('#modalTitle').html('External products');
             $('.modal_content').html(data);
             $('#sync_products_modal').foundation('open');
           },
@@ -61,6 +61,8 @@ javascript:
         });
       }
     }).on('ajax:error',function(e, xhr, status, error){
-      console.log(error);
+        $('.modal_content').html('');
+        $('#modalTitle').html('Products Not Found!');
+        $('#sync_products_modal').foundation('open');
     });
   });
