@@ -30,6 +30,8 @@
         - if current_user.staff?
           li class=(params[:controller] == 'nations' ? 'active' : '')
             = link_to "Shipping management", nations_path
+          li class=(params[:controller] == 'shipping_setings' ? 'active' : '')
+            = link_to "Shipping Setting", shipping_setings_path
           li class=(params[:controller] == 'request_products' ? 'active' : '')
             = link_to "Requested products", request_products_path
     .top-bar-right

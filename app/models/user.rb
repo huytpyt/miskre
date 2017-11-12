@@ -29,5 +29,13 @@ class User < ApplicationRecord
     end
     customer = Stripe::Customer.create(:email => self.email)
     self.update(customer_id: customer.id)
-  end    
+  end
+
+  def self.admins
+    where(role: 'admin').order(id: :asc)
+  end 
+
+  def self.master_admin
+    User.admins.first
+  end   
 end
