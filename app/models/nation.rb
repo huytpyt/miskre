@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: nations
+#
+#  id         :integer          not null, primary key
+#  code       :string
+#  name       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class Nation < ApplicationRecord
   has_many :shipping_types, dependent: :destroy
 

@@ -7,6 +7,7 @@ class RequestProductsController < ApplicationController
       return
     end
     @request_products = RequestProduct.all.order(created_at: :desc)
+    @user_products = UserProduct.requested
   end
 
   def show

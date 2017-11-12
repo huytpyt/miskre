@@ -1,3 +1,46 @@
+# == Schema Information
+#
+# Table name: products
+#
+#  id                   :integer          not null, primary key
+#  name                 :string
+#  weight               :integer          default(0)
+#  length               :float            default(0.0)
+#  height               :float            default(0.0)
+#  width                :float            default(0.0)
+#  sku                  :string
+#  desc                 :text
+#  price                :float
+#  compare_at_price     :float
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  shopify_id           :string
+#  cost                 :float
+#  link                 :text
+#  epub                 :float
+#  dhl                  :float
+#  vendor               :string           default("Miskre")
+#  bundle_id            :integer
+#  is_bundle            :boolean          default(FALSE)
+#  quantity             :integer          default(0)
+#  product_ids          :string
+#  user_id              :integer
+#  product_url          :string
+#  fulfillable_quantity :integer
+#  cus_cost             :float
+#  cus_epub             :float
+#  cus_dhl              :float
+#  suggest_price        :float
+#  sale_off             :integer
+#  shop_owner           :boolean          default(FALSE)
+#  shop_id              :integer
+#
+# Indexes
+#
+#  index_products_on_bundle_id  (bundle_id)
+#  index_products_on_user_id    (user_id)
+#
+
 require 'elasticsearch/model'
 class Product < ApplicationRecord
   include ShopifyApp::SessionStorage
@@ -72,7 +115,9 @@ class Product < ApplicationRecord
     # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
     self.cus_cost = self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
     random = rand(2.25 .. 2.75)
-    self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
+    if self.compare_at_price.nil?
+      self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
+    end
     
     self.epub = (0.2 * beus_us_cost).round(2)
     # self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
@@ -84,9 +129,13 @@ class Product < ApplicationRecord
   end
 
   def generate_sku
+    return if self.sku.present?
     p = Product.last
     if p
       last_sku_idx = SKU.index(p.sku)
+      if last_sku_idx.nil?
+        last_sku_idx = -1
+      end
     else
       last_sku_idx = -1
     end

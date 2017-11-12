@@ -78,6 +78,9 @@ Rails.application.routes.draw do
     get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
     patch "global_price_setting", to: "shops#global_price_setting", as: "global_price_setting"
     get "change_price_option", to: "shops#change_price_option", as: "change_price_option"
+    member do
+      get :user_products
+    end
   end
   resources :supplies, only: [:edit, :update, :destroy] do
     get "edit_variant/:variant_id", to: "supplies#edit_variant", as: "edit_variant"
@@ -126,6 +129,12 @@ Rails.application.routes.draw do
     collection { post :import }
   end
 
+  resources :user_products do
+    member do
+      post :approve
+    end
+  end
+
   post 'selectShop', to: 'home#selectShop'
 
   post 'shipping_rates', to: 'carrier_service#shipping_rates'
@@ -138,6 +147,10 @@ Rails.application.routes.draw do
   namespace :api, defaults: {format: :json}, :except => [:edit, :new] do
     resource :product, only: :index do
       get :profit_calculator
+      collection do
+        post 'sync_products/:shop_id', to: 'products#sync_products', as: :sync_products_from_shop
+        post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
+      end
     end
 
     # Routes for API

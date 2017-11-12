@@ -1,3 +1,33 @@
+# == Schema Information
+#
+# Table name: shops
+#
+#  id                    :integer          not null, primary key
+#  shopify_domain        :string           not null
+#  shopify_token         :string           not null
+#  created_at            :datetime
+#  updated_at            :datetime
+#  name                  :string
+#  domain                :string
+#  user_id               :integer
+#  use_carrier_service   :boolean
+#  carrier_service_id    :string
+#  cost_rate             :float            default(4.0)
+#  shipping_rate         :float            default(0.8)
+#  global_setting_enable :boolean          default(FALSE)
+#  random_from           :float            default(2.25)
+#  random_to             :float            default(2.75)
+#
+# Indexes
+#
+#  index_shops_on_shopify_domain  (shopify_domain) UNIQUE
+#  index_shops_on_user_id         (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
+
 regular_shop:
   shopify_domain: 'regular-shop.myshopify.com'
   shopify_token: 'token'

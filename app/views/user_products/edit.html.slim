@@ -1,0 +1,12 @@
+.edit-product-page
+  .page-header
+    h1 Editing & Approve User's Product
+  .row
+    .column.medium-12
+      = render 'form', product: @product
+
+      br
+      = link_to 'Back', user_product_path(@product)
+
+- unless @product.cost.zero?
+  = render "products/profit_calculator"
