@@ -6,6 +6,10 @@ class ShippingSetingsController < ApplicationController
   def index
     @nations = current_user.user_nations
     @shops = current_user.shops
+    if current_user == User.master_admin
+      ceo = User.find_by_email("duy@miskre.com")
+      @nations = ceo.user_nations if ceo.present?
+    end
   end
 
   def setting

@@ -25,7 +25,7 @@ class User < ApplicationRecord
 
   def create_customer
     if self.user?
-      ShippingService.sync_shipping_for_user self
+      ShippingService.delay.sync_shipping_for_user self
     end
     customer = Stripe::Customer.create(:email => self.email)
     self.update(customer_id: customer.id)
@@ -38,4 +38,8 @@ class User < ApplicationRecord
   def self.master_admin
     User.admins.first
   end   
+
+  def self.ceo
+    User.find_by_email("duy@miskre.com")
+  end
 end
