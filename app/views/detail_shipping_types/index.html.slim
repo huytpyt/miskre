@@ -17,7 +17,7 @@
             td= detail_shipping_type.weight_from
             td= detail_shipping_type.weight_to
             td= detail_shipping_type.cost
-            td= current_user.staff? ? detail_shipping_type.handling_fee : detail_shipping_type.handling_fee + 0.5
+            td= detail_shipping_type.handling_fee + 0.5
             - if current_user.staff?
               td= link_to 'Edit', edit_nation_shipping_type_detail_shipping_type_path(params[:nation_id], params[:shipping_type_id], detail_shipping_type)
               td= link_to 'Destroy', nation_shipping_type_detail_shipping_type_path(params[:nation_id], params[:shipping_type_id], detail_shipping_type), method: :delete, data:  {confirm: 'Are you sure?'}
