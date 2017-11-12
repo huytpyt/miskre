@@ -88,11 +88,11 @@ class ShippingSetingsController < ApplicationController
 
   def admin_default_shipping_setting
     return if current_user.user?
-    master_admin = User.master_admin
-    if master_admin
+    ceo = User.ceo
+    if ceo
       Nation.all.each do |nation|
-        admin_nation = master_admin.user_nations.find_or_create_by!(code: nation.code, name: nation.name)
-        sync_this_nation(master_admin, nation)
+        admin_nation = ceo.user_nations.find_or_create_by!(code: nation.code, name: nation.name)
+        sync_this_nation(ceo, nation)
       end
     end
   end
