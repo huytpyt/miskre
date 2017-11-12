@@ -25,6 +25,10 @@
             - shipping_type = user_shipping_type&.shipping_type
             - if shipping_type.present?
               - detail = shipping_type.has_handling ? shipping_type.detail_shipping_types : shipping_type.detail_no_handlings
+              - min_weight = detail.minimum(:weight_from)
+              - max_weight = detail.maximum(:weight_to)
+              - min_item = detail.where(weight_from: min_weight).first
+              - max_item = detail.where(weight_to: max_weight).last
               .column.item
                 .card
                   .card-divider
@@ -38,7 +42,7 @@
                   .card-section
                     = shipping_type.time_range
                     br
-                    |weight: #{detail.first&.weight_from&.round}g -> #{detail.last&.weight_to&.round}g
+                    |weight: #{min_weight}g -> #{max_weight}g
                     br
                     - if shipping_type.has_handling
                       |Cost Per KG + Handling Fee:
@@ -47,15 +51,15 @@
                         - if detail.first&.handling_fee.present?
                           |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5}
                       - else
-                        - if detail.first&.handling_fee.present? && detail.last&.handling_fee.present?
-                          |$#{detail.first&.cost} + $#{detail.first&.handling_fee + 0.5} -> $#{detail.last&.cost} + $#{detail.last&.handling_fee + 0.5}
+                        - if min_item.handling_fee.present? && max_item&.handling_fee.present?
+                          |$#{min_item&.cost} + $#{min_item&.handling_fee + 0.5} -> $#{max_item&.cost} + $#{max_item&.handling_fee + 0.5}
                     - else
                       - if detail.size == 1
                         - if detail.first&.cost.present?
                           |Cost: $#{detail.first&.cost + 0.5}
                       - else
-                        - if detail.first&.cost.present? && detail.last&.cost.present?
-                          |Cost: $#{detail.first&.cost + 0.5} -> $#{detail.last&.cost + 0.5}
+                        - if min_item&.cost.present? && max_item&.cost.present?
+                          |Cost: $#{min_item&.cost + 0.5} -> $#{max_item&.cost + 0.5}
                     br
                     = link_to "Detail", shipping_type.has_handling ? nation_shipping_type_detail_shipping_types_path(main_nation, shipping_type) : nation_shipping_type_detail_no_handlings_path(main_nation, shipping_type)
                     br
