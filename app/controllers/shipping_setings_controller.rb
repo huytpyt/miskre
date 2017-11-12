@@ -100,7 +100,7 @@ class ShippingSetingsController < ApplicationController
   def sync_this_nation(admin, nation)
     nation.shipping_types.each do |shipping_type|
       admin_nation = admin.user_nations.find_by_code(nation.code) || admin.user_nations.create(code: nation.code, name: nation.name)
-      admin_shipping_type = admin_nation.user_shipping_types.find_by_shipping_type_id(shipping_type.id) || admin_nation.user_shipping_types.create(shipping_type_id: shipping_type.id)
+      admin_shipping_type = admin_nation.user_shipping_types.find_by_shipping_type_id(shipping_type.id) || admin_nation.user_shipping_types.create(shipping_type_id: shipping_type.id, active: false)
       admin_shipping_type.shipping_settings.create(min_price: 0, max_price: "infinity", percent: 100, packet_name: "#{shipping_type.code} (#{shipping_type.time_range})") unless admin_shipping_type.shipping_settings.present?
     end
   end
