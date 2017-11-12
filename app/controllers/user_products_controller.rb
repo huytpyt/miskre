@@ -47,15 +47,15 @@ class UserProductsController < ApplicationController
 				assign_product = Product.new(name: name, weight: weight, desc: desc, cost: cost, quantity: quantity, suggest_price: suggest_price, user_id: user_id)
 				if assign_product.save!
 					supply = create_suppy(assign_product, shop_id, user_id, shopify_product_id)
-					product.user_variants.each do |v|
+					product.user_variants.each_with_index do |v, index|
 						option1 = v.option1
-  					option2 = v.option2
-  					option3 = v.option3
-  					quantity = v.quantity
-  					price = v.price
-  					sku = v.sku
-  					compare_at_price = v.compare_at_price
-  					Variant.create!(option1: option1, option2: option2, option3: option3, quantity: quantity, price: price, sku: sku, user_id: user_id, compare_at_price: compare_at_price, product_id: assign_product.id)
+  						option2 = v.option2
+  						option3 = v.option3
+  						quantity = v.quantity
+  						price = v.price
+  						sku = assign_product.sku + index.to_s.rjust(3, "0")
+  						compare_at_price = v.compare_at_price
+  						Variant.create!(option1: option1, option2: option2, option3: option3, quantity: quantity, price: price, sku: sku, user_id: user_id, compare_at_price: compare_at_price, product_id: assign_product.id)
 					end
 
 					product.images.each do |img|

@@ -197,9 +197,9 @@ class ShopifyCommunicator
       { "attachment" => encoded_content }
     end
     unless supply.supply_variants.empty?
-      shopify_product.options = product.options.collect do |o|
-        { "name" => o.name.capitalize }
-      end
+      # shopify_product.options = product.options.collect do |o|
+      #   { "name" => o.name.capitalize }
+      # end
       variants = supply.supply_variants.collect do |v|
         {
           'option1': v.option1,
@@ -221,7 +221,6 @@ class ShopifyCommunicator
         'sku': product.sku
       }]
     end
-
     shopify_product.variants = variants
     shopify_product.save
   end

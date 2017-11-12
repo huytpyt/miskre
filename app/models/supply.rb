@@ -45,7 +45,7 @@ class Supply < ApplicationRecord
   has_many :images, as: :imageable, dependent: :destroy
   has_many :supply_variants
 
-  after_update :sync_this_supply
+  after_commit :sync_this_supply
 
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}
