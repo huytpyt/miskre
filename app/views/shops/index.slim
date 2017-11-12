@@ -34,14 +34,24 @@
               td = link_to t(".report"), report_view_shops_path(shop), class: "button tiny"
 
 #sync_products_modal.reveal.reveal-modal aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
-  h3#modalTitle External products
+  h3#modalTitle.text-center External products
+  .modal_loading.text-center
+    i.fa.fa-spinner.fa-spin.fa-4x.fa-spinner aria-hidden="true"
+    br
+    br
+    h4 Loading...
   .modal_content.hide
   button.close-button data-close="" aria-label="Close modal" type="button"
       span aria-hidden="true" &times
 
 javascript:
   $(document).ready(function() {
-    $('.sync_products').on('ajax:success', function(e, data, status, xhr){
+    $('.sync_products').on('ajax:beforeSend', function(e, data, status, xhr){
+      $('.modal_content').html('');
+      $('.modal_content').addClass('hide');
+      $('.modal_loading').removeClass('hide');
+      $('#sync_products_modal').foundation('open');
+    }).on('ajax:success', function(e, data, status, xhr){
       if (data.status) {
         $.ajax({
           url: data.user_products_url,
@@ -50,12 +60,13 @@ javascript:
           success: function (data) {
             $('#modalTitle').html('External products');
             $('.modal_content').html(data);
-            $('#sync_products_modal').foundation('open');
+            // $('#sync_products_modal').foundation('open');
           },
           error: function (xhr, status) {
               console.log("Sorry, there was a problem!");
           },
           complete: function (xhr, status) {
+            $('.modal_loading').addClass('hide');
             $('.modal_content').removeClass('hide');
           }
         });
