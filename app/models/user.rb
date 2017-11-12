@@ -32,6 +32,7 @@
 #
 
 class User < ApplicationRecord
+  include HasAccessToken
   extend Enumerize
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -59,9 +60,21 @@ class User < ApplicationRecord
 
   def create_customer
     if self.user?
-      ShippingService.sync_shipping_for_user self
+      ShippingService.delay.sync_shipping_for_user self
     end
     customer = Stripe::Customer.create(:email => self.email)
     self.update(customer_id: customer.id)
-  end    
+  end
+
+  def self.admins
+    where(role: 'admin').order(id: :asc)
+  end 
+
+  def self.master_admin
+    User.admins.first
+  end   
+
+  def self.ceo
+    User.find_by_email("duy@miskre.com")
+  end
 end

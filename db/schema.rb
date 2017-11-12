@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 20171111032555) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.integer  "product_id"
+    t.string  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"

@@ -152,6 +152,18 @@ Rails.application.routes.draw do
         post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
       end
     end
+
+    # Routes for API
+    namespace :v1 do
+      resource :test, only: :show
+      resources :users, defaults: {scope: :users}, only: :show do
+        scope module: 'resource', as: :users do
+          collection do
+            resource :session
+          end
+        end
+      end
+    end
   end
 
   mount ShopifyApp::Engine, at: '/shopify'
