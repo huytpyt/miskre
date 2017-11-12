@@ -1,10 +1,15 @@
 class ShippingSetingsController < ApplicationController
   before_action :get_shipping, only: [:edit, :update, :destroy]
   before_action :check_authorization, except: [:index, :update_carrier_service]
+  before_action :admin_default_shipping_setting, only: [:index]
 
   def index
     @nations = current_user.user_nations
     @shops = current_user.shops
+    if current_user == User.master_admin
+      ceo = User.find_by_email("duy@miskre.com")
+      @nations = ceo.user_nations if ceo.present?
+    end
   end
 
   def setting
@@ -78,6 +83,25 @@ class ShippingSetingsController < ApplicationController
     shipping_type = UserShippingType.find(params[:shipping_type_id])
     unless shipping_type&.user_nation&.user == current_user
       redirect_to root_path
+    end
+  end
+
+  def admin_default_shipping_setting
+    return if current_user.user?
+    master_admin = User.master_admin
+    if master_admin
+      Nation.all.each do |nation|
+        admin_nation = master_admin.user_nations.find_or_create_by!(code: nation.code, name: nation.name)
+        sync_this_nation(master_admin, nation)
+      end
+    end
+  end
+
+  def sync_this_nation(admin, nation)
+    nation.shipping_types.each do |shipping_type|
+      admin_nation = admin.user_nations.find_by_code(nation.code) || admin.user_nations.create(code: nation.code, name: nation.name)
+      admin_shipping_type = admin_nation.user_shipping_types.find_by_shipping_type_id(shipping_type.id) || admin_nation.user_shipping_types.create(shipping_type_id: shipping_type.id)
+      admin_shipping_type.shipping_settings.create(min_price: 0, max_price: "infinity", percent: 100, packet_name: "#{shipping_type.code} (#{shipping_type.time_range})") unless admin_shipping_type.shipping_settings.present?
     end
   end
 end
