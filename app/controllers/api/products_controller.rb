@@ -1,4 +1,4 @@
-class Api::ProductsController < Api::ApiController
+class Api::ProductsController < ApplicationController
 	before_action :prepare_nation, only: :profit_calculator
 
 	def profit_calculator

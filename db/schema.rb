@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108021447) do
+ActiveRecord::Schema.define(version: 20171109030827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_tokens", force: :cascade do |t|
+    t.string   "scope"
+    t.string   "access_token"
+    t.datetime "expires_at"
+    t.string   "resource_type", null: false
+    t.integer  "resource_id",   null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["access_token"], name: "index_access_tokens_on_access_token", unique: true, using: :btree
+    t.index ["resource_type", "resource_id"], name: "index_access_tokens_on_resource_type_and_resource_id", using: :btree
+  end
 
   create_table "billings", force: :cascade do |t|
     t.integer  "status"
@@ -91,7 +103,7 @@ ActiveRecord::Schema.define(version: 20171108021447) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.string   "product_id"
+    t.string  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"
