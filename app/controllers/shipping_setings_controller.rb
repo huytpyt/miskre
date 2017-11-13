@@ -4,11 +4,11 @@ class ShippingSetingsController < ApplicationController
   before_action :admin_default_shipping_setting, only: [:index]
 
   def index
-    @nations = current_user.user_nations
+    @nations = current_user.user_nations.page(params[:page]).per(10)
     @shops = current_user.shops
     if current_user == User.master_admin
       ceo = User.find_by_email("duy@miskre.com")
-      @nations = ceo.user_nations if ceo.present?
+      @nations = ceo.user_nations.page(params[:page]).per(10) if ceo.present?
     end
   end
 
@@ -81,7 +81,7 @@ class ShippingSetingsController < ApplicationController
 
   def check_authorization
     shipping_type = UserShippingType.find(params[:shipping_type_id])
-    unless shipping_type&.user_nation&.user == current_user
+    unless shipping_type&.user_nation&.user == current_user || current_user.admin?
       redirect_to root_path
     end
   end
