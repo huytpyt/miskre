@@ -10,6 +10,13 @@ class Api::V1::BaseController < Api::ApiController
 
 	before_action :authenticate_any!, if: :skip_new_session
 
+  before_filter :add_allow_credentials_headers
+
+  def add_allow_credentials_headers
+    response.headers['Access-Control-Allow-Origin'] = request.headers['Origin'] || '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+  end 
+
 	def headers
     request.env
   end
