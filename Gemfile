@@ -76,6 +76,9 @@ gem 'jquery-datatables-rails', '~> 3.4'
 gem 'chosen-rails', '~> 1.5', '>= 1.5.2'
 gem 'vuejs-rails', '~> 2.4', '>= 2.4.2'
 
+gem 'bootstrap-sass', '~> 3.3.7'
+gem 'x-editable-rails'
+
 group :development do
   gem 'capistrano', '~> 3.9'
   gem 'capistrano-rails', '~> 1.3'

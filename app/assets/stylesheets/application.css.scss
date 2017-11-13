@@ -16,9 +16,10 @@
  *= require foundation
  *= require dropzone
  *= require chosen
+ *= require editable/bootstrap-editable
  *= require daterangepicker
  *= stub login/welcome.css
- *= require_tree .
+ *= require_tree ./login
  *= require_self
  */
 

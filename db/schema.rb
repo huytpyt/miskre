@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 20171111032555) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.string  "product_id"
+    t.integer  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"
@@ -342,10 +342,10 @@ ActiveRecord::Schema.define(version: 20171111032555) do
     t.float    "compare_at_price"
     t.integer  "quantity",           default: 0
     t.string   "shopify_product_id"
-    t.integer  "user_id"
-    t.integer  "shop_id"
     t.boolean  "is_request",         default: false, null: false
     t.string   "status",             default: ""
+    t.integer  "user_id"
+    t.integer  "shop_id"
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
     t.float    "cost",               default: 0.0

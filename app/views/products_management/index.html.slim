@@ -19,10 +19,17 @@
           tr 
             td = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
             td = product.sku
-            td = product.name 
+            td
+              a#product_name href="#" data-type="text" data-pk="1" #{product.name}
             td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
             td = product.variants&.pluck(:sku)&.join(", ")
             td = product.cost 
             td = product.suggest_price
             th = product.weight
             th = "#{product.width} - #{product.length}  #{product.height}"
+
+javascript:
+
+  $(document).ready(function() {
+    $('#product_name').editable();
+  });
