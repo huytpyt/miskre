@@ -23,9 +23,12 @@
               a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}
             td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
             td = product.variants&.pluck(:sku)&.join(", ")
-            td = product.cost 
-            td = product.suggest_price
-            th = product.weight
+            td 
+              a.edit_product_cost#cost href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.cost}
+            td 
+              a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
+            th
+              a.edit_product_weight#weight href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.weight} 
             th = "#{product.width} - #{product.length}  #{product.height}"
 
 javascript:
@@ -39,5 +42,32 @@ javascript:
       url: "#{update_product_api_product_path}",
       method: 'PUT',
       title: 'Enter product name'
+    });
+    $('.edit_product_cost').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter cost (USD)'
+    });
+    $('.edit_product_suggest_price').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter price (USD)'
+    });
+    $('.edit_product_weight').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter weight (g)'
     });
   });
