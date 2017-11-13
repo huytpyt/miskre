@@ -1,74 +1,16 @@
 table
   thead
     tr
+      th Photo
       th Name
-      th Shopify product ID
-      th Price ($)
       th Request
   tbody
     - @user_products.each do |product|
       tr
+        td = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
         td = link_to product.name, "javascript:void(0);", onclick: "$(this).parent().parent().next().toggleClass('hide');"
-        td = product.shopify_product_id
-        td = product.price
-        td = product.is_request ? "Requested" : "Not yet"
-      tr.hide
-        td colspan="4"
-          - if product.images.size > 0
-            .row
-              #images-preview
-                - product.images.each do |pi|
-                  .columns.medium-3
-                    = image_tag pi.file.url(:medium)
-          .row
-            .column.medium-3
-              strong Weight(g):&nbsp;
-              = product.weight
-            .column.medium-3
-              strong Length:&nbsp;
-              = product.length
-            .column.medium-3
-              strong Height:&nbsp;
-              = product.height
-            .column.medium-3
-              strong Width:&nbsp;
-              = product.width
-          .row
-            .column.medium-12
-              strong Desc:&nbsp;
-              = raw product.desc
-          
-          - unless product.user_variants.empty?
-            .row
-              .column.medium-12
-                h5 Variants
-                #variants
-                  .row
-                    .column
-                      table
-                        thead
-                          tr
-                            th Option 1
-                            th Option 2
-                            th Option 3
-                            th Quantity
-                            th Price ($)
-                            th SKU
-                        tbody
-                          - product.user_variants.each do |variant|
-                            tr
-                              td = variant.option1
-                              td = variant.option2
-                              td = variant.option3
-                              td = variant.quantity
-                              td = variant.price
-                              td = variant.sku
-
-          - unless product.is_request
-            = link_to "Request this product", request_user_product_api_product_path(product), class: 'button tiny request-product', remote: true, method: :post, data: { confirm: 'Are you sure?' }
-      tr
-        td colspan="4"
-          hr
+        td = product.is_request ? "Requested" : link_to("Request this product", request_user_product_api_product_path(product), class: 'button tiny request-product', remote: true, method: :post, data: { confirm: 'Are you sure?' })
+     
 
 javascript:
     $('.request-product').on('ajax:success', function(e, data, status, xhr){

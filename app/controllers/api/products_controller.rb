@@ -44,18 +44,13 @@ class Api::ProductsController < ApplicationController
 	def sync_products
 		shop_id = params[:shop_id]
 		if shop_id
-			products = SyncProductService.fetch_by_shop(shop_id)
+                    shop = Shop.find(shop_id)
+			SyncProductService.delay.fetch_by_shop(shop_id)
+                   products = UserProduct.where(shop_id:  shop_id)
 			if products.empty?
 				render json: {status: false, message: 'Not found!'}, status: 404
 			else
-				shop = Shop.find(shop_id)
-				user_id = shop.user_id
-				sync_products = save_sync_products(products, user_id, shop_id)
-				if sync_products
-					render json: {status: true, user_products_url: user_products_shop_url(shop), message: 'Successfully!'}, status: 200
-				else
-					render json: {status: false, message: "Can not save sync products!"}, status: 500
-				end
+			   render json: {status: true, user_products_url: user_products_shop_url(shop), message: 'Successfully!'}, status: 200
 			end
 		else
 			render json: {status: false, message: "Missing shop_id parameter!"}, status: 500
@@ -71,81 +66,11 @@ class Api::ProductsController < ApplicationController
     end
   end
 
-	private
+  private
 
-		def prepare_nation
+    def prepare_nation
       @national = Nation.find_by_code('US')
       @national ||= Nation.first
-    end
-
-    def save_sync_products(sync_products, user_id, shop_id)
-    	sync_products.each do |pro|
-    		pro_name = pro.title
-    		pro_desc = pro.body_html
-    		variants = pro.variants
-    		unless variants.empty?
-	    		variant = variants.first
-	  			variant_product_id = variant.product_id
-	  			variant_title = variant.title
-	  			variant_price = variant.price
-	  			variant_sku = variant.sku
-	  			variant_grams = variant.grams
-	  			variant_inventory_quantity = variant.inventory_quantity > 0 ? variant.inventory_quantity : 0
-	  			variant_weight = variant.weight
-	  			variant_weight_unit = variant.weight_unit
-	  			variant_compare_at_price = variant.compare_at_price
-	  			ActiveRecord::Base.transaction do
-		  			unless UserProduct.exists?(shopify_product_id: variant_product_id)
-			  			user_product = UserProduct.new(shopify_product_id: variant_product_id,name: pro_name, weight: convert_to_gram(variant_weight, variant_weight_unit), sku: variant_sku, desc: pro_desc, price: variant_price, quantity: variant_inventory_quantity, compare_at_price: variant_compare_at_price, user_id: user_id, shop_id: shop_id)
-			  			user_product.save!
-			    		if user_product
-			    			if variants.count > 1
-			    				sku_str = ""
-				  				variants.each_with_index do |v, index|
-				  					option1 = v.option1
-				  					option2 = v.option2
-				  					option3 = v.option3
-				  					quantity = v.inventory_quantity > 0 ? v.inventory_quantity : 0
-				  					price = v.price
-				  					sku = v.sku
-				  					sku_str += (index+1 == variants.count) ? sku : "#{sku}-"
-				  					compare_at_price = v.compare_at_price
-				  					new_variant = UserVariant.new(option1: option1, option2: option2, option3: option3, quantity: quantity, price: price, sku: sku, compare_at_price: compare_at_price, user_product_id: user_product.id)
-				  					new_variant.save!
-				  					user_product.update(sku: sku_str)
-				  				end
-				  			end
-
-				  			#Save image
-			    			img = pro.image
-			    			if img && img.src
-				    			image = user_product.images.new
-							    image.file_remote_url= img.src
-							    image.save!
-							  end
-			    		end
-			    	end
-		    	end
-	    	end
-    	end
-    	true
-    rescue
-    	false
-    end
-
-    def convert_to_gram(weight, weight_unit)
-    	w = case weight_unit
-    	when "lb"
-    		weight * 453.59237
-    	when "g"
-    		weight
-    	when "kg"
-    		weight * 1000
-    	when "oz"
-    		weight * 28.3495231
-    	end
-    	w = w > 4000 ? 4000 : w
-    	w = w < 10 ? 10 : w
     end
 
 end
