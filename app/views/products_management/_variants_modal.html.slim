@@ -1,0 +1,29 @@
+/! Modal
+.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1"  id="variantsModal-#{product_id}"
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        h4#myModalLabel.modal-title Edit #{product_name}'s variants
+      .modal-body
+        table
+          thead
+            tr
+              th Option 1
+              th Option 2
+              th Option 3
+              th SKU
+              th Quantity
+          tbody
+            - variants.each do |variant|
+              tr.option v-for="variant in variants"
+                td v-text="variant.option1" = variant.option1
+                td v-text="variant.option2" = variant.option2
+                td v-text="variant.option43" = variant.option3
+                td v-text="variant.sku" = variant.sku
+                td v-text="variant.quantity" = variant.quantity ? variant.quantity : 0
+  
+      .modal-footer
+        button.btn.btn-default data-dismiss="modal" type="button"  Close
+        button.btn.btn-primary type="button"  Save changes

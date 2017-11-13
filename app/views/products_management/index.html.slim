@@ -22,7 +22,9 @@
             td
               a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}
             td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
-            td = product.variants&.pluck(:sku)&.join(", ")
+            td 
+              = link_to product.variants&.pluck(:sku)&.join(", "), "javascript:void(0);", class: "variants_modal", data: {id: product.id}, onclick: "$('#variantsModal-#{product.id}').modal('show')"
+              = render "variants_modal", product_id: product.id, product_name: product.name, variants: product.variants
             td 
               a.edit_product_cost#cost href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.cost}
             td 
@@ -69,5 +71,10 @@ javascript:
       url: "#{update_product_api_product_path}",
       method: 'PUT',
       title: 'Enter weight (g)'
+    });
+    $( ".variants_modal" ).click(function() {
+      // var product_id = $(this).attr('data-id');
+
+      // // $('#variantsModal').modal('show');
     });
   });
