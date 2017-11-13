@@ -9,7 +9,7 @@
           th Name
           th
           th
-          - if current_user.admin?
+          - if current_user == User.master_admin
             th
       tbody
         - @nations.each do |nation|
@@ -18,10 +18,10 @@
             td = nation.name
             td = link_to "Shipping types", nation_shipping_types_path(nation)
             td = link_to 'Destroy', nation, method: :delete, data:  {confirm: 'Are you sure?' }
-            - if current_user.admin?
+            - if current_user == User.master_admin
               td = link_to "Sync this nation", sync_nation_nations_path(nation)
     br
     = link_to 'New Nation', new_nation_path
-    - if current_user.admin?
+    - if current_user == User.master_admin
       |&nbsp;|&nbsp;
       = link_to "Sync shipping settings", sync_shipping_nations_path

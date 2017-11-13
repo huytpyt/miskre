@@ -82,6 +82,12 @@ class ShopsController < ApplicationController
     @product_list = Product.where(id: product_ids).select(:id, :name)
   end
 
+  def user_products
+    @shop = Shop.find(params[:id])
+    @user_products = @shop.user_products
+    render layout: false
+  end
+
   private
 
   def prepare_nation

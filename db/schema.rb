@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108021447) do
+ActiveRecord::Schema.define(version: 20171111032555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_tokens", force: :cascade do |t|
+    t.string   "scope"
+    t.string   "access_token"
+    t.datetime "expires_at"
+    t.string   "resource_type", null: false
+    t.integer  "resource_id",   null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["access_token"], name: "index_access_tokens_on_access_token", unique: true, using: :btree
+    t.index ["resource_type", "resource_id"], name: "index_access_tokens_on_resource_type_and_resource_id", using: :btree
+  end
 
   create_table "billings", force: :cascade do |t|
     t.integer  "status"
@@ -91,7 +103,7 @@ ActiveRecord::Schema.define(version: 20171108021447) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.string   "product_id"
+    t.string  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"
@@ -186,10 +198,10 @@ ActiveRecord::Schema.define(version: 20171108021447) do
     t.integer  "user_id"
     t.string   "product_url"
     t.integer  "fulfillable_quantity"
+    t.float    "cus_cost"
     t.float    "cus_epub"
     t.float    "cus_dhl"
     t.float    "suggest_price"
-    t.float    "cus_cost"
     t.integer  "sale_off"
     t.boolean  "shop_owner",           default: false
     t.integer  "shop_id"
@@ -318,6 +330,30 @@ ActiveRecord::Schema.define(version: 20171108021447) do
     t.index ["user_id"], name: "index_user_nations_on_user_id", using: :btree
   end
 
+  create_table "user_products", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "weight"
+    t.integer  "length"
+    t.integer  "height"
+    t.integer  "width"
+    t.string   "sku"
+    t.text     "desc"
+    t.float    "price"
+    t.float    "compare_at_price"
+    t.integer  "quantity",           default: 0
+    t.string   "shopify_product_id"
+    t.integer  "user_id"
+    t.integer  "shop_id"
+    t.boolean  "is_request",         default: false, null: false
+    t.string   "status",             default: ""
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.float    "cost",               default: 0.0
+    t.float    "suggest_price",      default: 0.0
+    t.index ["shop_id"], name: "index_user_products_on_shop_id", using: :btree
+    t.index ["user_id"], name: "index_user_products_on_user_id", using: :btree
+  end
+
   create_table "user_shipping_types", force: :cascade do |t|
     t.integer  "user_nation_id"
     t.integer  "shipping_type_id"
@@ -325,6 +361,21 @@ ActiveRecord::Schema.define(version: 20171108021447) do
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.index ["user_nation_id"], name: "index_user_shipping_types_on_user_nation_id", using: :btree
+  end
+
+  create_table "user_variants", force: :cascade do |t|
+    t.string   "name"
+    t.string   "option1"
+    t.string   "option2"
+    t.string   "option3"
+    t.integer  "quantity",         default: 0
+    t.float    "price"
+    t.string   "sku"
+    t.float    "compare_at_price"
+    t.integer  "user_product_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.index ["user_product_id"], name: "index_user_variants_on_user_product_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -378,6 +429,7 @@ ActiveRecord::Schema.define(version: 20171108021447) do
   add_foreign_key "supplies", "users"
   add_foreign_key "user_nations", "users"
   add_foreign_key "user_shipping_types", "user_nations"
+  add_foreign_key "user_variants", "user_products"
   add_foreign_key "variants", "products"
   add_foreign_key "variants", "users"
 end

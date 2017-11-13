@@ -17,6 +17,7 @@
             th
             th
             th
+            th
         tbody
           - @shops.each do |shop|
             tr
@@ -28,4 +29,51 @@
               td = link_to t('.disconnect'), shop, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button tiny alert'
               td = link_to t(".product_list"), shop_path(shop), class: "button tiny success"
               td = link_to t(".bundle_manager"), shop_bundle_manager_path(shop), class: "button tiny"
+              - if current_user.user?
+                td = link_to t(".sync_products"), sync_products_from_shop_api_product_path(shop), class: "button tiny success sync_products", method: :post, remote: true
               td = link_to t(".report"), report_view_shops_path(shop), class: "button tiny"
+
+#sync_products_modal.reveal.reveal-modal aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
+  h3#modalTitle.text-center External products
+  .modal_loading.text-center
+    i.fa.fa-spinner.fa-spin.fa-4x.fa-spinner aria-hidden="true"
+    br
+    br
+    h4 Loading...
+  .modal_content.hide
+  button.close-button data-close="" aria-label="Close modal" type="button"
+      span aria-hidden="true" &times
+
+javascript:
+  $(document).ready(function() {
+    $('.sync_products').on('ajax:beforeSend', function(e, data, status, xhr){
+      $('.modal_content').html('');
+      $('.modal_content').addClass('hide');
+      $('.modal_loading').removeClass('hide');
+      $('#sync_products_modal').foundation('open');
+    }).on('ajax:success', function(e, data, status, xhr){
+      if (data.status) {
+        $.ajax({
+          url: data.user_products_url,
+          type: "GET",
+          dataType: "html",
+          success: function (data) {
+            $('#modalTitle').html('External products');
+            $('.modal_content').html(data);
+            // $('#sync_products_modal').foundation('open');
+          },
+          error: function (xhr, status) {
+              console.log("Sorry, there was a problem!");
+          },
+          complete: function (xhr, status) {
+            $('.modal_loading').addClass('hide');
+            $('.modal_content').removeClass('hide');
+          }
+        });
+      }
+    }).on('ajax:error',function(e, xhr, status, error){
+        $('.modal_content').html('');
+        $('#modalTitle').html('Products Not Found!');
+        $('#sync_products_modal').foundation('open');
+    });
+  });

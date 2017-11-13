@@ -1,3 +1,39 @@
+# == Schema Information
+#
+# Table name: supplies
+#
+#  id                   :integer          not null, primary key
+#  product_id           :integer
+#  shop_id              :integer
+#  shopify_product_id   :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  desc                 :text
+#  price                :float
+#  name                 :string
+#  original             :boolean          default(TRUE)
+#  user_id              :integer
+#  fulfillable_quantity :integer
+#  epub                 :float
+#  dhl                  :float
+#  cost_epub            :float
+#  cost_dhl             :float
+#  compare_at_price     :float
+#  cost                 :float
+#  keep_custom          :boolean          default(FALSE)
+#  is_deleted           :boolean          default(FALSE)
+#
+# Indexes
+#
+#  index_supplies_on_product_id  (product_id)
+#  index_supplies_on_shop_id     (shop_id)
+#  index_supplies_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
+
 class Supply < ApplicationRecord
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
@@ -9,7 +45,7 @@ class Supply < ApplicationRecord
   has_many :images, as: :imageable, dependent: :destroy
   has_many :supply_variants
 
-  after_update :sync_this_supply
+  after_commit :sync_this_supply
 
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}
