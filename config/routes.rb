@@ -152,6 +152,7 @@ Rails.application.routes.draw do
       collection do
         post 'sync_products/:shop_id', to: 'products#sync_products', as: :sync_products_from_shop
         post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
+        put '/update', to: 'products#update', as: :update_product
       end
     end
 

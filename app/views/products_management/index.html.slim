@@ -1,4 +1,4 @@
-.row
+.row.main-page
   .column
     h3.text-center Products management
     = paginate @products
@@ -20,7 +20,7 @@
             td = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
             td = product.sku
             td
-              a#product_name href="#" data-type="text" data-pk="1" #{product.name}
+              a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}
             td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
             td = product.variants&.pluck(:sku)&.join(", ")
             td = product.cost 
@@ -31,5 +31,13 @@
 javascript:
 
   $(document).ready(function() {
-    $('#product_name').editable();
+    $('.edit_product_name').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter product name'
+    });
   });

@@ -71,6 +71,21 @@ class Api::ProductsController < ApplicationController
     end
   end
 
+  def update
+  	product_id = params[:id]
+  	if Product.exists?(product_id)
+	  	product_params = params.require(:undefined).permit!
+	  	product = Product.find(product_id)
+	  	if product.update(product_params)
+	  		render json: {status: true, product: product}, status: 200
+	  	else
+	  		render json: {status: false, message: product.errors.full_messages}, status: 500
+	  	end
+	  else
+	  	render json: {status: false, message: "Product not found!"}, status: 500
+	  end
+  end
+
 	private
 
 		def prepare_nation
