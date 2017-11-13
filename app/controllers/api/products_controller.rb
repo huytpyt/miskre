@@ -44,9 +44,9 @@ class Api::ProductsController < ApplicationController
 	def sync_products
 		shop_id = params[:shop_id]
 		if shop_id
-                    shop = Shop.find(shop_id)
-			SyncProductService.delay.fetch_by_shop(shop_id)
+                  shop = Shop.find(shop_id)
                    products = UserProduct.where(shop_id:  shop_id)
+                   products.empty? ? SyncProductService.fetch_by_shop(shop_id) : SyncProductService.delay.fetch_by_shop(shop_id)
 			if products.empty?
 				render json: {status: false, message: 'Not found!'}, status: 404
 			else
