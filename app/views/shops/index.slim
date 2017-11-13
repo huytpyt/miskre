@@ -74,6 +74,7 @@ javascript:
     }).on('ajax:error',function(e, xhr, status, error){
         $('.modal_content').html('');
         $('#modalTitle').html('Products Not Found!');
+        $('.modal_loading').addClass('hide');
         $('#sync_products_modal').foundation('open');
     });
   });
