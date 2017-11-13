@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources 'products_management'
+
   resources 'shipping_setings', only: [:index] do 
     collection do
       get "update_carrier_service/:shop_id", to: "shipping_setings#update_carrier_service", as: "update_carrier"
