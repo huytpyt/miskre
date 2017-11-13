@@ -71,6 +71,7 @@ class Api::ProductsController < ApplicationController
     end
   end
 
+  # Update Product
   def update
   	product_id = params[:id]
   	if Product.exists?(product_id)
@@ -84,6 +85,32 @@ class Api::ProductsController < ApplicationController
 	  else
 	  	render json: {status: false, message: "Product not found!"}, status: 500
 	  end
+  end
+
+  # Update variant
+  def variant_update
+  	@product = Product.find(params[:product_id])
+  	@variant = Variant.find(params[:id])
+  	if @product && @variant
+  		if @product.is_bundle
+        product_ids = params[:variant][:product_ids]&.map {|a| eval(a)} || []
+        @variant.product_ids = product_ids
+      end
+      if @variant.update(variant_params)
+        VariantService.update_variant @product, @variant
+        if params[:variant][:images]
+          params[:variant][:images].each do |img|
+            @variant.images.create(file: img)
+          end
+        end
+
+        render json: {status: true, variant: @variant}, status: 200
+      else
+        render json: {status: false, message: @variant.errors.full_messages}, status: 500
+      end
+  	else
+  		render json: {status: false, message: "Variant not found!"}, status: 500
+  	end
   end
 
 	private
@@ -162,5 +189,9 @@ class Api::ProductsController < ApplicationController
     	w = w > 4000 ? 4000 : w
     	w = w < 10 ? 10 : w
     end
+
+    def variant_params
+	    params.require(:variant).permit(:quantity, :price, :sku, :option1, :option2, :option3)
+	  end
 
 end

@@ -1,11 +1,11 @@
 /! Modal
-.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1"  id="variantsModal-#{product_id}"
+.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1"  id="variantsModal-#{product.id}"
   .modal-dialog role="document" 
     .modal-content
       .modal-header
         button.close aria-label="Close" data-dismiss="modal" type="button" 
           span aria-hidden="true"  &times;
-        h4#myModalLabel.modal-title Edit #{product_name}'s variants
+        h4#myModalLabel.modal-title Edit #{product.name}'s variants
       .modal-body
         table
           thead
@@ -15,15 +15,23 @@
               th Option 3
               th SKU
               th Quantity
+              th Price (USD)
+              th
           tbody
-            - variants.each do |variant|
-              tr.option v-for="variant in variants"
-                td v-text="variant.option1" = variant.option1
-                td v-text="variant.option2" = variant.option2
-                td v-text="variant.option43" = variant.option3
-                td v-text="variant.sku" = variant.sku
-                td v-text="variant.quantity" = variant.quantity ? variant.quantity : 0
-  
-      .modal-footer
-        button.btn.btn-default data-dismiss="modal" type="button"  Close
-        button.btn.btn-primary type="button"  Save changes
+            - product.variants.each do |variant|
+              = form_for variant, url: variant_update_api_product_path(product.id, variant.id), method: :put, remote: true do |f|
+                - if product.is_bundle
+                  - variant.product_ids.each do |product_id|
+                    = f.hidden_field :"product_ids[]", value: product_id
+                tr.option v-for="variant in variants"
+                  td v-text="variant.option1" = f.text_field :option1
+                  td v-text="variant.option2" = f.text_field :option2
+                  td v-text="variant.option43" = f.text_field :option3
+                  td v-text="variant.sku" = f.text_field :sku, disabled: true
+                  td v-text="variant.quantity" = f.number_field :quantity, step: :any, min: 0, value: variant.quantity.present? ? variant.quantity : 0
+                  td v-text="variant.price"
+                    - if product.is_bundle
+                      = f.number_field :price, step: :any, min: 0, disabled: true
+                    - else 
+                      = f.number_field :price, step: :any, min: 0
+                  td = f.submit "Save", class: 'bnt btn-sm btn-primary', style: "margin-top: -5px"

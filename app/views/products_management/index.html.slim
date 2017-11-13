@@ -21,16 +21,17 @@
             td = product.sku
             td
               a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}
-            td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
+            td 
+              a.edit_product_url#product_url href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.product_url}
             td 
               = link_to product.variants&.pluck(:sku)&.join(", "), "javascript:void(0);", class: "variants_modal", data: {id: product.id}, onclick: "$('#variantsModal-#{product.id}').modal('show')"
-              = render "variants_modal", product_id: product.id, product_name: product.name, variants: product.variants
+              = render "variants_modal", product: product
             td 
-              a.edit_product_cost#cost href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.cost}
-            td 
-              a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
+              a.edit_product_cost#cost href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.cost}
+            td
+              a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
             th
-              a.edit_product_weight#weight href="javascript:void(0);" data-type="number"  data-id="#{product.id}" #{product.weight} 
+              a.edit_product_weight#weight href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.weight} 
             th = "#{product.width} - #{product.length}  #{product.height}"
 
 javascript:
@@ -72,9 +73,13 @@ javascript:
       method: 'PUT',
       title: 'Enter weight (g)'
     });
-    $( ".variants_modal" ).click(function() {
-      // var product_id = $(this).attr('data-id');
-
-      // // $('#variantsModal').modal('show');
+    $('.edit_product_url').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter product link'
     });
   });

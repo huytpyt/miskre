@@ -153,6 +153,7 @@ Rails.application.routes.draw do
         post 'sync_products/:shop_id', to: 'products#sync_products', as: :sync_products_from_shop
         post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
         put '/update', to: 'products#update', as: :update_product
+        put ':product_id/variant/:id/update', to: 'products#variant_update', as: :variant_update
       end
     end
 
