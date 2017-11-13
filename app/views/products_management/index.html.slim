@@ -1,0 +1,28 @@
+.row
+  .column
+    h3.text-center Products management
+    = paginate @products
+    table
+      thead
+        tr 
+          th Photo
+          th SKU
+          th Name
+          th Link
+          th Variant
+          th Cost
+          th Price
+          th Weight (g)
+          th Size (W-L-H)
+      tbody
+        - @products.each do |product|
+          tr 
+            td = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
+            td = product.sku
+            td = product.name 
+            td = link_to(product.product_url.truncate(20), product.product_url) if product.product_url.present?
+            td = product.variants&.pluck(:sku)&.join(", ")
+            td = product.cost 
+            td = product.suggest_price
+            th = product.weight
+            th = "#{product.width} - #{product.length}  #{product.height}"
