@@ -21,7 +21,10 @@
       tbody
         - @products.each do |product|
           tr 
-            td = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
+            td
+              = link_to "javascript:void(0);", class: "images_modal", onclick: "$('#imagesModal-#{product.id}').modal('show')" do
+                = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
+              = render "images_modal", product: product
             td = product.sku
             td
               a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}

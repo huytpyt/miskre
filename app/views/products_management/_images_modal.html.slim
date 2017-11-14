@@ -1,0 +1,45 @@
+/! Modal
+.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1"  id="imagesModal-#{product.id}"
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        h4#myModalLabel.modal-title Edit #{product.name}'s images
+      .modal-body
+      	- if product.is_bundle
+      		- form_link = product_update_bundle_path(product)
+      	- else
+      		- form_link = product_path(product)
+      	= form_for product, method: :patch, url: form_link do |f|
+				  = hidden_field_tag :user_id, params[:user_id]
+				  = hidden_field_tag :request_id, params[:request_id]
+				  - if product.errors.any?
+				    .row
+				      #error_explanation
+				        h2 #{pluralize(product.errors.count, "error")} prohibited this product from being saved:
+				        ul
+				          - product.errors.full_messages.each do |message|
+				            li = message
+				  - if product.persisted? && product.images.size > 0
+				    .row
+		          - product.images.each do |pi|
+		            .col-sm-3
+		              = image_tag pi.file.url(:medium)
+		            .col-sm-3
+		            	= link_to 'Remove', pi, method: :delete, remote: true, data: { confirm: 'Are you sure?' }
+				  .row
+				    .col-sm-12
+				      h4 Images
+				    .col-sm-12
+				      ul#dvPreview
+				    .col-sm-6
+				      .field
+				        /= f.label :images
+				        = f.file_field :images, multiple: true
+				    .col-sm-6
+				      - if product.persisted?
+				        a href="#" data-open="modal_image_url" Add image from URL
+				  .row
+				  	.col-sm-12
+				  		= f.submit "Save", class: 'btn btn-sm btn-primary'
