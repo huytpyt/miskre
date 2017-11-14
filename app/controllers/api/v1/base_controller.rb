@@ -5,9 +5,17 @@ class Api::V1::BaseController < Api::ApiController
   include Api::RecordNotFoundController
 
 	skip_before_action :site_http_basic_authenticate_with, raise: false
+  skip_before_action :verify_authenticity_token
 	protect_from_forgery with: :null_session
 
 	before_action :authenticate_any!, if: :skip_new_session
+
+  before_filter :add_allow_credentials_headers
+
+  def add_allow_credentials_headers
+    response.headers['Access-Control-Allow-Origin'] = request.headers['Origin'] || '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+  end 
 
 	def headers
     request.env
