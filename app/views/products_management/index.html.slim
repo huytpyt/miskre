@@ -36,7 +36,12 @@
               a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
             th
               a.edit_product_weight#weight href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.weight} 
-            th = "#{product.width} - #{product.length} - #{product.height}"
+            th 
+              a.edit_product_width#width href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.width}
+              | &nbsp;-&nbsp;
+              a.edit_product_length#length href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.length}
+              | &nbsp;-&nbsp;
+              a.edit_product_height#height href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.height}
 
 javascript:
 
@@ -85,5 +90,32 @@ javascript:
       url: "#{update_product_api_product_path}",
       method: 'PUT',
       title: 'Enter product link'
+    });
+    $('.edit_product_width').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter width'
+    });
+    $('.edit_product_length').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter length'
+    });
+    $('.edit_product_height').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter height'
     });
   });
