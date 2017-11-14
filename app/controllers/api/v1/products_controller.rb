@@ -6,8 +6,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
   	per_page = 20 if per_page.zero?
   	total_page = Product.count / per_page
   	total_page = total_page <= 0 ? 1 : total_page
-  	sort = params[:sort] || 'DESC' 
-  	render json: ProductsQuery.list(page, per_page, sort), status: 200
+  	sort = params[:sort] || 'DESC'
+  	search = params[:q]
+  	render json: ProductsQuery.list(page, per_page, sort, search), status: 200
   end
 
   def show

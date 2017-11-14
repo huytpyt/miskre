@@ -1,8 +1,12 @@
 class ProductsQuery < BaseQuery
 
-	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, order = 'DESC')
+	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, order = 'DESC', search = '')
 		sort_options = { id: order }
-		paginate = api_paginate(Product.order(sort_options), page).per(per_page)
+		if search.present?
+			paginate = api_paginate(Product.order(sort_options).search(search).records, page).per(per_page)
+		else
+			paginate = api_paginate(Product.order(sort_options), page).per(per_page)
+		end
 		{
 			status: true,
 			total_records: paginate.total_count,
