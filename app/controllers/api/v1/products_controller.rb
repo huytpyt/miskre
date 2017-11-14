@@ -1,5 +1,6 @@
 class Api::V1::ProductsController < Api::V1::BaseController
   def index
+    if current_resource.staff?
   	page = params[:page].to_i || 1
   	page = 1 if page.zero?
   	per_page = params[:per_page].to_i || 20
@@ -9,6 +10,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
   	sort = params[:sort] || 'DESC'
   	search = params[:q]
   	render json: ProductsQuery.list(page, per_page, sort, search), status: 200
+    else
+      render json: {status: false, message: "Permission denied"}, status: 550
+    end
   end
 
   def show
