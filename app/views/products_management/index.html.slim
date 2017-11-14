@@ -1,3 +1,7 @@
+- content_for :script
+  = javascript_include_tag "options"
+- content_for :script
+  = javascript_include_tag "variants"
 .row.main-page
   .column
     h3.text-center Products management
@@ -24,7 +28,7 @@
             td 
               a.edit_product_url#product_url href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.product_url}
             td 
-              = link_to product.variants&.pluck(:sku)&.join(", "), "javascript:void(0);", class: "variants_modal", data: {id: product.id}, onclick: "$('#variantsModal-#{product.id}').modal('show')"
+              = link_to product.variants.present? ? product.variants&.pluck(:sku)&.join(", ") : "Generate variants", "javascript:void(0);", class: "variants_modal", data: {id: product.id}, onclick: "$('#variantsModal-#{product.id}').modal('show')"
               = render "variants_modal", product: product
             td 
               a.edit_product_cost#cost href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.cost}
@@ -32,7 +36,7 @@
               a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
             th
               a.edit_product_weight#weight href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.weight} 
-            th = "#{product.width} - #{product.length}  #{product.height}"
+            th = "#{product.width} - #{product.length} - #{product.height}"
 
 javascript:
 

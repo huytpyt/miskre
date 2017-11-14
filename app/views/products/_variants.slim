@@ -1,18 +1,15 @@
-- content_for :script
-  = javascript_include_tag "variants"
-
 .page-header
   h1 Variants
 
-input#variantsResource value="#{product_variants_path(@product.id)}" type="hidden"
-input#variantsReload value="#{reload_product_variants_path(@product.id, format: 'json')}" type="hidden"
-input#productId value="#{@product.id}" type="hidden"
+input id="variantsResource-variant-#{@product.id}" value="#{product_variants_path(@product.id)}" type="hidden"
+input id="variantsReload-variant-#{@product.id}" value="#{reload_product_variants_path(@product.id, format: 'json')}" type="hidden"
+input id="productId-variant-#{@product.id}" value="#{@product.id}" type="hidden"
 
-#variants
+div class="variants" id="variant-#{@product.id}"
   .row
     .column
       - unless params[:action] == "show"
-        button.button.small @click="reloadVariants()" Reset variants based on Option
+        button.button.small @click="reloadVariants(#{@product.id})" Reset variants based on Option
       table
         thead
           tr

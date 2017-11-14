@@ -7,31 +7,6 @@
           span aria-hidden="true"  &times;
         h4#myModalLabel.modal-title Edit #{product.name}'s variants
       .modal-body
-        table
-          thead
-            tr
-              th Option 1
-              th Option 2
-              th Option 3
-              th SKU
-              th Quantity
-              th Price (USD)
-              th
-          tbody
-            - product.variants.each do |variant|
-              = form_for variant, url: variant_update_api_product_path(product.id, variant.id), method: :put, remote: true do |f|
-                - if product.is_bundle
-                  - variant.product_ids.each do |product_id|
-                    = f.hidden_field :"product_ids[]", value: product_id
-                tr.option v-for="variant in variants"
-                  td v-text="variant.option1" = f.text_field :option1
-                  td v-text="variant.option2" = f.text_field :option2
-                  td v-text="variant.option43" = f.text_field :option3
-                  td v-text="variant.sku" = f.text_field :sku, disabled: true
-                  td v-text="variant.quantity" = f.number_field :quantity, step: :any, min: 0, value: variant.quantity.present? ? variant.quantity : 0
-                  td v-text="variant.price"
-                    - if product.is_bundle
-                      = f.number_field :price, step: :any, min: 0, disabled: true
-                    - else 
-                      = f.number_field :price, step: :any, min: 0
-                  td = f.submit "Save", class: 'bnt btn-sm btn-primary', style: "margin-top: -5px"
+          - @product = product
+          = render partial: "products/options"
+          = render partial: "products/variants"
