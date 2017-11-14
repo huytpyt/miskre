@@ -188,4 +188,5 @@ class Api::ProductsController < ApplicationController
     def variant_params
 	    params.require(:variant).permit(:quantity, :price, :sku, :option1, :option2, :option3)
 	  end
+
 end
