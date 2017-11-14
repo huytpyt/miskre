@@ -5,18 +5,20 @@ class ProductsQuery < BaseQuery
 		if search.present?
 			paginate = api_paginate(Product.order(sort_options).search(search).records, page).per(per_page)
 		else
-			paginate = api_paginate(Product.order(sort_options), page).per(per_page)
+			paginate = api_paginate(Product.order(sort_options), page).per(1)
 		end
 		{
 			status: true,
-			total_records: paginate.total_count,
-			records_per_page: paginate.limit_value,
-			total_pages: paginate.total_pages,
-			current_page: paginate.current_page,
-			next_page: paginate.next_page,
-			prev_page: paginate.prev_page,
-			first_page: paginate.first_page? ? 1 : nil,
-			last_page: paginate.last_page? ? paginate.total_pages : nil,
+			paginator: {
+				total_records: paginate.total_count,
+				records_per_page: paginate.limit_value,
+				total_pages: paginate.total_pages,
+				current_page: paginate.current_page,
+				next_page: paginate.next_page,
+				prev_page: paginate.prev_page,
+				first_page: 1,
+				last_page: paginate.total_pages
+			},
 			products: paginate.map{ |product| single(product) }
 		}
 	end
