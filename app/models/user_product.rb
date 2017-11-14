@@ -30,15 +30,14 @@
 #
 
 class UserProduct < ApplicationRecord
-	belongs_to :user
+  belongs_to :user
   belongs_to :shop
   has_many :user_variants, dependent: :destroy
   has_many :images, as: :imageable, dependent: :destroy
 
-  validates :name, presence: true, uniqueness: true
-  validates :sku, presence: true, uniqueness: true
+  validates :name, presence: true
   validates :quantity, numericality: { only_integer: true}
-  validates :weight, presence: true, numericality: { only_integer: true,
+  validates :weight, numericality: { only_integer: true,
                                        greater_than_or_equal_to: 1}
 
   before_save :default_values
@@ -70,7 +69,7 @@ class UserProduct < ApplicationRecord
   end
 
   def cus_cost
-    self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
+    (self.cost + 1.5).round(2)
   end
 
   def cus_epub

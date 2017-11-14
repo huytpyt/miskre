@@ -113,7 +113,7 @@ class Product < ApplicationRecord
     end
     beus_us_cost = CarrierService.cal_cost(shipping_type, weight).to_f
     # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
-    self.cus_cost = self.cost >= 5 ? (self.cost + 1.5).round(2) : (self.cost*30/ 100).round(2)
+    self.cus_cost = (self.cost + 1.5).round(2)
     random = rand(2.25 .. 2.75)
     if self.compare_at_price.nil?
       self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5

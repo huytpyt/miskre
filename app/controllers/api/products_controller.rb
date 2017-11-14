@@ -44,18 +44,13 @@ class Api::ProductsController < ApplicationController
 	def sync_products
 		shop_id = params[:shop_id]
 		if shop_id
-			products = SyncProductService.fetch_by_shop(shop_id)
+                  shop = Shop.find(shop_id)
+                   products = UserProduct.where(shop_id:  shop_id)
+                   products.empty? ? SyncProductService.fetch_by_shop(shop_id) : SyncProductService.delay.fetch_by_shop(shop_id)
 			if products.empty?
 				render json: {status: false, message: 'Not found!'}, status: 404
 			else
-				shop = Shop.find(shop_id)
-				user_id = shop.user_id
-				sync_products = save_sync_products(products, user_id, shop_id)
-				if sync_products
-					render json: {status: true, user_products_url: user_products_shop_url(shop), message: 'Successfully!'}, status: 200
-				else
-					render json: {status: false, message: "Can not save sync products!"}, status: 500
-				end
+			   render json: {status: true, user_products_url: user_products_shop_url(shop), message: 'Successfully!'}, status: 200
 			end
 		else
 			render json: {status: false, message: "Missing shop_id parameter!"}, status: 500
@@ -113,9 +108,9 @@ class Api::ProductsController < ApplicationController
   	end
   end
 
-	private
+  private
 
-		def prepare_nation
+    def prepare_nation
       @national = Nation.find_by_code('US')
       @national ||= Nation.first
     end
@@ -193,5 +188,4 @@ class Api::ProductsController < ApplicationController
     def variant_params
 	    params.require(:variant).permit(:quantity, :price, :sku, :option1, :option2, :option3)
 	  end
-
 end
