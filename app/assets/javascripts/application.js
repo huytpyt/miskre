@@ -29,6 +29,7 @@
 //= require canvasjs.min
 //= require chosen-jquery
 //= require daterangepicker
+//= require jquery.remotipart
 //= require product
 //= require shipping
 //= require requested_products

@@ -108,6 +108,37 @@ class Api::ProductsController < ApplicationController
   	end
   end
 
+  def images_update
+  	@product = Product.find(params[:product_id])
+  	if @product
+			if params[:product] && params[:product][:images]
+        params[:product][:images].each do |img|
+          @product.images.create(file: img)
+        end
+        render nothing: true, status: 200
+      else
+      	render nothing: true, status: 200
+      end
+    else
+    	render nothing: true, status: 200
+    end
+  end
+
+  def upload_image_url
+  	@product = Product.find(params[:id])
+  	if @product
+	    image = @product.images.new
+	    image.file_remote_url= params[:undefined][:image_url]
+	    if image.save
+	    	render json: {status: true}, status: 200
+	    else
+	    	render json: {status: false}, status: 200
+	    end
+	  else
+	  	render json: {status: false}, status: 200
+	  end
+  end
+
   private
 
     def prepare_nation

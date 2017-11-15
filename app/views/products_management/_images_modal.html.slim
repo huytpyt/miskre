@@ -7,11 +7,7 @@
           span aria-hidden="true"  &times;
         h4#myModalLabel.modal-title Edit #{product.name}'s images
       .modal-body
-      	- if product.is_bundle
-      		- form_link = product_update_bundle_path(product)
-      	- else
-      		- form_link = product_path(product)
-      	= form_for product, method: :patch, url: form_link do |f|
+      	= form_for product, method: :put, url: images_update_api_product_path(product.id), :html => { :multipart => true }, remote: true, :authenticity_token => true do |f|
 				  = hidden_field_tag :user_id, params[:user_id]
 				  = hidden_field_tag :request_id, params[:request_id]
 				  - if product.errors.any?
@@ -24,10 +20,11 @@
 				  - if product.persisted? && product.images.size > 0
 				    .row
 		          - product.images.each do |pi|
-		            .col-sm-3
-		              = image_tag pi.file.url(:medium)
-		            .col-sm-3
-		            	= link_to 'Remove', pi, method: :delete, remote: true, data: { confirm: 'Are you sure?' }
+		          	.col-sm-6.text-center
+			            .col-sm-6
+			              = image_tag pi.file.url(:medium), style: "width: 150px; height: 100px"
+			            .col-sm-6
+			            	= link_to 'Remove', pi, method: :delete, remote: true, data: { confirm: 'Are you sure?' }
 				  .row
 				    .col-sm-12
 				      h4 Images
@@ -39,7 +36,21 @@
 				        = f.file_field :images, multiple: true
 				    .col-sm-6
 				      - if product.persisted?
-				        a href="#" data-open="modal_image_url" Add image from URL
+				      	b Add image from URL:&nbsp;
+				        a.upload_product_image_url#image_url href="javascript:void(0);" data-type="url"  data-id="#{product.id}"
 				  .row
 				  	.col-sm-12
 				  		= f.submit "Save", class: 'btn btn-sm btn-primary'
+
+javascript:
+	$(document).ready(function() {
+		$('.upload_product_image_url').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{upload_image_url_api_product_path}",
+      method: 'PUT',
+      title: 'Enter image url'
+    });
+	});

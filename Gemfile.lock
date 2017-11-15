@@ -431,6 +431,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 5.0.4)
   rails_admin (~> 1.2)
+  remotipart (~> 1.2)
   roo (~> 2.7, >= 2.7.1)
   roo-xls (~> 1.1)
   sass-rails (~> 5.0)
