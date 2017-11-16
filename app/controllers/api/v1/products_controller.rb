@@ -19,6 +19,12 @@ class Api::V1::ProductsController < Api::V1::BaseController
   end
 
   def create
+    product = Product.new(product_params)
+    if product.save
+      render json: ProductsQuery.single(product), status: 200
+    else
+      render json: {status: false, error: product.errors.full_messages}, status: 500
+    end
   end
 
   def update
