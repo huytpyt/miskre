@@ -63,13 +63,6 @@ class Order < ApplicationRecord
       csv << column_names
 
       all.each do |order|
-        if order.shipping_method == "ePacket"
-          shipping_method_code = "ePUB"
-        elsif order.shipping_method == "dhl"
-          shipping_method_code = "DHL"
-        else
-          shipping_method_code = order.shipping_method
-        end
         skus = []
         skus_array = order.skus.split(",")
         skus_array.each do |item|
@@ -107,7 +100,7 @@ class Order < ApplicationRecord
                order.ship_zip, order.ship_country,
                order.ship_phone, "",
                order.quantity, skus.join(","), "", order.date,
-               "remark", shipping_method_code, "", "", order.product_name,
+               "remark", order.shipping_method, "", "", order.product_name,
                "Color", "Size"]
         csv << row
       end
