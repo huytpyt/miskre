@@ -42,7 +42,7 @@
 #
 
 class Order < ApplicationRecord
-  belongs_to :shop
+  # belongs_to :shop
 
   has_many :line_items, dependent: :destroy
   has_many :products, through: :line_items
@@ -52,7 +52,7 @@ class Order < ApplicationRecord
 
   validates :shopify_id, uniqueness: true
 
-  def self.to_csv
+  def self.to_xls
     CSV.generate(headers:true) do |csv|
       column_names =  ["Order Id", "First Name", "Last Name",
                        "Ship Address1", "Ship Address2", "Ship City",
@@ -61,9 +61,6 @@ class Order < ApplicationRecord
                        "Unit Price(price1,price2...)", "Date", "Remark", "Shipping Method",
                        "Tracking No.", "Fulfil Fee$", "Product Name", "Color", "Size"]
       csv << column_names
-      p "-----"
-      p all
-      p "-----"
       all.each do |order|
         skus = []
         skus_array = order.skus.split(",")
