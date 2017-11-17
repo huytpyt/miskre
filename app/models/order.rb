@@ -62,17 +62,15 @@ class Order < ApplicationRecord
                        "Tracking No.", "Fulfil Fee$", "Product Name", "Color", "Size"]
       csv << column_names
 
-      all.each do |order|
-        row = ["d", "", "d",
-               "d", "d",
-               "d", "d",
-               "d", "d",
-               "d", "",
-               "d", "d", "", "",
-               "remark", "d", "", "", "d",
-               "Color", "Size"]
-        csv << row
-      end
+      row = ["d", "", "d",
+             "d", "d",
+             "d", "d",
+             "d", "d",
+             "d", "",
+             "d", "d", "", "",
+             "remark", "d", "", "", "d",
+             "Color", "Size"]
+      csv << row
     end
   end
 
