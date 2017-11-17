@@ -63,44 +63,13 @@ class Order < ApplicationRecord
       csv << column_names
 
       all.each do |order|
-        skus = []
-        skus_array = order.skus.split(",")
-        skus_array.each do |item|
-          sku_item = item.split("*")
-          sku = sku_item[0].strip
-          quantity = sku_item[1]
-          product = Product.find_by_sku(sku&.first(3))
-          if product&.is_bundle
-            if product.variants.present?
-              variant = Variant.find_by_sku sku
-              variant.product_ids.each do |id|
-                if id[:variant_id].nil?
-                  skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
-                else
-                   skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
-                end
-              end
-            else
-              product.product_ids.each do |id|
-                if id[:variant_id].nil?
-                  skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
-                else
-                   skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
-                end
-              end
-            end
-          else
-            skus.push("#{sku} * #{quantity}")
-          end
-        end
-            
-        row = [order.shopify_id, order.first_name, order.last_name,
-               order.ship_address1, order.ship_address2,
-               order.ship_city, order.ship_state,
-               order.ship_zip, order.ship_country,
-               order.ship_phone, "",
-               order.quantity, skus.join(","), "", order.date,
-               "remark", order.shipping_method, "", "", order.product_name,
+        row = ["d", "", "d",
+               "d", "d",
+               "d", "d",
+               "d", "d",
+               "d", "",
+               "d", "d", "", "",
+               "remark", "d", "", "", "d",
                "Color", "Size"]
         csv << row
       end
