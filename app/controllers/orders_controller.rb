@@ -12,7 +12,7 @@ class OrdersController < ApplicationController
 
   def fetch
     respond_to do |format|
-      format.xls { send_data Order.to_csv(@orders), filename: "orders-#{@start_date}-#{@end_date}.xls" }
+      format.xls { send_data @orders.to_csv, filename: "orders-#{@start_date}-#{@end_date}.xls" }
     end
   end
 
