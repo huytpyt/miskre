@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
 
-  resources 'products_management'
+  resources 'products_management' do
+    collection do
+      put ':product_id/images_update', to: 'products_management#images_update', as: :images_update
+    end
+  end
 
   resources 'shipping_setings', only: [:index] do 
     collection do
@@ -154,7 +158,6 @@ Rails.application.routes.draw do
         post 'user_products/:id/request', to: 'products#request_user_product', as: :request_user_product
         put '/update', to: 'products#update', as: :update_product
         put ':product_id/variant/:id/update', to: 'products#variant_update', as: :variant_update
-        put ':product_id/images_update', to: 'products#images_update', as: :images_update
         put 'upload_image_url', to: 'products#upload_image_url', as: :upload_image_url
       end
     end
