@@ -52,7 +52,7 @@ class Order < ApplicationRecord
 
   validates :shopify_id, uniqueness: true
 
-  def self.to_csv
+  def self.to_csv orders
     CSV.generate(headers:true) do |csv|
       column_names =  ["Order Id", "First Name", "Last Name",
                        "Ship Address1", "Ship Address2", "Ship City",
@@ -62,7 +62,7 @@ class Order < ApplicationRecord
                        "Tracking No.", "Fulfil Fee$", "Product Name", "Color", "Size"]
       csv << column_names
 
-      self.all.each do |order|
+      orders.each do |order|
         skus = []
         skus_array = order.skus.split(",")
         skus_array.each do |item|
