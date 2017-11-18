@@ -5,7 +5,7 @@ class ProductsQuery < BaseQuery
 		if search.present?
 			paginate = api_paginate(Product.order(sort_options).search(search).records, page).per(per_page)
 		else
-			paginate = api_paginate(Product.order(sort_options), page).per(1)
+			paginate = api_paginate(Product.order(sort_options), page).per(per_page)
 		end
 		hostname = request.host || "http://miskre.com"
 		port = request.port || 80
