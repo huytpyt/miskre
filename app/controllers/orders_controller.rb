@@ -55,7 +55,7 @@ class OrdersController < ApplicationController
         end
       end
       send_data xls_string, :type => "text/plain", 
-           :filename=>"orders-#{@start_date}-#{@end_date}.xls",
+           :filename=>"orders-#{@start_date}-#{@end_date}.csv",
            :disposition => 'attachment'
     end
   end
