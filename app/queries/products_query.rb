@@ -93,7 +93,9 @@ class ProductsQuery < BaseQuery
 		product.images.map do |image|
 			{
 				id: image.id,
-				url: image.file_url
+				url: image.file_url,
+	  		thumb: image.file.url(:thumb),
+	  		medium: image.file.url(:medium)
 			}
 		end
 	end
