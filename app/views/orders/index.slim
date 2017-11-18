@@ -2,7 +2,7 @@
   h1 Orders
 
 #orders-query
-  = form_tag(main_app.orders_path, method: :get) do
+  = form_tag(orders_path, method: :get) do
     .row
       .columns.large-2
         label
@@ -32,9 +32,9 @@
             options_for_select(fulfillment_options, @fulfillment_status),
             include_blank: true
       .columns.large-1
-        button.button.tiny View
+        input type="submit" value="View" class="button tiny"
       .columns.large-1
-        button.button.tiny.success formaction="#{main_app.fetch_orders_path}.xls" Download
+        input type="submit" value="Download" class="button tiny success" formaction="#{fetch_orders_path}.xls"
 
 #orders-data
   .row

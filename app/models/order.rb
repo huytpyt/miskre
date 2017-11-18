@@ -42,7 +42,7 @@
 #
 
 class Order < ApplicationRecord
-  # belongs_to :shop
+  belongs_to :shop
 
   has_many :line_items, dependent: :destroy
   has_many :products, through: :line_items
