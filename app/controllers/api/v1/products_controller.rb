@@ -11,11 +11,11 @@ class Api::V1::ProductsController < Api::V1::BaseController
     total_page = total_page <= 0 ? 1 : total_page
     sort = params[:sort] || 'DESC'
     search = params[:q]
-    render json: ProductsQuery.list(page, per_page, sort, search), status: 200
+    render json: ProductsQuery.list(request, page, per_page, sort, search), status: 200
   end
 
   def show
-    render json: ProductsQuery.single(@product), status: 200
+    render json: ProductsQuery.single(request, @product), status: 200
   end
 
   def create
