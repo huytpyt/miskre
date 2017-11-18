@@ -32,9 +32,9 @@
             options_for_select(fulfillment_options, @fulfillment_status),
             include_blank: true
       .columns.large-1
-        input type="submit" value="View" class="button tiny"
+        input type="submit" value="View" name="view" class="button tiny"
       .columns.large-1
-        input type="submit" value="Download" class="button tiny success" formaction="#{fetch_orders_path}.xls"
+        input type="submit" value="Download" name="download" class="button tiny success"
 
 #orders-data
   .row
