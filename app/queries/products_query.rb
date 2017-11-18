@@ -1,15 +1,12 @@
 class ProductsQuery < BaseQuery
 
-	def self.list(request, page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, order = 'DESC', search = '')
+	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, order = 'DESC', search = '')
 		sort_options = { id: order }
 		if search.present?
 			paginate = api_paginate(Product.order(sort_options).search(search).records, page).per(per_page)
 		else
 			paginate = api_paginate(Product.order(sort_options), page).per(per_page)
 		end
-		hostname = request.host || "http://miskre.com"
-		port = request.port || 80
-		base_url = "#{hostname}:#{port}"
 		{
 			status: true,
 			paginator: {
@@ -22,14 +19,11 @@ class ProductsQuery < BaseQuery
 				first_page: 1,
 				last_page: paginate.total_pages
 			},
-			products: paginate.map{ |product| single_with_base_url(base_url, product) }
+			products: paginate.map{ |product| single(product) }
 		}
 	end
 
-	def self.single(request, product)
-		hostname = request.host || "http://miskre.com"
-		port = request.port || 80
-		base_url = "#{hostname}:#{port}"
+	def self.single(product)
 		{
 			id: product.id,
 			name: product.name,
@@ -65,47 +59,7 @@ class ProductsQuery < BaseQuery
 			updated_at: product.updated_at,
 			options: options_for(product),
 			variants: variants_for(product),
-			images: images_for(product, base_url)
-		}
-	end
-
-	def self.single_with_base_url(base_url, product)
-		{
-			id: product.id,
-			name: product.name,
-			weight: product.weight,
-			length: product.length,
-			height: product.height,
-			width: product.width,
-			sku: product.sku,
-			desc: product.desc,
-			price: product.price,
-			compare_at_price: product.compare_at_price,
-			shopify_id: product.shopify_id,
-			cost: product.cost,
-			link: product.link,
-			epub: product.epub,
-			dhl: product.dhl,
-			vendor: product.vendor,
-			bundle_id: product.bundle_id,
-			is_bundle: product.is_bundle,
-			quantity: product.quantity,
-			product_ids: product.product_ids,
-			user_id: product.user_id,
-			product_url: product.product_url,
-			fulfillable_quantity: product.fulfillable_quantity,
-			cus_cost: product.cus_cost,
-			cus_epub: product.cus_epub,
-			cus_dhl: product.cus_dhl,
-			suggest_price: product.suggest_price,
-			sale_off: product.sale_off,
-			shop_owner: product.shop_owner,
-			shop_id: product.shop_id,
-			created_at: product.created_at,
-			updated_at: product.updated_at,
-			options: options_for(product),
-			variants: variants_for(product),
-			images: images_for(product, base_url)
+			images: images_for(product)
 		}
 	end
 
@@ -135,11 +89,11 @@ class ProductsQuery < BaseQuery
 		end
 	end
 
-	def self.images_for(product, base_url)
+	def self.images_for(product)
 		product.images.map do |image|
 			{
 				id: image.id,
-				url: "#{base_url}#{image.file_url}"
+				url: image.file_url
 			}
 		end
 	end
