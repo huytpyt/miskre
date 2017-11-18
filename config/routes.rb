@@ -164,6 +164,7 @@ Rails.application.routes.draw do
         end
       end
       resources :products
+      resources :images
     end
   end
 
