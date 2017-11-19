@@ -17,6 +17,8 @@
 #  index_images_on_imageable_type_and_imageable_id  (imageable_type,imageable_id)
 #
 
+require 'base64'
+
 class Image < ApplicationRecord
   has_attached_file :file, styles: { medium: "300x300>", thumb: "100x100>" }, default_url: "/images/:style/missing.png"
   validates_attachment_content_type :file, content_type: /\Aimage\/.*\z/
@@ -31,4 +33,10 @@ class Image < ApplicationRecord
   def file_url
     file.url(:medium)
   end
+
+  def set_image_base64(base64_str)
+    img = Paperclip.io_adapters.for(base64_str)
+    # img.original_filename = image_name
+    self.file = img
+   end
 end

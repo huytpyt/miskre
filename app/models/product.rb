@@ -49,7 +49,7 @@ class Product < ApplicationRecord
   include Elasticsearch::Model::Callbacks
   Product.import(force: true)
   # has_many :images, dependent: :destroy
-  has_many :images, as: :imageable, dependent: :destroy
+  has_many :images, as: :imageable
 
   has_many :supplies
   has_many :shops, through: :supplies

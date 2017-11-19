@@ -10,8 +10,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
     total_page = Product.count / per_page
     total_page = total_page <= 0 ? 1 : total_page
     sort = params[:sort] || 'DESC'
+    order_by = params[:order_by] || 'id'
     search = params[:q]
-    render json: ProductsQuery.list(page, per_page, sort, search), status: 200
+    render json: ProductsQuery.list(page, per_page, sort, order_by, search), status: 200
   end
 
   def show
@@ -19,19 +20,57 @@ class Api::V1::ProductsController < Api::V1::BaseController
   end
 
   def create
-    product = Product.new(product_params)
-    if product.save
-      render json: ProductsQuery.single(product), status: 200
-    else
-      render json: {status: false, error: product.errors.full_messages}, status: 500
+    ActiveRecord::Base.transaction do
+      if params[:product]
+        product = Product.new(product_params)
+        if product.save
+          if params[:product][:images].present?
+            if params[:product][:images].is_a?(Array)
+              exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
+              product.image_ids = exists_ids
+              product.save!
+              render json: ProductsQuery.single(product), status: 200
+            else
+              render json: {status: false, error: "`images` must an array"}, status: 500
+            end
+          else
+            render json: ProductsQuery.single(product), status: 200
+          end
+        else
+          render json: {status: false, error: product.errors.full_messages}, status: 500
+        end
+      else
+        render json: {status: false, error: "The params invalid!"}, status: 500
+      end
     end
   end
 
   def update
-    if @product.update(product_params)
-      render json: ProductsQuery.single(@product), status: 200
-    else
-      render json: {status: false, error: @product.errors.full_messages}, status: 500
+    ActiveRecord::Base.transaction do
+      if params[:product]
+        if params[:product].empty?
+          render json: ProductsQuery.single(@product), status: 200
+        else
+          if @product.update(product_params)
+            if params[:product][:images].present?
+              if params[:product][:images].is_a?(Array)
+                exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
+                @product.image_ids = exists_ids
+                @product.save
+                render json: ProductsQuery.single(@product), status: 200
+              else
+                render json: {status: false, error: "`images` must an array"}, status: 500
+              end
+            else
+              render json: ProductsQuery.single(@product), status: 200
+            end
+          else
+            render json: {status: false, error: @product.errors.full_messages}, status: 500
+          end
+        end
+      else
+        render json: {status: false, error: "The params invalid!"}, status: 500
+      end
     end
   end
 
