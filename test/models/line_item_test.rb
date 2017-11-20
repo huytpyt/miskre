@@ -3,7 +3,7 @@
 # Table name: line_items
 #
 #  id                   :integer          not null, primary key
-#  product_id           :integer
+#  product_id           :string
 #  order_id             :integer
 #  quantity             :integer
 #  sku                  :string
