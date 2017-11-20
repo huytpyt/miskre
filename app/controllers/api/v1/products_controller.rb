@@ -12,7 +12,8 @@ class Api::V1::ProductsController < Api::V1::BaseController
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q]
-    render json: ProductsQuery.list(page, per_page, sort, order_by, search), status: 200
+    key = params[:key] || nil
+    render json: ProductsQuery.list(page, per_page, sort, order_by, search, key), status: 200
   end
 
   def show
@@ -135,7 +136,10 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :product_ids,
         :product_url,
         :suggest_price,
-        :sale_off
+        :sale_off,
+        :resource_url,
+        :vendor_detail,
+        :cost_per_quantity
       )
     end
 end
