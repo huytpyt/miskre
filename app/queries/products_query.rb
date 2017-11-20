@@ -4,7 +4,7 @@ class ProductsQuery < BaseQuery
 		sort_options = { "#{order_by}" => sort }
 
 		product = Product.where(shop_owner: false)
-		if key.present? && Product.column_names.include? key
+		if key.present? && Product.column_names.include?(key)
 			product = product.where("#{key} = ''")
 		end
 		if search.present?
