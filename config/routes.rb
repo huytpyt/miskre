@@ -163,7 +163,10 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :products
+      resources :products do
+        resources :options
+        resources :variants
+      end
       resources :images
     end
   end
