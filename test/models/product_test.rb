@@ -27,13 +27,16 @@
 #  user_id              :integer
 #  product_url          :string
 #  fulfillable_quantity :integer
-#  cus_cost             :float
 #  cus_epub             :float
 #  cus_dhl              :float
 #  suggest_price        :float
+#  cus_cost             :float
 #  sale_off             :integer
 #  shop_owner           :boolean          default(FALSE)
 #  shop_id              :integer
+#  resource_url         :string
+#  vendor_detail        :text
+#  cost_per_quantity    :string
 #
 # Indexes
 #

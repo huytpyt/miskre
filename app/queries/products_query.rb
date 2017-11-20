@@ -1,11 +1,16 @@
 class ProductsQuery < BaseQuery
 
-	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '')
+	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '', key = nil)
 		sort_options = { "#{order_by}" => sort }
+
+		product = Product.where(shop_owner: false)
+		if key.present? && Product.column_names.include? key
+			product = product.where("#{key} = ''")
+		end
 		if search.present?
-			paginate = api_paginate(Product.where(shop_owner: false).order(sort_options).search(search).records, page).per(per_page)
+			paginate = api_paginate(product.order(sort_options).search(search).records, page).per(per_page)
 		else
-			paginate = api_paginate(Product.where(shop_owner: false).order(sort_options), page).per(per_page)
+			paginate = api_paginate(product.order(sort_options), page).per(per_page)
 		end
 		{
 			status: true,
@@ -55,6 +60,9 @@ class ProductsQuery < BaseQuery
 			sale_off: product.sale_off,
 			shop_owner: product.shop_owner,
 			shop_id: product.shop_id,
+			resource_url: product.resource_url,
+			vendor_detail: product.vendor_detail,
+			cost_per_quantity: product.cost_per_quantity,
 			created_at: product.created_at,
 			updated_at: product.updated_at,
 			options: options_for(product),
