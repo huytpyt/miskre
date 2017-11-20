@@ -1,22 +1,3 @@
-# == Schema Information
-#
-# Table name: access_tokens
-#
-#  id            :integer          not null, primary key
-#  scope         :string
-#  access_token  :string
-#  expires_at    :datetime
-#  resource_type :string           not null
-#  resource_id   :integer          not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#
-# Indexes
-#
-#  index_access_tokens_on_access_token                   (access_token) UNIQUE
-#  index_access_tokens_on_resource_type_and_resource_id  (resource_type,resource_id)
-#
-
 class AccessToken < ApplicationRecord
 	before_create :generate_access_token
   belongs_to :resource, polymorphic: true
