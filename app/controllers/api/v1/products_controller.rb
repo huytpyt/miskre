@@ -29,13 +29,27 @@ class Api::V1::ProductsController < Api::V1::BaseController
               exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
               product.image_ids = exists_ids
               product.save!
-              render json: ProductsQuery.single(product), status: 200
             else
               render json: {status: false, error: "`images` must an array"}, status: 500
             end
-          else
-            render json: ProductsQuery.single(product), status: 200
           end
+
+          if params[:product][:options].present?
+            if params[:product][:options].is_a?(Array)
+              params[:product][:options].each do |option|
+                option[:values] = option[:values].split(",")
+                if option[:name].present?
+                  opt = product.options.new(name: option[:name], values: option[:values])
+                  opt.save!
+                end
+              end
+              product.regen_variants
+            else
+              render json: {status: false, error: "`options` must an array"}, status: 500
+            end
+          end
+
+          render json: ProductsQuery.single(product), status: 200
         else
           render json: {status: false, error: product.errors.full_messages}, status: 500
         end
