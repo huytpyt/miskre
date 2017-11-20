@@ -165,7 +165,11 @@ Rails.application.routes.draw do
       end
       resources :products do
         resources :options
-        resources :variants
+        resources :variants do
+          collection do
+            post :reload
+          end
+        end
       end
       resources :images
     end
