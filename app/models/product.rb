@@ -43,6 +43,7 @@
 
 require 'elasticsearch/model'
 class Product < ApplicationRecord
+  serialize :product_ids
   include ShopifyApp::SessionStorage
 
   include Elasticsearch::Model
@@ -82,7 +83,6 @@ class Product < ApplicationRecord
   before_save :calculate_price
 
   after_commit :sync_job
-  serialize :product_ids
 
   validate :validate_bundle
 
