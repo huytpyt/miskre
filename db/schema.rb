@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171120181958) do
+ActiveRecord::Schema.define(version: 20171111032555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 20171120181958) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.string   "product_id"
+    t.string  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"
@@ -198,16 +198,13 @@ ActiveRecord::Schema.define(version: 20171120181958) do
     t.integer  "user_id"
     t.string   "product_url"
     t.integer  "fulfillable_quantity"
+    t.float    "cus_cost"
     t.float    "cus_epub"
     t.float    "cus_dhl"
     t.float    "suggest_price"
-    t.float    "cus_cost"
     t.integer  "sale_off"
     t.boolean  "shop_owner",           default: false
     t.integer  "shop_id"
-    t.string   "resource_url"
-    t.text     "vendor_detail"
-    t.string   "cost_per_quantity"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
   end
@@ -345,10 +342,10 @@ ActiveRecord::Schema.define(version: 20171120181958) do
     t.float    "compare_at_price"
     t.integer  "quantity",           default: 0
     t.string   "shopify_product_id"
-    t.boolean  "is_request",         default: false, null: false
-    t.string   "status",             default: ""
     t.integer  "user_id"
     t.integer  "shop_id"
+    t.boolean  "is_request",         default: false, null: false
+    t.string   "status",             default: ""
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
     t.float    "cost",               default: 0.0
