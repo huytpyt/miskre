@@ -25,7 +25,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
       if params[:product]
         product = Product.new(product_params)
         if params[:product][:cost_per_quantity].present?
-          product.cost_per_quantity = params[:product][:cost_per_quantity])
+          product.cost_per_quantity = params[:product][:cost_per_quantity]
         end
         if product.save
           if params[:product][:images].present?
