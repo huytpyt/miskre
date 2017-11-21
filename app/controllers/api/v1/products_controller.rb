@@ -24,6 +24,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
     ActiveRecord::Base.transaction do
       if params[:product]
         product = Product.new(product_params)
+        if params[:product][:cost_per_quantity].present?
+          product.cost_per_quantity = params[:product][:cost_per_quantity])
+        end
         if product.save
           if params[:product][:images].present?
             if params[:product][:images].is_a?(Array)
@@ -66,6 +69,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
         if params[:product].empty?
           render json: ProductsQuery.single(@product), status: 200
         else
+          if params[:product][:cost_per_quantity].present?
+            @product.update(cost_per_quantity: params[:product][:cost_per_quantity])
+          end
           if @product.update(product_params)
             if params[:product][:images].present?
               if params[:product][:images].is_a?(Array)
@@ -138,8 +144,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :suggest_price,
         :sale_off,
         :resource_url,
-        :vendor_detail,
-        :cost_per_quantity
+        :vendor_detail
       )
     end
 end
