@@ -69,6 +69,7 @@ input#productsResource value="#{products_path()}" type="hidden"
           = paginate @products
           table
             = render "product", products: @products
+          = paginate @products
         #tab-2.tab-content
           table#product-table
             = render "product", products: @my_products
