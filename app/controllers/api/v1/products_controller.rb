@@ -41,7 +41,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
           if params[:product][:options].present?
             if params[:product][:options].is_a?(Array)
               params[:product][:options].each do |option|
-                option[:values] = option[:values].split(",")
+                # option[:values] = option[:values].split(",")
                 if option[:name].present?
                   opt = product.options.new(name: option[:name], values: option[:values])
                   opt.save!
@@ -85,15 +85,33 @@ class Api::V1::ProductsController < Api::V1::BaseController
 
             if params[:product][:options].present?
               if params[:product][:options].is_a?(Array)
-                @product.options.delete_all
+                opts = []
+                changed_records = 0
                 params[:product][:options].each do |option|
-                  option[:values] = option[:values].split(",")
-                  if option[:name].present?
-                    opt = @product.options.new(name: option[:name], values: option[:values])
-                    opt.save!
+                  option_id = option[:id]
+                  if option_id
+                    opt = Option.find(option_id)
+                    if opt
+                      if opt.name != option[:name] || opt.values != option[:values]
+                        opt.name = option[:name] if option[:name].present?
+                        opt.values = option[:values]
+                        opt.save!
+                        changed_records +=1
+                      end
+                    end
+                  else
+                    if option[:name].present?
+                      opt = @product.options.new(name: option[:name], values: option[:values])
+                      opt.save!
+                      changed_records +=1
+                    end
                   end
+                  opts << opt.id
                 end
-                @product.regen_variants
+                unless changed_records.zero?
+                  @product.options.where.not(id: opts).delete_all
+                  # @product.regen_variants
+                end
               else
                 render json: {status: false, error: "`options` must an array"}, status: 500
               end
