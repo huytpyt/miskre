@@ -174,6 +174,7 @@ Rails.application.routes.draw do
       resources :images
       resources :shops do 
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
+        patch "update_global_price_setting", to: "shops#update_global_price_setting"
       end
     end
   end
