@@ -75,7 +75,12 @@ class Api::V1::ProductsController < Api::V1::BaseController
           if @product.update(product_params)
             if params[:product][:images].present?
               if params[:product][:images].is_a?(Array)
-                exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
+                exists_ids = []
+                params[:product][:images].each do |image|
+                  if Image.exists?(image[:id])
+                    exists_ids.push(image[:id])
+                  end
+                end
                 @product.image_ids = exists_ids
                 @product.save
               else
