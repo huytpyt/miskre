@@ -96,7 +96,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
                       opt.save if opt.changed?
                     end
                   else
-                    opt = @product.options.find_or_create_by(name: option[:name], values: option[:values])
+                    opt = @product.options.create!(name: option[:name], values: option[:values])
                   end
                   opts << opt.id
                 end
