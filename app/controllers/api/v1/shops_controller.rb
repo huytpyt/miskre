@@ -45,15 +45,49 @@ class Api::V1::ShopsController < Api::V1::BaseController
     render json: {response: response}, status: 200
   end
 
+  def update_global_price_setting
+    shop = Shop.find(params[:shop_id])
+    if shop.update(global_price_setting_params)
+      ShopService.update_supply shop
+      render json: {cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to}, status: 200
+    else
+      render json: {error: "Something went wrong!"}, status: 500
+    end
+  end
+
+  def list_nations
+    render json: {nations: Nation.all}, status: 200
+  end
+
   def destroy
     @shop.destroy
     head :no_content
+  end
+
+  def change_price_option
+    shop = Shop.find(params[:shop_id])
+    if shop.global_setting_enable == true
+      shop.global_setting_enable = false
+      ShopService.update_price_suggest shop
+    else
+      shop.global_setting_enable = true
+      ShopService.update_price_global_setting shop
+    end
+    if shop.save
+      render json: {global_setting_enable: shop.global_setting_enable}, status: 200
+    else
+      render json: {error: "Something went wrong!"}, status: 500
+    end
   end
 
   private
   def prepare_nation
     @national = Nation.find_by_code(params[:nation] || 'US')
     @national ||= Nation.first
+  end
+
+  def global_price_setting_params
+    params.permit(:cost_rate, :shipping_rate, :random_from, :random_to)
   end
 
 end
