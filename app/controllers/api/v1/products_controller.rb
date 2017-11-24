@@ -98,10 +98,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
                     if opt
                       opt.name = option[:name] if option[:name].present?
                       opt.values = option[:values] if option[:values].present?
-                      if opt.changed?
-                        opt.save 
-                        @product.regen_variants
-                      end
+                      opt.save if opt.changed?
                     end
                   else
                     opt = @product.options.create!(name: option[:name], values: option[:values])
