@@ -173,7 +173,6 @@ Rails.application.routes.draw do
       end
       resources :images
       resources :shops do 
-        get "get_setting_price_value"
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
       end
     end
