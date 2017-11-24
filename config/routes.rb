@@ -176,6 +176,7 @@ Rails.application.routes.draw do
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
         patch "update_global_price_setting", to: "shops#update_global_price_setting"
       end
+      get "list_nations", to: "shops#list_nations"
     end
   end
 

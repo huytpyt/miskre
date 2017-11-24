@@ -55,6 +55,10 @@ class Api::V1::ShopsController < Api::V1::BaseController
     end
   end
 
+  def list_nations
+    render json: {nations: Nation.all}, status: 200
+  end
+
   def destroy
     @shop.destroy
     head :no_content
