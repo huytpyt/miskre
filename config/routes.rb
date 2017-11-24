@@ -178,6 +178,10 @@ Rails.application.routes.draw do
         get "change_price_option", to: "shops#change_price_option"
       end
       get "list_nations", to: "shops#list_nations"
+      resources :supplies do
+        post 'upload_image_url', on: :member
+      end
+      resources :supply_variants
     end
   end
 
