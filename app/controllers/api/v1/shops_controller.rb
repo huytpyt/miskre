@@ -16,13 +16,11 @@ class Api::V1::ShopsController < Api::V1::BaseController
     total_page = supplies.size / per_page
     total_page = total_page <= 0 ? 1 : total_page
 
-    global_settting = @shop.global_setting_enable
-    render json: SuppliesQuery.list(page, per_page, params["search"], supplies, global_settting), status: 200
+    render json: SuppliesQuery.list(page, per_page, params["search"], supplies, show_shop(@shop)), status: 200
   end
 
-  def get_setting_price_value
-    shop = Shop.find params[:shop_id]
-    render json: {values: {cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to}}
+  def show_shop shop
+    {id: shop.id, created_at: shop.created_at, updated_at: shop.updated_at, name: shop.name, domain: shop.domain, user_id: shop.user_id, cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to, global_setting_enable: shop.global_setting_enable}
   end
 
   def shipping

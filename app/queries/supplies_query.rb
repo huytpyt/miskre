@@ -1,6 +1,6 @@
 class SuppliesQuery < BaseQuery
 
-  def self.list(page = 1, per_page = 12, search = '', supplies, global_settting)
+  def self.list(page = 1, per_page = 12, search = '', supplies, shop)
     if search.present?
       paginate = api_paginate(supplies.search(search).records, page).per(per_page)
     else
@@ -17,7 +17,7 @@ class SuppliesQuery < BaseQuery
         first_page: 1,
         last_page: paginate.total_pages
       },
-      global_settting_enabled: global_settting,
+      shop: shop,
       supplies: paginate.map{ |supply| supply}
     }
   end
