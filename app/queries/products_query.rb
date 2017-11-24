@@ -73,17 +73,7 @@ class ProductsQuery < BaseQuery
 
 	def self.variants_for(product)
 		product.variants.map do |variant|
-			{
-				id: variant.id,
-				option1: variant.option1,
-				option2: variant.option2,
-				option3: variant.option3,
-				quantity: variant.quantity,
-				price: variant.price,
-				sku: variant.sku,
-				compare_at_price: variant.compare_at_price,
-				product_ids: variant.product_ids
-			}
+			VariantsQuery.single(variant)
 		end
 	end
 
@@ -92,7 +82,9 @@ class ProductsQuery < BaseQuery
 			{
 				id: option.id,
 				name: option.name,
-				values: option.values
+				values: option.values,
+				created_at: option.created_at,
+				updated_at: option.updated_at
 			}
 		end
 	end
@@ -103,7 +95,9 @@ class ProductsQuery < BaseQuery
 				id: image.id,
 				url: image.file_url,
 	  		thumb: image.file.url(:thumb),
-	  		medium: image.file.url(:medium)
+	  		medium: image.file.url(:medium),
+	  		created_at: image.created_at,
+				updated_at: image.updated_at
 			}
 		end
 	end
