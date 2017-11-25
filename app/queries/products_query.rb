@@ -28,6 +28,29 @@ class ProductsQuery < BaseQuery
 		}
 	end
 
+	def self.list_miskre(products, page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '')
+		sort_options = { "#{order_by}" => sort }
+		if search.present?
+			paginate = api_paginate(products.order(sort_options).search(search).records, page).per(per_page)
+		else
+			paginate = api_paginate(products.order(sort_options), page).per(per_page)
+		end
+		{
+			status: true,
+			paginator: {
+				total_records: paginate.total_count,
+				records_per_page: paginate.limit_value,
+				total_pages: paginate.total_pages,
+				current_page: paginate.current_page,
+				next_page: paginate.next_page,
+				prev_page: paginate.prev_page,
+				first_page: 1,
+				last_page: paginate.total_pages
+			},
+			products: paginate.map{ |product| single(product) }
+		}
+	end
+
 	def self.single(product)
 		{
 			id: product.id,
@@ -44,7 +67,6 @@ class ProductsQuery < BaseQuery
 			cost: product.cost,
 			link: product.link,
 			epub: product.epub,
-			dhl: product.dhl,
 			vendor: product.vendor,
 			bundle_id: product.bundle_id,
 			is_bundle: product.is_bundle,
@@ -55,7 +77,6 @@ class ProductsQuery < BaseQuery
 			fulfillable_quantity: product.fulfillable_quantity,
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,
-			cus_dhl: product.cus_dhl,
 			suggest_price: product.suggest_price,
 			sale_off: product.sale_off,
 			shop_owner: product.shop_owner,
