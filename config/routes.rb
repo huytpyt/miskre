@@ -182,6 +182,15 @@ Rails.application.routes.draw do
         post 'upload_image_url', on: :member
       end
       resources :supply_variants
+      resources :product_lists, only: [:show] do 
+        collection do
+          get "miskre_products", to: "product_lists#miskre_products"
+          get "user_products", to: "product_lists#user_products"
+        end
+        get "add_to_shop_info", to: "product_lists#add_to_shop_info"
+        post "assign_shop", to: "product_lists#assign_shop"
+        get "shipping", to: "product_lists#shipping"
+      end
     end
   end
 
