@@ -92,7 +92,11 @@ class Product < ApplicationRecord
 
   def self.search(search)
     if search
-      where(['name LIKE ? OR sku LIKE ?', "%#{search}%", "%#{search}%"])
+      if search.to_i == 0
+        where(['name LIKE ? OR sku LIKE  ?', "%#{search}%", "%#{search}%"])
+      else
+        where(id: search)
+      end
     else
       scoped
     end
