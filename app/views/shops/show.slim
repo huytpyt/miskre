@@ -61,7 +61,7 @@
             = select_tag "Country", options_from_collection_for_select(Nation.all, "code", "name"), class: 'chosen-select-country'
           .columns.large-7
             label
-              | Enter SKU or product name:
+              | Enter product name:
               = text_field_tag :search
           .columns.large-2
             label
@@ -79,7 +79,7 @@
                   /span.text-right.pull-right
                     = product.price
               .card-section
-                - unless supply.product.images.empty?
+                - unless supply.product&.images.nil? || supply.product&.images&.empty?
                   = image_tag supply.product.images.first.file.url(:medium)
                 - else
                   = image_tag "default.jpg"
@@ -110,7 +110,7 @@
                 ul.menu
                   li
                     = link_to "Customize", edit_supply_path(supply), class: 'button tiny'
-                  - if supply.product.product_url.present?
+                  - if supply.product&.product_url&.present?
                     li = link_to "Download resources", supply.product.product_url, class: 'button tiny success', target: '_blank'
                   li
                     = link_to "Remove", supply_path(supply),

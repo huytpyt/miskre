@@ -1,8 +1,8 @@
-development: &default
-  host: 'http://localhost:9200'
-test:
-  <<: *default
-staging:
-  <<: *default
-production:
-  host: 'http://elasticsearch:9200'
+# development: &default
+#   host: 'http://localhost:9200'
+# test:
+#   <<: *default
+# staging:
+#   <<: *default
+# production:
+#   host: 'http://elasticsearch:9200'

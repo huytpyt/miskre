@@ -91,8 +91,8 @@ group :development do
 end
 
 # For super search
-gem 'elasticsearch-rails', '~> 0.1.7'
-gem 'elasticsearch-model', '~> 0.1.7'
+# gem 'elasticsearch-rails', '~> 0.1.7'
+# gem 'elasticsearch-model', '~> 0.1.7'
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 # Environment variables

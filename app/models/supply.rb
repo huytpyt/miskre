@@ -35,9 +35,9 @@
 #
 
 class Supply < ApplicationRecord
-  include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
-  Supply.import(force: true)
+  # include Elasticsearch::Model
+  # include Elasticsearch::Model::Callbacks
+  # Supply.import(force: true)
   
   belongs_to :shop
   belongs_to :product
@@ -50,6 +50,13 @@ class Supply < ApplicationRecord
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}
 
+  def self.search(search)
+    if search
+      where(['name LIKE ?', "%#{search}%"])
+    else
+      scoped
+    end
+  end
   def sync_this_supply
     JobsService.delay.sync_this_supply self.id
   end

@@ -8,7 +8,7 @@ class ProductsQuery < BaseQuery
 			product = product.where("#{key} = ''")
 		end
 		if search.present?
-			paginate = api_paginate(product.order(sort_options).search(search).records, page).per(per_page)
+			paginate = api_paginate(product.order(sort_options).search(search), page).per(per_page)
 		else
 			paginate = api_paginate(product.order(sort_options), page).per(per_page)
 		end
@@ -31,7 +31,7 @@ class ProductsQuery < BaseQuery
 	def self.list_miskre(products, page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '')
 		sort_options = { "#{order_by}" => sort }
 		if search.present?
-			paginate = api_paginate(products.order(sort_options).search(search).records, page).per(per_page)
+			paginate = api_paginate(products.order(sort_options).search(search), page).per(per_page)
 		else
 			paginate = api_paginate(products.order(sort_options), page).per(per_page)
 		end
