@@ -44,15 +44,15 @@
 #  index_products_on_user_id    (user_id)
 #
 
-require 'elasticsearch/model'
+# require 'elasticsearch/model'
 class Product < ApplicationRecord
   serialize :product_ids
   serialize :cost_per_quantity
   include ShopifyApp::SessionStorage
 
-  include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
-  Product.import(force: true)
+  # include Elasticsearch::Model
+  # include Elasticsearch::Model::Callbacks
+  # Product.import(force: true)
   # has_many :images, dependent: :destroy
   has_many :images, as: :imageable
 
@@ -89,6 +89,14 @@ class Product < ApplicationRecord
   after_commit :sync_job
 
   validate :validate_bundle
+
+  def self.search(search)
+    if search
+      where(['name LIKE ? OR sku LIKE ?', "%#{search}%", "%#{search}%"])
+    else
+      scoped
+    end
+  end
 
   def validate_bundle
     if self.is_bundle

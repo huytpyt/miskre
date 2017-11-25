@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
     staff_ids = User.where.not(role: "user").ids
     # @products = Product.order(sku: :asc).page params[:page]
     @products = Product.all.where(shop_owner: false, user_id: [staff_ids, nil]).order(id: :desc)
-    @products = params[:search].present? ? @products.search(params[:search]).records.page(params[:page]) : @products.page(params[:page])
+    @products = params[:search].present? ? @products.search(params[:search]).page(params[:page]) : @products.page(params[:page])
 
     @request_products = current_user.request_products
     @my_products = current_user.products.where(shop_owner: false).order(id: :desc)
