@@ -18,9 +18,9 @@ class ShopService
       carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
       carrier_service.service_discovery = false
       carrier_service.save
-      if carrier_service
+      if carrier_service.persisted?
         shop.update(carrier_service_id: carrier_service.id, use_carrier_service: true)
-        carrier_service
+        "Service was activated."
       else
         carrier_service.errors.messages[:base][0]
       end
