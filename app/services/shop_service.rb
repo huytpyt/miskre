@@ -18,7 +18,12 @@ class ShopService
       carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
       carrier_service.service_discovery = false
       carrier_service.save
-      shop.update(carrier_service_id: carrier_service.id, use_carrier_service: true)
+      if carrier_service
+        shop.update(carrier_service_id: carrier_service.id, use_carrier_service: true)
+        carrier_service
+      else
+        carrier_service.errors.messages[:base][0]
+      end
     rescue 
       "You need to add payment methods on shopify first!"
     end
