@@ -55,7 +55,7 @@ class User < ApplicationRecord
   # end
 
   def staff?
-    self.admin? || self.manager? || self.partner?
+    self.admin? || self.manager?
   end
 
   def create_customer

@@ -17,4 +17,12 @@ class Nation < ApplicationRecord
   def destroy_user_nation
     UserNation.where(code: self.code).destroy_all
   end
+
+  def self.search search
+    if search
+      where(['name LIKE ? OR code LIKE ?', "%#{search}%", "%#{search}%"])
+    else
+      scoped
+    end
+  end
 end

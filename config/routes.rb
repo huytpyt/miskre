@@ -191,6 +191,16 @@ Rails.application.routes.draw do
         post "assign_shop", to: "product_lists#assign_shop"
         get "shipping", to: "product_lists#shipping"
       end
+      resources :shipping_managements, only: [] do
+        collection do 
+          get "nations", to: "shipping_managements#list_nations"
+          delete "nations/:id", to: "shipping_managements#destroy_nation"
+          get "nations/:id/shipping_types", to: "shipping_managements#shipping_types"
+          delete "shipping_types/:shipping_type_id", to: "shipping_managements#destroy_shipping_type"
+          delete "shipping_types/:shipping_type_id/detail_shipping_types/:id", to: "shipping_managements#destroy_detail_shipping"
+          get "shipping_types/:shipping_type_id/detail_shipping_types", to: "shipping_managements#detail_shipping_types"
+        end
+      end
     end
   end
 

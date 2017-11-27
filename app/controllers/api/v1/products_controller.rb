@@ -122,7 +122,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
     end
 
     def staff_authentication
-      unless current_resource.staff?
+      unless current_resource.staff? || current_resource.partner?
         render json: {status: false, message: "Permission denied"}, status: 550
       end
     end
