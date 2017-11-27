@@ -51,6 +51,12 @@ class ProductsQuery < BaseQuery
 		}
 	end
 
+	def self.single_partner(product) 
+		{
+
+		}
+	end
+
 	def self.single(product)
 		{
 			id: product.id,
