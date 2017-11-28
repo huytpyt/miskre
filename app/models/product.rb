@@ -93,7 +93,7 @@ class Product < ApplicationRecord
   def self.search(search)
     if search
       if search.to_i == 0
-        where(['name LIKE ? OR sku LIKE  ?', "%#{search}%", "%#{search}%"])
+        where(['lower(name) LIKE ? OR lower(sku) LIKE  ?', "%#{search.downcase}%", "%#{search.downcase}%"])
       else
         where(id: search)
       end

@@ -20,7 +20,7 @@ class Nation < ApplicationRecord
 
   def self.search search
     if search
-      where(['name LIKE ? OR code LIKE ?', "%#{search}%", "%#{search}%"])
+      where(['lower(name) LIKE ? OR lower(code) LIKE ?', "%#{search.downcase}%", "%#{search.downcase}%"])
     else
       scoped
     end
