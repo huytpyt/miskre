@@ -1,13 +1,13 @@
 version: '3'
 services:
-  elasticsearch:
-    image: elasticsearch
-    ports:
-      - "9200:9200"
-    networks:
-      - default
-    volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
+  # elasticsearch:
+  #   image: elasticsearch
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - default
+  #   volumes:
+  #     - elasticsearch:/usr/share/elasticsearch/data
   app:
     build:
       context: .
@@ -21,7 +21,7 @@ services:
       REDIS_URL: 'redis://cache:6379'
       SECRET_KEY_BASE: 'e3ba32e5105fb3edf485ff800c3fa79de96006efd751357083964a388e21cf1af1e282a72a39981fdff2737b808b6af41c990e1641ce7147412a7723ce3532fe'
     links:
-      - elasticsearch
+      # - elasticsearch
       - db
       - cache
     command: bundle exec rails s Puma -b 0.0.0.0
@@ -38,7 +38,7 @@ services:
       REDIS_URL: 'redis://cache:6379'
       SECRET_KEY_BASE: 'e3ba32e5105fb3edf485ff800c3fa79de96006efd751357083964a388e21cf1af1e282a72a39981fdff2737b808b6af41c990e1641ce7147412a7723ce3532fe'
     links:
-      - elasticsearch
+      # - elasticsearch
       - db
       - cache
     command: bundle exec sidekiq -C config/sidekiq.yml
@@ -68,7 +68,7 @@ services:
     links:
       - app
 volumes:
-  elasticsearch:
+  # elasticsearch:
   db_data:
   cache_data:
   public_data:

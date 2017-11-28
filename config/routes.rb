@@ -201,6 +201,12 @@ Rails.application.routes.draw do
           get "shipping_types/:shipping_type_id/detail_shipping_types", to: "shipping_managements#detail_shipping_types"
         end
       end
+      resources :shipping_settings, only: [] do
+        collection do 
+          get "shippings_by_nation", to: "shipping_settings#shippings_by_nation"
+          get ":user_shipping_type_id/setting/change_status", to: "shipping_settings#change_status"
+        end
+      end
     end
   end
 

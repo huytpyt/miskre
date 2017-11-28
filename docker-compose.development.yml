@@ -1,13 +1,13 @@
 version: '3'
 services:
-  elasticsearch:
-    image: elasticsearch
-    ports:
-      - "9200:9200"
-    networks:
-      - default
-    volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
+  # elasticsearch:
+  #   image: elasticsearch
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - default
+  #   volumes:
+  #     - elasticsearch:/usr/share/elasticsearch/data
   app:
     build:
       context: .
@@ -19,7 +19,7 @@ services:
       DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_development'
       REDIS_URL: 'redis://cache:6379'
     links:
-      - elasticsearch
+      # - elasticsearch
       - db
       - cache
     command: bundle exec rails s Puma -b 0.0.0.0
@@ -34,7 +34,7 @@ services:
       DATABASE_URL: 'postgresql://miskre:db_pass@db/shop_center_development'
       REDIS_URL: 'redis://cache:6379'
     links:
-      - elasticsearch
+      # - elasticsearch
       - db
       - cache
     command: bundle exec sidekiq -C config/sidekiq.yml
@@ -47,6 +47,8 @@ services:
       POSTGRES_DATABASE:             shop_center_development
       POSTGRES_USER:                 miskre
       POSTGRES_PASSWORD:             db_pass
+    ports:
+      - "5432:5432"
   cache:
     image: redis:3-alpine
     volumes:
@@ -62,7 +64,7 @@ services:
     links:
       - app
 volumes:
-  elasticsearch: 
+  # elasticsearch: 
   db_data:
   cache_data:
 
