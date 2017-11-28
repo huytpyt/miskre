@@ -41,7 +41,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
           if params[:product][:options].present?
             if params[:product][:options].is_a?(Array)
               params[:product][:options].each do |option|
-                option[:values] = option[:values].split(",")
+                # option[:values] = option[:values].split(",")
                 if option[:name].present?
                   opt = product.options.new(name: option[:name], values: option[:values])
                   opt.save!
@@ -75,7 +75,12 @@ class Api::V1::ProductsController < Api::V1::BaseController
           if @product.update(product_params)
             if params[:product][:images].present?
               if params[:product][:images].is_a?(Array)
-                exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
+                exists_ids = []
+                params[:product][:images].each do |image|
+                  if Image.exists?(image[:id])
+                    exists_ids.push(image[:id])
+                  end
+                end
                 @product.image_ids = exists_ids
                 @product.save
               else
@@ -85,17 +90,55 @@ class Api::V1::ProductsController < Api::V1::BaseController
 
             if params[:product][:options].present?
               if params[:product][:options].is_a?(Array)
-                @product.options.delete_all
+                opts = []
                 params[:product][:options].each do |option|
-                  option[:values] = option[:values].split(",")
-                  if option[:name].present?
-                    opt = @product.options.new(name: option[:name], values: option[:values])
-                    opt.save!
+                  option_id = option[:id]
+                  if option_id
+                    opt = Option.find(option_id)
+                    if opt
+                      opt.name = option[:name] if option[:name].present?
+                      opt.values = option[:values] if option[:values].present?
+                      opt.save if opt.changed?
+                    end
+                  else
+                    opt = @product.options.create!(name: option[:name], values: option[:values])
                   end
+                  opts << opt.id
                 end
-                @product.regen_variants
+                @product.options.where.not(id: opts).destroy_all
               else
                 render json: {status: false, error: "`options` must an array"}, status: 500
+              end
+            end
+
+            if params[:product][:variants].present?
+              if params[:product][:variants].is_a?(Array)
+                vts = []
+                params[:product][:variants].each do |variant|
+                  variant_id = variant[:id]
+                  if variant_id
+                    vt = Variant.find(variant_id)
+                    if vt
+                      vt.option1 = variant[:option1].present?
+                      vt.option2 = variant[:option2].present?
+                      vt.option3 = variant[:option3].present?
+                      vt.quantity = variant[:quantity].present?
+                      vt.price = variant[:price].present?
+                      if variant[:images].present?
+                        if variant[:images].is_a?(Array)
+                          exists_ids = variant[:images].select{|id| Image.exists?(id)}
+                          vt.image_ids = exists_ids
+                          vt.save
+                        end
+                      end
+                      vt.save if vt.changed?
+                      vts << vt.id
+                    end
+                  end
+                end
+                @product.variants.where.not(id: vts).destroy_all
+              else
+                render json: {status: false, error: "`variants` must an array"}, status: 500
               end
             end
 
