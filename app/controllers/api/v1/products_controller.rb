@@ -109,37 +109,40 @@ class Api::V1::ProductsController < Api::V1::BaseController
               else
                 render json: {status: false, error: "`options` must an array"}, status: 500
               end
-            end
 
-            if params[:product][:variants].present?
-              if params[:product][:variants].is_a?(Array)
-                vts = []
-                params[:product][:variants].each do |variant|
-                  variant_id = variant[:id]
-                  if variant_id
-                    vt = Variant.find(variant_id)
-                    if vt
-                      vt.option1 = variant[:option1].present?
-                      vt.option2 = variant[:option2].present?
-                      vt.option3 = variant[:option3].present?
-                      vt.quantity = variant[:quantity].present?
-                      vt.price = variant[:price].present?
-                      if variant[:images].present?
-                        if variant[:images].is_a?(Array)
-                          exists_ids = variant[:images].select{|id| Image.exists?(id)}
-                          vt.image_ids = exists_ids
-                          vt.save
+              if params[:product][:variants].present?
+                if params[:product][:variants].is_a?(Array)
+                  vts = []
+                  params[:product][:variants].each do |variant|
+                    variant_id = variant[:id]
+                    if variant_id
+                      vt = Variant.find(variant_id)
+                      if vt
+                        vt.option1 = variant[:option1].present?
+                        vt.option2 = variant[:option2].present?
+                        vt.option3 = variant[:option3].present?
+                        vt.quantity = variant[:quantity].present?
+                        vt.price = variant[:price].present?
+                        if variant[:images].present?
+                          if variant[:images].is_a?(Array)
+                            exists_ids = variant[:images].select{|id| Image.exists?(id)}
+                            vt.image_ids = exists_ids
+                            vt.save
+                          end
                         end
+                        vt.save if vt.changed?
+                        vts << vt.id
                       end
-                      vt.save if vt.changed?
-                      vts << vt.id
                     end
                   end
+                  @product.variants.where.not(id: vts).destroy_all
+                else
+                  render json: {status: false, error: "`variants` must an array"}, status: 500
                 end
-                @product.variants.where.not(id: vts).destroy_all
-              else
-                render json: {status: false, error: "`variants` must an array"}, status: 500
               end
+            else
+              @product.options.destroy_all
+              @product.variants.destroy_all
             end
 
             render json: ProductsQuery.single(@product), status: 200
