@@ -1,6 +1,7 @@
 FROM ruby:2.3-alpine
 
 RUN apk add --no-cache \
+  imagemagick \
   alpine-sdk \
   tzdata \
   nodejs \
