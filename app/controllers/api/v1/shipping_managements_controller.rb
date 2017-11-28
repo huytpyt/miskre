@@ -14,7 +14,8 @@ class Api::V1::ShippingManagementsController < Api::V1::BaseController
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q]
-    render json: ShippingsQuery.list(nations, page, per_page, sort, order_by, search), status: 200
+    shipping_setting = false
+    render json: ShippingsQuery.list(nations, page, per_page, sort, order_by, search, shipping_setting), status: 200
   end
 
   def destroy_nation
