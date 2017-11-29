@@ -3,7 +3,7 @@ class ProductsQuery < BaseQuery
 	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '', key = nil)
 		sort_options = { "#{order_by}" => sort }
 
-		product = Product.where(shop_owner: false)
+		product = Product.where(shop_owner: false, is_bundle: false)
 		if key.present? && Product.column_names.include?(key)
 			product = product.where("#{key} = ''")
 		end
