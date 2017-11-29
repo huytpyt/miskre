@@ -17,7 +17,7 @@ class VariantsQuery < BaseQuery
 			user_id: variant.user_id,
 			compare_at_price: variant.compare_at_price,
 			product_ids: variant.product_ids,
-			images: images_for(variant),
+			image: images_for(variant),
 			created_at: variant.created_at,
 			updated_at: variant.updated_at
 		}
