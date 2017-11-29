@@ -20,6 +20,8 @@ class VariantService
       variant.price = ((total_price * (100 - product.sale_off.to_i))/100).round(2)
       compare_at_price = (variant.price * random/ 5).round(0) * 5
       product.update(suggest_price: variant.price, compare_at_price: compare_at_price, cost: total_cost, weight: total_weight)
+    else
+      compare_at_price = (variant.price * random/ 5).round(0) * 5
     end
     variant.compare_at_price = compare_at_price
     variant.save
