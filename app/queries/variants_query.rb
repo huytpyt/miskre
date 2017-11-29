@@ -26,12 +26,13 @@ class VariantsQuery < BaseQuery
 	private
 
 		def self.images_for(variant)
-			variant.images.map do |image|
+			image = variant.images&.first
+			if image
 				{
 					id: image.id,
 					url: image.file_url,
-		  		thumb: image.file.url(:thumb),
-		  		medium: image.file.url(:medium)
+		  			thumb: image.file.url(:thumb),
+		  			medium: image.file.url(:medium)
 				}
 			end
 		end
