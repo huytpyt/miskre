@@ -12,6 +12,7 @@ class JobsService
     product.supplies.where(original: true, is_deleted: false).where.not(shopify_product_id: nil).each do |s|
       s.copy_product_attr
       s.save
+      sync_supply s.id
     end
   end
 

@@ -18,6 +18,7 @@ class SuppliesController < ApplicationController
             @supply.images.create(file: img)
           end
         end
+        JobsService.delay.sync_this_supply @supply.id
         format.html { redirect_to edit_supply_path(@supply), notice: 'Product was successfully updated.' }
       else
         format.html { render :edit }
