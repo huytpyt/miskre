@@ -124,11 +124,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
                         vt.quantity = variant[:quantity].present?
                         vt.price = variant[:price].present?
                         if variant[:images].present?
-                          if variant[:images].is_a?(Array)
-                            exists_ids = variant[:images].select{|id| Image.exists?(id)}
-                            vt.image_ids = exists_ids
-                            vt.save
-                          end
+                          exists_ids = Image.exists?(variant[:images][:id]) ? [variant[:images][:id]] : []
+                          vt.image_ids = exists_ids
+                          vt.save
                         end
                         vt.save if vt.changed?
                         vts << vt.id
