@@ -30,8 +30,8 @@ class Api::V1::ProductsController < Api::V1::BaseController
         if product.save
           if params[:product][:images].present?
             if params[:product][:images].is_a?(Array)
-              exists_ids = params[:product][:images].select{|id| Image.exists?(id)}
-              product.image_ids = exists_ids
+              exists_ids = params[:product][:images].select{|image| Image.exists?(image[:id])}
+              product.image_ids = exists_ids.pluck(:id)
               product.save!
             else
               render json: {status: false, error: "`images` must an array"}, status: 500
@@ -41,7 +41,6 @@ class Api::V1::ProductsController < Api::V1::BaseController
           if params[:product][:options].present?
             if params[:product][:options].is_a?(Array)
               params[:product][:options].each do |option|
-                # option[:values] = option[:values].split(",")
                 if option[:name].present?
                   opt = product.options.new(name: option[:name], values: option[:values])
                   opt.save!
