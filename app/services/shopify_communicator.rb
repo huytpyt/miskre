@@ -122,11 +122,7 @@ class ShopifyCommunicator
               end
             end
           end
-
           sleep 0.5
-        #rescue
-        #  p "Error Connection. Try again ..."
-        #  next 
         end
       end
     rescue
@@ -161,7 +157,6 @@ class ShopifyCommunicator
     product = Product.find(product_id)
 
     new_product = ShopifyAPI::Product.new
-    assign(new_product, product)
     if @shop.present?
       supply = Supply.new(shop_id: @shop.id,
                     product_id: product.id,
@@ -169,8 +164,20 @@ class ShopifyCommunicator
                     shopify_product_id: new_product.id)
       supply.copy_product_attr_add_product
       if supply.save
+        assign(new_product, product)
+        product.images.each do  |image| 
+          supply_image = supply.images.new(file: ORIGINAL_URL+ image.file.url)
+          supply_image.save
+        end
         product.variants.each do |variant|
-          supply.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+          variant_image = variant.images&.first
+          supply_variant = supply.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+          if supply_variant.save
+            if variant_image
+              supply_variant_image = supply_variant.images.new(file: ORIGINAL_URL + variant_image.file.url)
+              supply_variant_image.save
+            end
+          end
         end
       end
     end
@@ -226,14 +233,9 @@ class ShopifyCommunicator
   end
 
   def assign(shopify_product, product, supply=nil)
-    # if a supply is given, we will get it's name, desc, price, image
-    # to update to Shopify
-    # otherwise, we will use product's name, desc, price, image
-
     shopify_product.title = product.name
     shopify_product.vendor = @shop.shopify_domain
     shopify_product.body_html = product.desc
-    # TODO upload supply images here
     shopify_product.images = product.images.collect do |i|
       { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
       raw_content = Paperclip.io_adapters.for(i.file).read
