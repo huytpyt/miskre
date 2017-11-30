@@ -2,6 +2,13 @@
   .row
     .columns
       h4 Images
+    - if @supply.images.size > 0
+      .columns
+        #images-preview
+          - @variant.images.each do |pi|
+            div
+              = image_tag pi.file.url(:medium)
+            = link_to 'Remove', pi, method: :delete, data: { confirm: 'Are you sure?' }
     .columns
       ul#dvPreview
     .columns.medium-6
