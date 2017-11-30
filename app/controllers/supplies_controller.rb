@@ -44,6 +44,8 @@ class SuppliesController < ApplicationController
     @supply.is_deleted = true
     @supply.shop_id = nil
     if @supply.save
+      @supply.images.destroy_all
+      @supply.supply_variants.each {|supply_variant| supply_variant.images.destroy_all}
       JobsService.delay.remove_shopify_product shop.id, @supply.shopify_product_id
     end
     redirect_to shop_url(shop), notice: 'Product was successfully removed from shop.'
