@@ -155,7 +155,6 @@ Rails.application.routes.draw do
 
     # Routes for API
     namespace :v1 do
-      resource :test, only: :show
       resources :users, defaults: {scope: :users}, only: :show do
         scope module: 'resource', as: :users do
           collection do

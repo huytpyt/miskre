@@ -37,12 +37,6 @@ class Api::V1::ImagesController < Api::V1::BaseController
 
   	def validate_image_base64
   		if params[:image].present?
-		    # rexp = /data:image\/(?:gif|jpg|jpeg|tiff|png);base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)/
-		    # if rexp.match(params[:image])
-		    # 	true
-		    # else
-		    #   render json: {status: false, error: "Image must base64 format"}, status: 500
-		    # end
 			true
 		else
 			render json: {status: false, error: "Image can't be blank"}, status: 500
