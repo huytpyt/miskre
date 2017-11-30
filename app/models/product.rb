@@ -70,17 +70,17 @@ class Product < ApplicationRecord
   has_many :tracking_products
   belongs_to :shop
   
-  validates :suggest_price, presence: true, numericality: { greater_than_or_equal_to: 0}
+  validates :suggest_price, presence: true, numericality: {greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
   validates :product_url, url: {allow_blank: true}
   validates :sku, presence: true, uniqueness: true
   validates :quantity, numericality: { only_integer: true}
-  validates :cost, numericality: { greater_than_or_equal_to: 0}
-  validates :weight, presence: true, numericality: { only_integer: true,
+  validates :cost, numericality: {greater_than_or_equal_to: 0.1}
+  validates :weight, presence: true, numericality: {only_integer: true,
                                        greater_than_or_equal_to: 1}
-  validates :length, numericality: true
-  validates :height, numericality: true
-  validates :width, numericality: true
+  validates :length, numericality: {greater_than_or_equal_to: 0}
+  validates :height, numericality: {greater_than_or_equal_to: 0}
+  validates :width, numericality: {greater_than_or_equal_to: 0}
 
   after_initialize :generate_sku, :if => :new_record?
   # before_save :pack_bundle, if: :is_bundle

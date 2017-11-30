@@ -1,16 +1,16 @@
 class ProductsQuery < BaseQuery
 
-	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '', key = nil)
+	def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '', key = nil, current_resource)
 		sort_options = { "#{order_by}" => sort }
 
-		product = Product.where(shop_owner: false, is_bundle: false)
+		products = Product.where(shop_owner: false, is_bundle: false)
 		if key.present? && Product.column_names.include?(key)
-			product = product.where("#{key} = ''")
+			products = products.where("#{key} = ''")
 		end
 		if search.present?
-			paginate = api_paginate(product.order(sort_options).search(search), page).per(per_page)
+			paginate = api_paginate(products.order(sort_options).search(search), page).per(per_page)
 		else
-			paginate = api_paginate(product.order(sort_options), page).per(per_page)
+			paginate = api_paginate(products.order(sort_options), page).per(per_page)
 		end
 		{
 			status: true,
@@ -24,7 +24,7 @@ class ProductsQuery < BaseQuery
 				first_page: 1,
 				last_page: paginate.total_pages
 			},
-			products: paginate.map{ |product| single(product) }
+			products: paginate.map{ |product| current_resource.partner? ? single_partner(product) : single(product) }
 		}
 	end
 
@@ -53,7 +53,21 @@ class ProductsQuery < BaseQuery
 
 	def self.single_partner(product) 
 		{
-
+			id: product.id,
+			name: product.name,
+			weight: product.weight,
+			length: product.length,
+			height: product.height,
+			width: product.width,
+			sku: product.sku,
+			desc: product.desc,
+			vendor_detail: product.vendor_detail,
+			cost_per_quantity: product.cost_per_quantity,
+			created_at: product.created_at,
+			updated_at: product.updated_at,
+			options: options_for(product),
+			variants: variants_for(product),
+			images: images_for(product)
 		}
 	end
 
