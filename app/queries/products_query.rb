@@ -72,6 +72,10 @@ class ProductsQuery < BaseQuery
 	end
 
 	def self.single(product)
+		if product.cost_per_quantity.nil?
+			product.cost_per_quantity = [{"quantity"=>1, "cost"=>product.cost}]
+			product.save
+		end
 		{
 			id: product.id,
 			name: product.name,
