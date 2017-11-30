@@ -37,6 +37,7 @@
 #  resource_url         :string
 #  vendor_detail        :text
 #  cost_per_quantity    :string
+#  approved             :boolean          default(FALSE)
 #
 # Indexes
 #

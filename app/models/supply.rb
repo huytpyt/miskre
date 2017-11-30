@@ -20,7 +20,7 @@
 #  cost_dhl             :float
 #  compare_at_price     :float
 #  cost                 :float
-#  keep_cu@tom          :boolean          default(FALSE)
+#  keep_custom          :boolean          default(FALSE)
 #  is_deleted           :boolean          default(FALSE)
 #
 # Indexes

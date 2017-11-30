@@ -163,6 +163,7 @@ Rails.application.routes.draw do
         end
       end
       resources :products do
+        post "toggle_approve", to: "products#toggle_approve", on: :member
         resources :options
         resources :variants do
           collection do

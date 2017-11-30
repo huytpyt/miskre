@@ -1,7 +1,8 @@
 class Api::V1::ProductsController < Api::V1::BaseController
   before_action :staff_authentication, only: [:create, :destroy]
   before_action :staff_partner_authentication, only: [:index, :show, :update]
-  before_action :prepare_product, only: [:show, :update, :destroy]
+  before_action :admin_authentication, only: [:toggle_approve]
+  before_action :prepare_product, only: [:show, :update, :destroy, :toggle_approve]
 
   def index
     page = params[:page].to_i || 1
@@ -159,6 +160,17 @@ class Api::V1::ProductsController < Api::V1::BaseController
     head :no_content
   end
 
+  def toggle_approve
+    if @product.approved
+      @product.approved = false
+    else
+      @product.approved = true
+    end
+    if @product.save
+      render json: {approved: @product.approved}
+    end
+  end
+
   private
 
     def prepare_product
@@ -173,6 +185,12 @@ class Api::V1::ProductsController < Api::V1::BaseController
 
     def staff_partner_authentication
       unless current_resource.staff? || current_resource.partner?
+        render json: {status: false, message: "Permission denied"}, status: 550
+      end
+    end
+
+    def admin_authentication
+      unless current_resource.admin?
         render json: {status: false, message: "Permission denied"}, status: 550
       end
     end
