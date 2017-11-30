@@ -167,7 +167,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
       @product.approved = true
     end
     if @product.save
-      render json: {approved: @product.approved}
+      render json: {approved: @product.approved}, status: 200
+    else
+      render json: {error: @product.errors.full_messages}, status: 500
     end
   end
 
