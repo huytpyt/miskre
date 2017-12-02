@@ -1,0 +1,95 @@
+class OrdersQuery < BaseQuery
+
+  def self.list(page = 1, per_page = 12, sort, order_by, search, key,
+   shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+    shop, orders = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+    sort_options = { "#{order_by}" => sort }
+    paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
+    {
+      paginator: {
+        total_records: paginate.total_count,
+        records_per_page: paginate.limit_value,
+        total_pages: paginate.total_pages,
+        current_page: paginate.current_page,
+        next_page: paginate.next_page,
+        prev_page: paginate.prev_page,
+        first_page: 1,
+        last_page: paginate.total_pages
+      },
+      orders: paginate.map{ |orders| single(orders) }
+    }
+  end
+
+  def self.pay_for_miskre reponse_result
+    result, total_paid = reponse_result
+    { 
+      result: result,
+      total_pay_sucess: total_paid
+    }
+  end
+
+  def self.single(order)
+    {
+      id: order.id,
+      first_name: order.first_name,
+      last_name: order.last_name,
+      ship_address1: order.ship_address1,
+      ship_address2: order.ship_address2,
+      ship_city: order.ship_city,
+      ship_state: order.ship_state,
+      ship_zip: order.ship_zip,
+      ship_country: order.ship_country,
+      ship_phone: order.ship_phone,
+      email: order.email,
+      quantity: order.quantity,
+      skus: order.skus,
+      unit_price: order.unit_price,
+      date: order.date,
+      remark: order.remark,
+      shipping_method: order.shipping_method,
+      tracking_no: order.tracking_no,
+      fulfill_fee: order.fulfill_fee,
+      product_name: order.product_name,
+      color: order.color,
+      size: order.size,
+      shop_id: order.shop_id,
+      created_at: order.created_at,
+      updated_at: order.updated_at,
+      shopify_id: order.shopify_id,
+      financial_status: order.financial_status,
+      fulfillment_status: order.fulfillment_status,
+      paid_for_miskre: order.paid_for_miskre,
+      shop_name: order.shop.name,
+      total_cost: OrderService.new.sum_money_from_order(order).to_f
+    }
+  end
+
+  def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+    query_params = {}
+    if fulfillment_status == "null"
+      query_params['fulfillment_status'] = nil
+    else
+      query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
+    end
+    query_params['financial_status'] = financial_status unless financial_status.empty?
+
+    if shop_id
+      begin
+        current_shop = Shop.find(shop_id)
+        orders = current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+      rescue ActiveRecord::RecordNotFound
+        current_shop = nil
+        orders = []
+      end
+    else
+      unless current_resource.shops.empty?
+        current_shop = current_resource.shops.first
+        orders = current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+      else
+        current_shop = nil
+        orders = []
+      end
+    end
+    return [current_shop, orders]
+  end
+end

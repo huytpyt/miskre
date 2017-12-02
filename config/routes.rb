@@ -171,6 +171,11 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :orders do
+        collection do
+          post :pay_for_miskre
+        end
+      end
       resources :images
       resources :shops do 
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
