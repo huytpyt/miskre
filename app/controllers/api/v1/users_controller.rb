@@ -15,4 +15,10 @@ class Api::V1::UsersController < Api::V1::BaseController
       fb_link: user.fb_link
   	}, status: 200
   end
+
+  def add_balance
+    user = current_resource
+    response_result = UserQuery.add_balance(params, user)
+    render json: response_result, status: 200
+  end
 end

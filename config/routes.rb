@@ -159,6 +159,7 @@ Rails.application.routes.draw do
         scope module: 'resource', as: :users do
           collection do
             resource :session
+            post :add_balance
           end
         end
       end

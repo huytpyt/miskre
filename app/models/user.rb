@@ -41,6 +41,7 @@ class User < ApplicationRecord
   enumerize :role, in: [:admin, :manager, :partner, :user],
     default: :user, predicates: true
 
+  has_one :balance
   has_many :shops
   has_many :products
   has_many :shippings

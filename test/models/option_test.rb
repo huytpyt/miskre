@@ -17,8 +17,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (product_id => products.id)
-#  fk_rails_...  (user_id => users.id)
+#  options_product_id_fkey  (product_id => products.id)
+#  options_user_id_fkey     (user_id => users.id)
 #
 
 require 'test_helper'

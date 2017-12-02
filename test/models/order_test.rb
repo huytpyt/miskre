@@ -30,6 +30,8 @@
 #  shopify_id         :string
 #  financial_status   :string
 #  fulfillment_status :string
+#  paid_for_miskre    :text
+#  invoice_id         :integer
 #
 # Indexes
 #
@@ -38,7 +40,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (shop_id => shops.id)
+#  orders_shop_id_fkey  (shop_id => shops.id)
 #
 
 require 'test_helper'
