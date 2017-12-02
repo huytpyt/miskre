@@ -70,6 +70,8 @@ class Product < ApplicationRecord
   belongs_to :user
   has_many :tracking_products
   belongs_to :shop
+
+  has_and_belongs_to_many :categories
   
   validates :suggest_price, presence: true, numericality: {greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true

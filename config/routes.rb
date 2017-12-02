@@ -208,6 +208,7 @@ Rails.application.routes.draw do
           get ":user_shipping_type_id/setting/change_status", to: "shipping_settings#change_status"
         end
       end
+      resources :categories, only: [:index]
     end
   end
 
