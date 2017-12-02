@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171130084218) do
+ActiveRecord::Schema.define(version: 20171201083107) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -272,6 +272,7 @@ ActiveRecord::Schema.define(version: 20171130084218) do
     t.boolean  "global_setting_enable", default: false
     t.float    "random_from",           default: 2.25
     t.float    "random_to",             default: 2.75
+    t.string   "plan_name"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree
   end
