@@ -172,7 +172,8 @@ Rails.application.routes.draw do
         end
       end
       resources :images
-      resources :shops do 
+      resources :shops do
+        get "reload_plan_name", to: "shops#reload_plan_name", on: :member 
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
         patch "update_global_price_setting", to: "shops#update_global_price_setting"
         get "change_price_option", to: "shops#change_price_option"

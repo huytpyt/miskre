@@ -1,4 +1,36 @@
 class ShopService
+  def get_session shop
+    session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+    ShopifyAPI::Base.activate_session(session)
+  end
+  def self.update_plan_name shop
+    begin
+      unless ["unlimited", "affiliate"].include? shop.plan_name
+        get_session shop
+        shopify = ShopifyAPI::Shop.current
+        shop.update(plan_name: shopify.plan_name)
+      end
+      shop.plan_name
+    rescue StandardError => e
+      shop.update(plan_name: NOT_EXIST)
+      shop.plan_name
+    end
+  end
+
+  def self.reload_plan_for_shops
+    Shop.each do |shop|
+      unless shop.plan_name == NOT_EXIST
+        begin
+          get_session shop
+          shopify = ShopifyAPI::Shop.current
+          shop.update(plan_name: shopify.plan_name)
+        rescue
+          shop.update(plan_name: NOT_EXIST)
+        end
+      end
+    end
+  end
+
   def self.reset_carrier_service shop
     if shop.carrier_service_id.nil?
       result = activate_carrier_service shop
