@@ -68,7 +68,8 @@ class ProductsQuery < BaseQuery
 			updated_at: product.updated_at,
 			options: options_for(product),
 			variants: variants_for(product),
-			images: images_for(product)
+			images: images_for(product),
+			categories: product.categories.ids
 		}
 	end
 
@@ -114,7 +115,8 @@ class ProductsQuery < BaseQuery
 			updated_at: product.updated_at,
 			options: options_for(product),
 			variants: variants_for(product),
-			images: images_for(product)
+			images: images_for(product),
+			categories: product.categories.ids
 		}
 	end
 
