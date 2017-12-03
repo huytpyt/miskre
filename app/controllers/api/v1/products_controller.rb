@@ -30,8 +30,9 @@ class Api::V1::ProductsController < Api::V1::BaseController
         if product.save
           if params[:product][:categories].present?
             if params[:product][:categories].is_a?(Array)
-              exists_ids = params[:product][:categories].select{|category| Category.exists?(category[:id])}
-              product.categories = Product.where(id: exists_ids)
+              exists_ids = params[:product][:categories].select{|category| Category.exists?(category)}
+              product.categories = Category.where(id: exists_ids)
+              product.save!
             else
               render json: {status: false, error: "`categories` must an array"}, status: 500
             end
@@ -47,7 +48,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
           end
           if params[:product][:resource_images].present?
             if params[:product][:resource_images].is_a?(Array)
-              exists_ids = params[:product][:resource_images].select{|image| ResouceImage.exists?(image[:id])}
+              exists_ids = params[:product][:resource_images].select{|image| ResourceImage.exists?(image[:id])}
               product.resource_image_ids = exists_ids.pluck(:id)
               product.save!
             else
@@ -106,17 +107,18 @@ class Api::V1::ProductsController < Api::V1::BaseController
               if params[:product][:supply].nil?
                 if params[:product][:categories].present?
                   if params[:product][:categories].is_a?(Array)
-                    exists_ids = params[:product][:categories].select{|category| Category.exists?(category[:id])}
-                    product.categories = Product.where(id: exists_ids)
+                    exists_ids = params[:product][:categories].select{|category| Category.exists?(category)}
+                    @product.categories = Category.where(id: exists_ids)
+                    @product.save!
                   else
                     render json: {status: false, error: "`categories` must an array"}, status: 500
                   end
                 end
                 if params[:product][:resource_images].present?
                   if params[:product][:resource_images].is_a?(Array)
-                    exists_ids = params[:product][:resource_images].select{|image| ResouceImage.exists?(image[:id])}
-                    product.resource_image_ids = exists_ids.pluck(:id)
-                    product.save!
+                    exists_ids = params[:product][:resource_images].select{|image| ResourceImage.exists?(image[:id])}
+                    @product.resource_image_ids = exists_ids.pluck(:id)
+                    @product.save!
                   else
                     render json: {status: false, error: "`images` must an array"}, status: 500
                   end
