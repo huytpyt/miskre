@@ -172,6 +172,7 @@ Rails.application.routes.draw do
         end
       end
       resources :images
+      resources :resource_images
       resources :shops do
         get "reload_plan_name", to: "shops#reload_plan_name", on: :member 
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"

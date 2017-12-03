@@ -47,7 +47,7 @@ class ProductsQuery < BaseQuery
 				first_page: 1,
 				last_page: paginate.total_pages
 			},
-			products: paginate.map{ |product| single(product) }
+			products: paginate.map{ |product| single_for_list(product) }
 		}
 	end
 
@@ -63,6 +63,40 @@ class ProductsQuery < BaseQuery
 			desc: product.desc,
 			vendor_detail: product.vendor_detail,
 			cost_per_quantity: product.cost_per_quantity,
+			approved: product.approved,
+			created_at: product.created_at,
+			updated_at: product.updated_at,
+			options: options_for(product),
+			variants: variants_for(product),
+			images: images_for(product),
+			categories: product.categories.ids,
+			resource_images: product.resource_images
+		}
+	end
+
+	def self.single_for_list(product)
+		{
+			id: product.id,
+			name: product.name,
+			weight: product.weight,
+			length: product.length,
+			height: product.height,
+			width: product.width,
+			sku: product.sku,
+			desc: product.desc,
+			price: product.price,
+			compare_at_price: product.compare_at_price,
+			link: product.link,
+			epub: product.epub,
+			bundle_id: product.bundle_id,
+			is_bundle: product.is_bundle,
+			product_ids: product.product_ids,
+			product_url: product.product_url,
+			cus_cost: product.cus_cost,
+			cus_epub: product.cus_epub,
+			suggest_price: product.suggest_price,
+			sale_off: product.sale_off,
+			resource_url: product.resource_url,
 			approved: product.approved,
 			created_at: product.created_at,
 			updated_at: product.updated_at,
@@ -116,7 +150,8 @@ class ProductsQuery < BaseQuery
 			options: options_for(product),
 			variants: variants_for(product),
 			images: images_for(product),
-			categories: product.categories.ids
+			categories: product.categories.ids,
+			resource_images: product.resource_images
 		}
 	end
 
