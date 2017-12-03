@@ -70,7 +70,7 @@ class ProductsQuery < BaseQuery
 			variants: variants_for(product),
 			images: images_for(product),
 			categories: product.categories.ids,
-			resource_images: product.resource_images
+			resource_images: resource_images_for(product)
 		}
 	end
 
@@ -151,7 +151,7 @@ class ProductsQuery < BaseQuery
 			variants: variants_for(product),
 			images: images_for(product),
 			categories: product.categories.ids,
-			resource_images: product.resource_images
+			resource_images: resource_images_for(product)
 		}
 	end
 
@@ -178,9 +178,21 @@ class ProductsQuery < BaseQuery
 			{
 				id: image.id,
 				url: image.file_url,
-	  		thumb: image.file.url(:thumb),
-	  		medium: image.file.url(:medium),
-	  		created_at: image.created_at,
+	  			thumb: image.file.url(:thumb),
+	  			medium: image.file.url(:medium),
+	  			created_at: image.created_at,
+				updated_at: image.updated_at
+			}
+		end
+	end
+	def self.resource_images_for(product)
+		product.resource_images.map do |image|
+			{
+				id: image.id,
+				url: image.file_url,
+	  			thumb: image.file.url(:thumb),
+	  			medium: image.file.url(:medium),
+	  			created_at: image.created_at,
 				updated_at: image.updated_at
 			}
 		end
