@@ -25,17 +25,19 @@ class VariantsQuery < BaseQuery
 
 	private
 
-		def self.images_for(variant)
-			image = variant.images&.first
-			if image
-				{
-					id: image.id,
-					url: image.file_url,
-		  			thumb: image.file.url(:thumb),
-		  			medium: image.file.url(:medium)
-				}
-			end
+	def self.images_for(variant)
+		image = variant.images&.first
+		if image
+			{
+				id: image.id,
+				original: image.file.url,
+	  			thumb: image.file.url(:thumb),
+	  			medium: image.file.url(:medium),
+	  			created_at: image.created_at,
+	  			updated_at: image.updated_at
+			}
 		end
+	end
 
 end
 

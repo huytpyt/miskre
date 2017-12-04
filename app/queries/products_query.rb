@@ -177,7 +177,7 @@ class ProductsQuery < BaseQuery
 		product.images.map do |image|
 			{
 				id: image.id,
-				url: image.file_url,
+				original: image.file.url,
 	  			thumb: image.file.url(:thumb),
 	  			medium: image.file.url(:medium),
 	  			created_at: image.created_at,
@@ -189,7 +189,7 @@ class ProductsQuery < BaseQuery
 		product.resource_images.map do |image|
 			{
 				id: image.id,
-				url: image.file_url,
+				original: image.file.url,
 	  			thumb: image.file.url(:thumb),
 	  			medium: image.file.url(:medium),
 	  			created_at: image.created_at,

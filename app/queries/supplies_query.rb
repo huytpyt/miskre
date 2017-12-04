@@ -28,7 +28,24 @@ class SuppliesQuery < BaseQuery
 
   def self.get_supply_infor supply
     profit = ((supply.price + supply.epub) - (supply.cost + supply.cost_epub)).round(2)
-    {id: supply.id, product_id: supply.product_id, shop_id: supply.shop_id, created_at: supply.created_at, updated_at: supply.updated_at, desc: supply.desc, price: supply.price, name: supply.name, original: supply.original, epub: supply.epub, cost_epub: supply.cost_epub, compare_at_price: supply.compare_at_price, cost: supply.cost, keep_custom: supply.keep_custom, is_deleted: supply.is_deleted, profit: profit}
+    {
+      id: supply.id, 
+      product_id: supply.product_id, 
+      shop_id: supply.shop_id, 
+      created_at: supply.created_at, 
+      updated_at: supply.updated_at, 
+      desc: supply.desc, 
+      price: supply.price, 
+      name: supply.name, 
+      original: supply.original, 
+      epub: supply.epub, 
+      cost_epub: supply.cost_epub, 
+      compare_at_price: supply.compare_at_price, 
+      cost: supply.cost, 
+      keep_custom: supply.keep_custom, 
+      is_deleted: supply.is_deleted, 
+      profit: profit
+    }
   end
 
 end
