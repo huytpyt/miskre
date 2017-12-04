@@ -5,7 +5,7 @@ class ProductsQuery < BaseQuery
 
 		products = Product.where(shop_owner: false, is_bundle: false)
 		if key.present? && Product.column_names.include?(key)
-			products = products.where("#{key}": [nil, "", false] )
+			products = key == "approved" ? products.where("#{key}": false) : products.where("#{key}": [nil, ""] )
 		end
 		if search.present?
 			paginate = api_paginate(products.order(sort_options).search(search), page).per(per_page)
