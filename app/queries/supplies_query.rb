@@ -44,8 +44,31 @@ class SuppliesQuery < BaseQuery
       cost: supply.cost, 
       keep_custom: supply.keep_custom, 
       is_deleted: supply.is_deleted, 
-      profit: profit
+      profit: profit,
+      image: supply.images&.first&.file.url(:medium)
     }
   end
 
+  def self.single supply
+    {
+      id: supply.id, 
+      name: supply.name, 
+      price: supply.price, 
+      compare_at_price: supply.compare_at_price, 
+      product_id: supply.product_id, 
+      product_ids: supply&.product&.product_ids,
+      shop_id: supply.shop_id, 
+      created_at: supply.created_at, 
+      updated_at: supply.updated_at, 
+      desc: supply.desc, 
+      original: supply.original, 
+      epub: supply.epub, 
+      cost_epub: supply.cost_epub, 
+      cost: supply.cost, 
+      keep_custom: supply.keep_custom, 
+      is_deleted: supply.is_deleted, 
+      images: supply.images, 
+      variant: VariantsQuery.list_supply(supply.supply_variants)
+    }
+  end
 end
