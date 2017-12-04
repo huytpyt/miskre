@@ -60,8 +60,8 @@ class UserProductsController < ApplicationController
 
 					product.images.each do |img|
 						image = assign_product.images.new
-				    image.file_remote_url= "#{request.base_url}/#{img.file_url}"
-				    image.save!
+				    		image.file_remote_url= "#{request.base_url}/#{img.file.url}"
+				    		image.save!
 					end
 					assign_product
 				end
