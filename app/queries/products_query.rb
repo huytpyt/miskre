@@ -5,7 +5,7 @@ class ProductsQuery < BaseQuery
 
 		products = Product.where(shop_owner: false, is_bundle: false)
 		if key.present? && Product.column_names.include?(key)
-			products = products.where("#{key}": [nil, false] )
+			products = products.where("#{key}": [nil, "", false] )
 		end
 		if search.present?
 			paginate = api_paginate(products.order(sort_options).search(search), page).per(per_page)
@@ -75,6 +75,7 @@ class ProductsQuery < BaseQuery
 	end
 
 	def self.single_for_list(product)
+		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
 		{
 			id: product.id,
 			name: product.name,
@@ -95,6 +96,7 @@ class ProductsQuery < BaseQuery
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,
 			suggest_price: product.suggest_price,
+			profit: profit,
 			sale_off: product.sale_off,
 			resource_url: product.resource_url,
 			approved: product.approved,
@@ -112,6 +114,7 @@ class ProductsQuery < BaseQuery
 			product.cost_per_quantity = [{"quantity"=>1, "cost"=>product.cost}]
 			product.save
 		end
+		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
 		{
 			id: product.id,
 			name: product.name,
@@ -138,6 +141,7 @@ class ProductsQuery < BaseQuery
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,
 			suggest_price: product.suggest_price,
+			profit: profit,
 			sale_off: product.sale_off,
 			shop_owner: product.shop_owner,
 			shop_id: product.shop_id,
