@@ -32,4 +32,24 @@ class OrderService
     end
     return total_money
   end
+
+  def pay_for_miskre order_list_id, user_id
+    reponse_result = []
+    Order.where(id: order_list_id).inject(0) do |amount, order|
+      amount += OrderService.new.sum_money_from_order(order).to_f
+      begin
+        if order.paid_for_miskre != "succeeded"
+          reponse = Stripe::Charge.create(
+            customer: (User.find user_id).customer_id,
+            amount: (amount*100).to_i,
+            currency: "usd"
+          )
+          reponse_result << { order_id: order.id, status: "succeeded", errors: nil }
+        end
+      rescue Exception => e
+        reponse_result << { order_id: order.id, status: "failed", errors: e.message.to_s}
+      end
+    end
+    [reponse_result, @total_amount_success]
+  end
 end

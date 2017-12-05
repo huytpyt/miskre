@@ -3,22 +3,29 @@
 
 table#order-table
   thead
-    tr 
+    tr
+      th
+      th Shop
       th OrderId
       th Customer
       th Email
       th Date
       th Status
-      th 
+      th Total cost
+      th
       /th Total
   tbody
     - orders.each do |order|
       tr
+        td
+          input name="chk[]" onchange="" type="checkbox" class="#{order.id} hidden"
+        td = Shop.find(order.shop_id).name
         td = order.shopify_id
         td = "#{order.first_name} #{order.last_name}"
         td = order.email
         td = order.date.strftime("%F")
         td #{order.financial_status} | #{order.fulfillment_status}
+        td = OrderService.new.sum_money_from_order(order).to_f
         td
           ul.menu
             li

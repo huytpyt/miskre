@@ -54,4 +54,15 @@ class Order < ApplicationRecord
   belongs_to :invoices
 
   validates :shopify_id, uniqueness: true
+
+  def self.search(search)
+    if search
+        where("lower(email) LIKE :search OR lower(first_name) LIKE :search
+         OR lower(fulfillment_status) LIKE :search
+         OR CAST(shopify_id AS TEXT) LIKE :search
+         OR lower(last_name) LIKE :search OR lower(financial_status) LIKE :search", { search: "%#{search.downcase}%" })
+    else
+      scoped
+    end
+  end
 end
