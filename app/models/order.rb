@@ -30,8 +30,9 @@
 #  shopify_id         :string
 #  financial_status   :string
 #  fulfillment_status :string
-#  paid_for_miskre    :text
+#  paid_for_miskre    :boolean          default(FALSE)
 #  invoice_id         :integer
+#  request_charge_id  :integer
 #
 # Indexes
 #
@@ -52,6 +53,7 @@ class Order < ApplicationRecord
   has_one :billings_order
   has_one :billing, through: :billings_orders
   belongs_to :invoices
+  belongs_to :request_charge
 
   validates :shopify_id, uniqueness: true
 

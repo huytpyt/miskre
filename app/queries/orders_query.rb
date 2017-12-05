@@ -20,12 +20,17 @@ class OrdersQuery < BaseQuery
     }
   end
 
-  def self.pay_for_miskre reponse_result
-    result, total_paid = reponse_result
+  def self.accept_charge_orders reponse_result
+    result, total_paid, error = reponse_result
     {
       result: result,
-      total_pay_sucess: total_paid
+      total_paid_sucess: total_paid,
+      errors: error
     }
+  end
+
+  def self.reject_charge_orders reponse_result
+    reponse_result
   end
 
   def self.single(order)

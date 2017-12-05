@@ -5,7 +5,7 @@ class Api::V1::OrdersController < Api::V1::BaseController
     page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20
     per_page = 20 if per_page.zero?
-    total_page = Product.where(shop_owner: false, is_bundle: false).count / per_page
+    total_page = Order.count / per_page
     total_page = total_page <= 0 ? 1 : total_page
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
@@ -25,11 +25,24 @@ class Api::V1::OrdersController < Api::V1::BaseController
     render json: OrdersQuery.single(order), status: 200
   end
 
-  def pay_for_miskre
-    order_list_id = JSON.parse(params["order_list"]).split(",")
-    user_id = current_resource.id
-    reponse = OrderService.new.pay_for_miskre(order_list_id, user_id)
-    render json: OrdersQuery.pay_for_miskre(reponse), status: 200
+  def accept_charge_orders
+    if current_user.staff?
+      request_charge_id = params["request_charge_id"]
+      reponse = OrderService.new.accept_charge_orders(request_charge_id)
+      render json: OrdersQuery.accept_charge_orders(reponse), status: 200
+    else
+      render json: { errors: "Permission denied" }, status: 401
+    end
+  end
+
+  def reject_charge_orders
+    if current_user.staff?
+      request_charge_id = params["request_charge_id"]
+      reponse = OrderService.new.reject_charge_orders(request_charge_id)
+      render json: OrdersQuery.reject_charge_orders(reponse), status: 200
+    else
+      render json: { errors: "Permission denied" }, status: 401
+    end
   end
 
   private

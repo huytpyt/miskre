@@ -15,7 +15,7 @@ class UserService
     amount = params[:amount].to_f
     if amount <= 0
       errors = "Amount must me greater than 0"
-      return ["failed", amount, user, errors, user.balance.total_amount]
+      return ["Failed", amount, user, errors, user.balance.total_amount]
     end
 
     begin
@@ -31,18 +31,91 @@ class UserService
             new_balance = Balance.new(
               total_amount: amount
             )
+            new_balance.lock!
             user.balance = new_balance
           else
             @user_balance = user.balance
+            @user_balance.lock!
             @user_balance.total_amount += amount
             @user_balance.save
           end
         end
-        user.save
+        if user.save
+          invoice = generate_invoice(user, amount)
+          invoice.add_balance!
+        end
       end
       return [@response_result.status, amount, user, nil, user.reload.balance.total_amount]
     rescue Exception => e
       return [@response_result.status, amount, user, e.message.to_s, user.balance.total_amount]
     end
   end
+
+  def self.add_balance_manual params, user
+    amount = params[:amount].to_f
+    if amount <= 0
+      errors = "Amount must me greater than 0"
+      return ["Failed", amount, user, errors, user.balance.total_amount]
+    end
+
+    ActiveRecord::Base.transaction do
+      if user.balance.blank?
+        new_balance = Balance.new(
+          total_amount: amount
+        )
+        new_balance.lock!
+        user.balance = new_balance
+      else
+        @user_balance = user.balance
+        @user_balance.lock!
+        @user_balance.total_amount += amount
+        @user_balance.save!
+      end
+      if user.save!
+        invoice = generate_invoice(user, amount)
+        invoice.add_balance!
+      end
+    end
+    return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
+  rescue Exception => e
+    return ["Failed", amount, user, e.message.to_s, user.balance.total_amount]
+  end
+
+  def self.request_charge_orders order_list_id, user
+    orders_list = Order.where(id: JSON.parse(order_list_id))
+    user_balance = user.balance
+    if user_balance.nil?
+      return { result: "Failed", errors: "You do not have any balance, please add." }
+    end
+
+    amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += OrderService.new.sum_money_from_order(order).to_f }
+    user_balance.lock!
+    if amount_must_paid > user_balance.total_amount
+      return { result: "Failed", errors: "Your account does not have enough balance" }
+    end
+
+    if orders_list.pluck(:paid_for_miskre).include?(true)
+      return { result: "Failed", errors: "Some of orders had paid" }
+    end
+
+    new_request_charge = RequestCharge.new(
+      user_id: user.id,
+      total_amount: amount_must_paid
+    )
+    new_request_charge.orders << orders_list
+    if new_request_charge.save
+      new_request_charge.pending!
+      return { request_charge: "completed", errors: nil }
+    elsif !new_request_charge.valid?
+      return { request_charge: "error", errors: new_request_charge.errors }
+    end
+  end
+
+  private
+    def self.generate_invoice user, amount
+      invoice = Invoice.create(
+          user_id: user.id,
+          money_amount: amount
+      )
+    end
 end

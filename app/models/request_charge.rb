@@ -5,7 +5,7 @@
 #  id           :integer          not null, primary key
 #  user_id      :integer
 #  total_amount :decimal(, )
-#  status       :integer          default(0)
+#  status       :integer          default("pending")
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
@@ -16,9 +16,13 @@ class RequestCharge < ApplicationRecord
 
   enum status: %w(pending approved rejected)
 
-  before_create do
-    return if self.orders.blank?
-    total_amount = self.orders.inject(0){ |sum_amount, order| sum_amount += OrderService.new.sum_money_from_order(order).to_f }
-    self.total_amount = total_amount
+  def self.search(search)
+    if search
+        where("CAST(user_id AS TEXT) LIKE :search OR CAST(total_amount AS TEXT) LIKE :search
+         OR status = :search_status
+         OR CAST(id AS TEXT) LIKE :search", { search: "%#{search.downcase}%", search_status: RequestCharge.statuses["#{search}"] })
+    else
+      scoped
+    end
   end
 end

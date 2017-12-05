@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  resources 'shipping_setings', only: [:index] do 
+  resources 'shipping_setings', only: [:index] do
     collection do
       get "update_carrier_service/:shop_id", to: "shipping_setings#update_carrier_service", as: "update_carrier"
       get ":shipping_type_id/setting", to: "shipping_setings#setting", as: "setting"
@@ -14,10 +14,10 @@ Rails.application.routes.draw do
   end
 
   resources :nations do
-    collection do 
+    collection do
       get 'sync_shipping', to: "nations#sync_shipping"
       get 'sync_nation/:nation_id', to: "nations#sync_nation", as: "sync_nation"
-    end 
+    end
     resources :shipping_types do
       resources :detail_shipping_types
       resources :detail_no_handlings
@@ -25,8 +25,8 @@ Rails.application.routes.draw do
   end
   resources :request_products
 
-  resources :invite_people, only: [:index] do 
-    collection do 
+  resources :invite_people, only: [:index] do
+    collection do
       post "invite"
     end
   end
@@ -49,7 +49,7 @@ Rails.application.routes.draw do
     patch 'forgetpass' => 'users/passwords#update', as: :user_password_patch
     put 'forgetpass' => 'users/passwords#update', as: :user_password_put
     get 'forgetpass/set_comp' => 'users/passwords#set_comp', as: :set_comp
-  
+
     get 'logout' => 'users/sessions#logout', as: :logout
     get 'signout' => 'users/sessions#destroy', as: :user_signout
     get 'sign_in' => 'users/sessions#new', as: :new_user_session
@@ -61,7 +61,7 @@ Rails.application.routes.draw do
   resources :images, only: :destroy
 
   resources :payments, only: [:index, :new, :create] do
-    collection do 
+    collection do
       get "edit", to: "payments#edit", as: "edit"
       post "update", to: "payments#update", as: "update"
       get "remove", to: "payments#remove", as: "remove"
@@ -100,7 +100,7 @@ Rails.application.routes.draw do
       post "create_bundle", to: "products#create_bundle"
     end
     patch "update_bundle", to: "products#update_bundle"
-    
+
     member do
       get 'report'
       get 'tracking_product'
@@ -160,6 +160,8 @@ Rails.application.routes.draw do
           collection do
             resource :session
             post :add_balance
+            post :add_balance_manual
+            post :request_charge_orders
           end
         end
       end
@@ -174,11 +176,13 @@ Rails.application.routes.draw do
       end
       resources :orders do
         collection do
-          post :pay_for_miskre
+          post :accept_charge_orders
+          post :reject_charge_orders
         end
       end
+      resources :request_charges
       resources :images
-      resources :shops do 
+      resources :shops do
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
         patch "update_global_price_setting", to: "shops#update_global_price_setting"
         get "change_price_option", to: "shops#change_price_option"
@@ -188,7 +192,7 @@ Rails.application.routes.draw do
         post 'upload_image_url', on: :member
       end
       resources :supply_variants
-      resources :product_lists, only: [:show] do 
+      resources :product_lists, only: [:show] do
         collection do
           get "miskre_products", to: "product_lists#miskre_products"
           get "user_products", to: "product_lists#user_products"
@@ -198,7 +202,7 @@ Rails.application.routes.draw do
         get "shipping", to: "product_lists#shipping"
       end
       resources :shipping_managements, only: [] do
-        collection do 
+        collection do
           get "nations", to: "shipping_managements#list_nations"
           delete "nations/:id", to: "shipping_managements#destroy_nation"
           get "nations/:id/shipping_types", to: "shipping_managements#shipping_types"
@@ -208,7 +212,7 @@ Rails.application.routes.draw do
         end
       end
       resources :shipping_settings, only: [] do
-        collection do 
+        collection do
           get "shippings_by_nation", to: "shipping_settings#shippings_by_nation"
           get ":user_shipping_type_id/setting/change_status", to: "shipping_settings#change_status"
         end

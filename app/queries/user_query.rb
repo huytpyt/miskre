@@ -5,11 +5,26 @@ class UserQuery < BaseQuery
     {
       status: response_result,
       amount: amount,
-      id: user.id,
+      user_id: user.id,
       email: user.email,
       errors: errors,
       current_balance: current_balance
     }
   end
 
+  def self.add_balance_manual params, user
+    response_result, amount, user, errors, current_balance = UserService.add_balance_manual(params, user)
+    {
+      status: response_result,
+      amount: amount,
+      user_id: user.id,
+      email: user.email,
+      errors: errors,
+      current_balance: current_balance
+    }
+  end
+
+  def self.request_charge_orders order_list_id, user
+    UserService.request_charge_orders(order_list_id, user)
+  end
 end

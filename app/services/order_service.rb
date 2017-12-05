@@ -33,23 +33,68 @@ class OrderService
     return total_money
   end
 
-  def pay_for_miskre order_list_id, user_id
+  def accept_charge_orders request_charge_id
     reponse_result = []
-    Order.where(id: order_list_id).inject(0) do |amount, order|
-      amount += OrderService.new.sum_money_from_order(order).to_f
-      begin
-        if order.paid_for_miskre != "succeeded"
-          reponse = Stripe::Charge.create(
-            customer: (User.find user_id).customer_id,
-            amount: (amount*100).to_i,
-            currency: "usd"
-          )
-          reponse_result << { order_id: order.id, status: "succeeded", errors: nil }
+    request_charge = RequestCharge.find request_charge_id
+    ActiveRecord::Base.transaction do
+      @error = []
+      user = request_charge.user
+      order_list_id = request_charge.orders.pluck(:id)
+      order_list = Order.where(id: order_list_id)
+
+      user_balance = user.balance
+      user_balance.lock!
+      if user_balance.nil?
+        @error << "This user does not have any balance."
+        raise ActiveRecord::Rollback
+      end
+
+      amount_must_paid = request_charge.total_amount
+      if request_charge.pending? && !orders_paid?(order_list)
+        if amount_must_paid <= user_balance.total_amount
+          new_user_balance = user.balance.total_amount - amount_must_paid
+          user_balance.total_amount = new_user_balance
+          user_balance.save!
+          request_charge.approved!
+          order_list.update_all(paid_for_miskre: true)
+          generate_invoice_for_orders(user, amount_must_paid, order_list)
+        else
+          @error << "This account does not have enough balance"
         end
-      rescue Exception => e
-        reponse_result << { order_id: order.id, status: "failed", errors: e.message.to_s}
+      else
+        @error << "Some of orders had paid or rejected"
       end
     end
-    [reponse_result, @total_amount_success]
+    if @error.blank?
+      ["OK", request_charge.total_amount, nil]
+    else
+      ["Failed", 0, @error]
+    end
+  rescue Exception => error
+    ["Failed", 0, error]
   end
+
+  def reject_charge_orders request_charge_id
+    request_charge = RequestCharge.find request_charge_id
+    if request_charge.approved?
+      return { result: "Failed", errors: "This order is approved." }
+    else
+      request_charge.rejected!
+      return { result: "Success", errors: nil }
+    end
+  end
+
+  private
+    def generate_invoice_for_orders user, amount, orders
+      invoice = Invoice.create(
+        user_id: user.id,
+        money_amount: amount
+      )
+      invoice.orders << orders
+      invoice.order_pay!
+    end
+
+    def orders_paid? order_list
+      order_list.pluck(:paid_for_miskre).include?(true)
+    end
 end

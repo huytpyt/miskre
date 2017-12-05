@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+ActiveRecord::Schema.define(version: 20171205040444) do
 
-ActiveRecord::Schema.define(version: 20171202094926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,7 +110,7 @@ ActiveRecord::Schema.define(version: 20171202094926) do
   end
 
   create_table "invoices", force: :cascade do |t|
-    t.string   "type"
+    t.integer  "invoice_type"
     t.string   "user_id"
     t.decimal  "money_amount"
     t.datetime "created_at",   null: false
@@ -179,13 +179,14 @@ ActiveRecord::Schema.define(version: 20171202094926) do
     t.string   "color"
     t.string   "size"
     t.integer  "shop_id"
-    t.datetime "created_at",         precision: 6, null: false
-    t.datetime "updated_at",         precision: 6, null: false
+    t.datetime "created_at",         precision: 6,                 null: false
+    t.datetime "updated_at",         precision: 6,                 null: false
     t.string   "shopify_id"
     t.string   "financial_status"
     t.string   "fulfillment_status"
-    t.text     "paid_for_miskre"
+    t.boolean  "paid_for_miskre",                  default: false
     t.integer  "invoice_id"
+    t.integer  "request_charge_id"
     t.index ["shop_id"], name: "index_orders_on_shop_id", using: :btree
     t.index ["shopify_id"], name: "index_orders_on_shopify_id", using: :btree
   end
@@ -228,6 +229,14 @@ ActiveRecord::Schema.define(version: 20171202094926) do
     t.boolean  "approved",                           default: false
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
+  end
+
+  create_table "request_charges", force: :cascade do |t|
+    t.integer  "user_id"
+    t.decimal  "total_amount"
+    t.integer  "status",       default: 0
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "request_products", force: :cascade do |t|

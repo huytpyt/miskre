@@ -30,8 +30,9 @@
 #  shopify_id         :string
 #  financial_status   :string
 #  fulfillment_status :string
-#  paid_for_miskre    :text
+#  paid_for_miskre    :boolean          default(FALSE)
 #  invoice_id         :integer
+#  request_charge_id  :integer
 #
 # Indexes
 #
