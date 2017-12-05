@@ -45,8 +45,10 @@ class Api::V1::ProductListsController < Api::V1::BaseController
         shop = Shop.find_by_id id
         if available_shops.include? shop
           begin
-            comunicate = ShopifyCommunicator.new(id)
-            comunicate.add_product(@product.id)
+            session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+            ShopifyAPI::Base.activate_session(session)
+            ShopifyAPI::Shop.current
+            JobsService.delay.add_product shop.id, @product.id
           rescue Exception => e
             notice = e.message
           end
