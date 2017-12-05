@@ -2,7 +2,7 @@ class Api::V1::SuppliesController < Api::V1::BaseController
   load_and_authorize_resource :supply
 
   def show
-    render json: {supply: show_supply(@supply)}, status: 200
+    render json: {supply: SuppliesQuery.single(@supply)}, status: 200
   end
 
   def update
@@ -50,10 +50,6 @@ class Api::V1::SuppliesController < Api::V1::BaseController
 
   def supply_params
     params.permit(:name, :price, :desc, :original, :keep_custom, :compare_at_price)
-  end
-
-  def show_supply supply
-    {id: supply.id, name: supply.name, price: supply.price, compare_at_price: supply.compare_at_price, product_id: supply.product_id, shop_id: supply.shop_id, created_at: supply.created_at, updated_at: supply.updated_at, desc: supply.desc, original: supply.original, epub: supply.epub, cost_epub: supply.cost_epub, cost: supply.cost, keep_custom: supply.keep_custom, is_deleted: supply.is_deleted, images: supply.images, variant: supply.supply_variants, product: supply.product}
   end
 
 end
