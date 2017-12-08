@@ -108,18 +108,35 @@ class ShopifyCommunicator
           fetched_pages += 1
 
           orders.each do |o|
-            select_items = o.line_items.select do |o_item|
-              o_item if Product.exists?(sku: o_item.sku.first(3))
-            end
-            unless select_items.empty?
-              begin
-                order_params = get_order_params(o, select_items)
-                new_order = @shop.orders.new(order_params)
-                if new_order.save
-                  add_line_items(new_order, select_items)
+            unless Order.exists?(shopify_id: o.id)
+              select_items = o.line_items.select do |o_item|
+                o_item if Product.exists?(sku: o_item.sku.first(3))
+              end
+              unless select_items.empty?
+                begin
+                  order_params = get_order_params(o, select_items)
+                  new_order = @shop.orders.new(order_params)
+                  if new_order.save
+                    add_line_items(new_order, select_items)
+                  end
+                rescue NoMethodError => e
+                  p 'invalid order'
                 end
-              rescue NoMethodError => e
-                p 'invalid order'
+              end
+            else
+              order = Order.find_by_shopify_id(o.id)
+              if order
+                order.update(first_name: o.customer.first_name,
+                  last_name: o.customer.last_name,
+                  ship_address1: o.shipping_address.address1,
+                  ship_address2: o.shipping_address.address2,
+                  ship_city: o.shipping_address.city,
+                  ship_state: o.shipping_address.province,
+                  ship_zip: o.shipping_address.zip,
+                  ship_country: o.shipping_address.country,
+                  ship_phone: o.shipping_address.phone,
+                  email: o.customer.email,
+                  financial_status: o.financial_status)
               end
             end
           end
