@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171208100333) do
 
+ActiveRecord::Schema.define(version: 20171208100333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,8 +52,8 @@ ActiveRecord::Schema.define(version: 20171208100333) do
   create_table "categories", force: :cascade do |t|
     t.string   "name"
     t.integer  "parent_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "categories_products", force: :cascade do |t|
@@ -268,10 +268,10 @@ ActiveRecord::Schema.define(version: 20171208100333) do
     t.string   "file_file_name"
     t.string   "file_content_type"
     t.integer  "file_file_size"
-    t.datetime "file_updated_at",   precision: 6
+    t.datetime "file_updated_at"
     t.integer  "product_id"
-    t.datetime "created_at",        precision: 6, null: false
-    t.datetime "updated_at",        precision: 6, null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.index ["product_id"], name: "index_resource_images_on_product_id", using: :btree
   end
 
@@ -319,11 +319,11 @@ ActiveRecord::Schema.define(version: 20171208100333) do
     t.integer  "user_id"
     t.boolean  "use_carrier_service"
     t.string   "carrier_service_id"
-    t.float    "cost_rate",                           default: 4.0
-    t.float    "shipping_rate",                       default: 0.8
-    t.boolean  "global_setting_enable",               default: false
-    t.float    "random_from",                         default: 2.25
-    t.float    "random_to",                           default: 2.75
+    t.float    "cost_rate",             default: 4.0
+    t.float    "shipping_rate",         default: 0.8
+    t.boolean  "global_setting_enable", default: false
+    t.float    "random_from",           default: 2.25
+    t.float    "random_to",             default: 2.75
     t.string   "plan_name"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree

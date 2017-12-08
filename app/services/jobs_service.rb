@@ -7,6 +7,11 @@ class JobsService
     end
   end
 
+  def self.add_product shop_id, product_id
+    communicator = ShopifyCommunicator.new(shop_id)
+    communicator.add_product(product_id)
+  end
+
   def self.sync_product product_id
     product = Product.find(product_id)
     product.supplies.where(original: true, is_deleted: false).where.not(shopify_product_id: nil).each do |s|

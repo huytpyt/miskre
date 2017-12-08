@@ -2,18 +2,6 @@ class Api::V1::ImagesController < Api::V1::BaseController
 	before_action :validate_image_base64, only: :create
 	before_action :prepare_image, only: [:show, :destroy]
 
-	def index
-		page = params[:page].to_i || 1
-    		page = 1 if page.zero?
-    		per_page = params[:per_page].to_i || 20
-    		per_page = 20 if per_page.zero?
-    		total_page = Image.count / per_page
-    		total_page = total_page <= 0 ? 1 : total_page
-	    sort = params[:sort] || 'DESC'
-	    order_by = params[:order_by] || 'id'
-	    render json: ImagesQuery.list(page, per_page, sort, order_by), status: 200
-	end
-
   	def create
   		image = Image.new
     		image.set_image_base64(params[:image])

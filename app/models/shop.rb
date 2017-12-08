@@ -67,5 +67,6 @@ class Shop < ActiveRecord::Base
     shop = ShopifyAPI::Shop.current
     self.name = shop.name
     self.domain = shop.domain
+    self.plan_name = shop.plan_name
   end
 end

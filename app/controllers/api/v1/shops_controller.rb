@@ -1,9 +1,10 @@
 class Api::V1::ShopsController < Api::V1::BaseController
+  before_action :check_shop, only: [:show, :destroy, :reload_plan_name]
   load_and_authorize_resource :shop
   before_action :prepare_nation, only: [:shipping] 
 
   def index
-    render json: @shops.select(:id, :shopify_domain, :name, :domain)
+    render json: @shops.select(:id, :shopify_domain, :name, :domain, :plan_name)
   end
 
   def show
@@ -20,7 +21,7 @@ class Api::V1::ShopsController < Api::V1::BaseController
   end
 
   def show_shop shop
-    {id: shop.id, created_at: shop.created_at, updated_at: shop.updated_at, name: shop.name, domain: shop.domain, user_id: shop.user_id, cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to, global_setting_enable: shop.global_setting_enable}
+    {id: shop.id, created_at: shop.created_at, updated_at: shop.updated_at, name: shop.name, domain: shop.domain, user_id: shop.user_id, cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to, global_setting_enable: shop.global_setting_enable, plan_name: shop.plan_name}
   end
 
   def shipping
@@ -80,6 +81,11 @@ class Api::V1::ShopsController < Api::V1::BaseController
     end
   end
 
+  def reload_plan_name
+    result = ShopService.update_plan_name @shop
+    render json: {plan_name: result}, status: 200
+  end
+
   private
   def prepare_nation
     @national = Nation.find_by_code(params[:nation] || 'US')
@@ -88,6 +94,12 @@ class Api::V1::ShopsController < Api::V1::BaseController
 
   def global_price_setting_params
     params.permit(:cost_rate, :shipping_rate, :random_from, :random_to)
+  end
+
+  def check_shop
+    unless Shop.find_by_id params[:id]
+      render json: {error: "Not found"}, status: 404
+    end
   end
 
 end

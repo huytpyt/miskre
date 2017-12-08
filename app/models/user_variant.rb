@@ -25,8 +25,7 @@
 #
 
 class UserVariant < ApplicationRecord
-	belongs_to :user_product
-	has_many :images, as: :imageable, dependent: :destroy
-
+  belongs_to :user_product
+  has_many :images, as: :imageable, dependent: :destroy
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
 end

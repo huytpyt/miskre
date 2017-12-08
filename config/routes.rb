@@ -187,7 +187,9 @@ Rails.application.routes.draw do
       end
       resources :request_charges
       resources :images
+      resources :resource_images
       resources :shops do
+        get "reload_plan_name", to: "shops#reload_plan_name", on: :member
         get ":supply_id/shipping", to: "shops#shipping", as: "shipping"
         patch "update_global_price_setting", to: "shops#update_global_price_setting"
         get "change_price_option", to: "shops#change_price_option"
@@ -222,6 +224,7 @@ Rails.application.routes.draw do
           get ":user_shipping_type_id/setting/change_status", to: "shipping_settings#change_status"
         end
       end
+      resources :categories, only: [:index]
     end
   end
 

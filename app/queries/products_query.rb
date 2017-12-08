@@ -5,7 +5,7 @@ class ProductsQuery < BaseQuery
 
 		products = Product.where(shop_owner: false, is_bundle: false)
 		if key.present? && Product.column_names.include?(key)
-			products = products.where("#{key}": [nil, false] )
+			products = key == "approved" ? products.where("#{key}": false) : products.where("#{key}": [nil, ""] )
 		end
 		if search.present?
 			paginate = api_paginate(products.order(sort_options).search(search), page).per(per_page)
@@ -47,7 +47,7 @@ class ProductsQuery < BaseQuery
 				first_page: 1,
 				last_page: paginate.total_pages
 			},
-			products: paginate.map{ |product| single(product) }
+			products: paginate.map{ |product| single_for_list(product) }
 		}
 	end
 
@@ -68,7 +68,44 @@ class ProductsQuery < BaseQuery
 			updated_at: product.updated_at,
 			options: options_for(product),
 			variants: variants_for(product),
-			images: images_for(product)
+			images: images_for(product),
+			categories: product.categories.ids,
+			resource_images: resource_images_for(product)
+		}
+	end
+
+	def self.single_for_list(product)
+		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
+		{
+			id: product.id,
+			name: product.name,
+			weight: product.weight,
+			length: product.length,
+			height: product.height,
+			width: product.width,
+			sku: product.sku,
+			desc: product.desc,
+			price: product.price,
+			compare_at_price: product.compare_at_price,
+			link: product.link,
+			epub: product.epub,
+			bundle_id: product.bundle_id,
+			is_bundle: product.is_bundle,
+			product_ids: product.product_ids,
+			product_url: product.product_url,
+			cus_cost: product.cus_cost,
+			cus_epub: product.cus_epub,
+			suggest_price: product.suggest_price,
+			profit: profit,
+			sale_off: product.sale_off,
+			resource_url: product.resource_url,
+			approved: product.approved,
+			created_at: product.created_at,
+			updated_at: product.updated_at,
+			options: options_for(product),
+			variants: variants_for(product),
+			images: images_for(product),
+			categories: product.categories.ids
 		}
 	end
 
@@ -77,6 +114,7 @@ class ProductsQuery < BaseQuery
 			product.cost_per_quantity = [{"quantity"=>1, "cost"=>product.cost}]
 			product.save
 		end
+		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
 		{
 			id: product.id,
 			name: product.name,
@@ -103,6 +141,7 @@ class ProductsQuery < BaseQuery
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,
 			suggest_price: product.suggest_price,
+			profit: profit,
 			sale_off: product.sale_off,
 			shop_owner: product.shop_owner,
 			shop_id: product.shop_id,
@@ -114,7 +153,9 @@ class ProductsQuery < BaseQuery
 			updated_at: product.updated_at,
 			options: options_for(product),
 			variants: variants_for(product),
-			images: images_for(product)
+			images: images_for(product),
+			categories: product.categories.ids,
+			resource_images: resource_images_for(product)
 		}
 	end
 
@@ -140,10 +181,22 @@ class ProductsQuery < BaseQuery
 		product.images.map do |image|
 			{
 				id: image.id,
-				url: image.file_url,
-	  		thumb: image.file.url(:thumb),
-	  		medium: image.file.url(:medium),
-	  		created_at: image.created_at,
+				original: image.file.url,
+	  			thumb: image.file.url(:thumb),
+	  			medium: image.file.url(:medium),
+	  			created_at: image.created_at,
+				updated_at: image.updated_at
+			}
+		end
+	end
+	def self.resource_images_for(product)
+		product.resource_images.map do |image|
+			{
+				id: image.id,
+				original: image.file.url,
+	  			thumb: image.file.url(:thumb),
+	  			medium: image.file.url(:medium),
+	  			created_at: image.created_at,
 				updated_at: image.updated_at
 			}
 		end
