@@ -136,7 +136,8 @@ class ShopifyCommunicator
                   ship_country: o.shipping_address.country,
                   ship_phone: o.shipping_address.phone,
                   email: o.customer.email,
-                  financial_status: o.financial_status)
+                  financial_status: o.financial_status,
+                  order_name: o.name)
               end
             end
           end
