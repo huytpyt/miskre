@@ -1,0 +1,27 @@
+doctype html
+html lang="en"
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+    title == content_for?(:title) ? yield(:title) : t('appName')
+    = stylesheet_link_tag "bootstrap_layout"
+    = csrf_meta_tags
+    = yield :css
+    = javascript_include_tag "application"
+  body data=body_data class=body_css_class
+
+    = render 'layouts/top_bar'
+    /= render 'layouts/shop_selection'
+    = render 'layouts/flash_messages'
+    = yield
+    .footer
+    = yield :script
+    javascript:
+        window.__lc = window.__lc || {};
+        window.__lc.license = 9227480;
+        (function() {
+          var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true;
+          lc.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.livechatinc.com/tracking.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(lc, s);
+        })();

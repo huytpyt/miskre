@@ -1,0 +1,12 @@
+/! Modal
+.modal.fade aria-labelledby="myModalLabel" role="dialog" tabindex="-1"  id="variantsModal-#{product.id}"
+  .modal-dialog role="document" 
+    .modal-content
+      .modal-header
+        button.close aria-label="Close" data-dismiss="modal" type="button" 
+          span aria-hidden="true"  &times;
+        h4#myModalLabel.modal-title Edit #{product.name}'s variants
+      .modal-body
+          - @product = product
+          = render partial: "products/options"
+          = render partial: "products/variants"

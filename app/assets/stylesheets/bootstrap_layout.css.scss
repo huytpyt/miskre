@@ -16,19 +16,15 @@
  *= require foundation
  *= require dropzone
  *= require chosen
+ *= require editable/bootstrap-editable
  *= require daterangepicker
  *= stub login/welcome.css
  *= require_tree ./login
- *= require billing
- *= require products
- *= require orders
- *= require reports
- *= require request_products
- *= require shipping_operators
- *= require shop
- *= require variants
  *= require_self
  */
+
+ @import "bootstrap-sprockets";
+ @import "bootstrap";
 
 .page-header
   h1 {
@@ -36,4 +32,22 @@
   }
 .footer {
   margin-top: 60px;
+}
+
+.row {
+	max-width: 90%;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.column {
+	width: 100%;
+}
+
+.top-bar {
+	font-size: 16px;
+
+	.menu > li {
+		margin: 5px;
+	}
 }

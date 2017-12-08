@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require jquery
+//= require bootstrap-sprockets
 //= require jquery_ujs
 //= require moment
 //= require jquery.isotope.min
@@ -21,10 +22,14 @@
 //= require axios
 //= require dropzone
 //= require foundation
+//= require jquery-ui
+//= require editable/bootstrap-editable
+//= require editable/rails
 //= require ckeditor/init
 //= require canvasjs.min
 //= require chosen-jquery
 //= require daterangepicker
+//= require jquery.remotipart
 //= require product
 //= require shipping
 //= require requested_products

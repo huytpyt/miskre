@@ -1,0 +1,124 @@
+- content_for :script
+  = javascript_include_tag "options"
+- content_for :script
+  = javascript_include_tag "variants"
+.row.main-page
+  .column
+    h3.text-center Products management
+    = paginate @products
+    table
+      thead
+        tr 
+          th Photo
+          th SKU
+          th Name
+          th Link
+          th Variant
+          th Cost
+          th Price
+          th Weight (g)
+          th Size (W-L-H)
+      tbody
+        - @products.each do |product|
+          tr 
+            td
+              = link_to "javascript:void(0);", class: "images_modal", onclick: "$('#imagesModal-#{product.id}').modal('show')" do
+                = image_tag product.images.first&.file&.url(:medium) || "default.jpg", width: "200"
+              = render "images_modal", product: product
+            td = product.sku
+            td
+              a.edit_product_name#name href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.name}
+            td 
+              a.edit_product_url#product_url href="javascript:void(0);" data-type="text"  data-id="#{product.id}" #{product.product_url}
+            td 
+              = link_to product.variants.present? ? product.variants&.pluck(:sku)&.join(", ") : "Generate variants", "javascript:void(0);", class: "variants_modal", data: {id: product.id}, onclick: "$('#variantsModal-#{product.id}').modal('show')"
+              = render "variants_modal", product: product
+            td 
+              a.edit_product_cost#cost href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.cost}
+            td
+              a.edit_product_suggest_price#suggest_price href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.suggest_price}
+            th
+              a.edit_product_weight#weight href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.weight} 
+            th 
+              a.edit_product_width#width href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.width}
+              | &nbsp;-&nbsp;
+              a.edit_product_length#length href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.length}
+              | &nbsp;-&nbsp;
+              a.edit_product_height#height href="javascript:void(0);" data-min="0" data-step="any" data-type="number"  data-id="#{product.id}" #{product.height}
+
+javascript:
+
+  $(document).ready(function() {
+    $('.edit_product_name').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter product name'
+    });
+    $('.edit_product_cost').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter cost (USD)'
+    });
+    $('.edit_product_suggest_price').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter price (USD)'
+    });
+    $('.edit_product_weight').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter weight (g)'
+    });
+    $('.edit_product_url').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter product link'
+    });
+    $('.edit_product_width').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter width'
+    });
+    $('.edit_product_length').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter length'
+    });
+    $('.edit_product_height').editable({
+      params: function(params) {
+        params.id = $(this).editable().data('id');
+        return params;
+      }, 
+      url: "#{update_product_api_product_path}",
+      method: 'PUT',
+      title: 'Enter height'
+    });
+  });
