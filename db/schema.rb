@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171205040444) do
+ActiveRecord::Schema.define(version: 20171208100333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,20 @@ ActiveRecord::Schema.define(version: 20171205040444) do
     t.integer  "order_id"
     t.index ["billing_id"], name: "index_billings_orders_on_billing_id", using: :btree
     t.index ["order_id"], name: "index_billings_orders_on_order_id", using: :btree
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "parent_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "categories_products", force: :cascade do |t|
+    t.integer "product_id"
+    t.integer "category_id"
+    t.index ["category_id"], name: "index_categories_products_on_category_id", using: :btree
+    t.index ["product_id"], name: "index_categories_products_on_product_id", using: :btree
   end
 
   create_table "detail_no_handlings", force: :cascade do |t|
@@ -187,6 +201,7 @@ ActiveRecord::Schema.define(version: 20171205040444) do
     t.boolean  "paid_for_miskre",                  default: false
     t.integer  "invoice_id"
     t.integer  "request_charge_id"
+    t.string   "order_name"
     t.index ["shop_id"], name: "index_orders_on_shop_id", using: :btree
     t.index ["shopify_id"], name: "index_orders_on_shopify_id", using: :btree
   end
@@ -249,6 +264,17 @@ ActiveRecord::Schema.define(version: 20171205040444) do
     t.index ["user_id"], name: "index_request_products_on_user_id", using: :btree
   end
 
+  create_table "resource_images", force: :cascade do |t|
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at",   precision: 6
+    t.integer  "product_id"
+    t.datetime "created_at",        precision: 6, null: false
+    t.datetime "updated_at",        precision: 6, null: false
+    t.index ["product_id"], name: "index_resource_images_on_product_id", using: :btree
+  end
+
   create_table "shipping_settings", force: :cascade do |t|
     t.integer  "user_shipping_type_id"
     t.float    "min_price"
@@ -298,6 +324,7 @@ ActiveRecord::Schema.define(version: 20171205040444) do
     t.boolean  "global_setting_enable",               default: false
     t.float    "random_from",                         default: 2.25
     t.float    "random_to",                           default: 2.75
+    t.string   "plan_name"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree
   end

@@ -25,6 +25,7 @@ class UserService
         description: "Add balance #{amount}$ for user id-#{user.id} email-#{user.email}",
         customer: user.customer_id
       )
+
       ActiveRecord::Base.transaction do
         if @response_result.status == "succeeded"
           if user.balance.blank?

@@ -4,20 +4,26 @@ class OrdersQuery < BaseQuery
    shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
     shop, orders = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
     sort_options = { "#{order_by}" => sort }
-    paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
-    {
-      paginator: {
-        total_records: paginate.total_count,
-        records_per_page: paginate.limit_value,
-        total_pages: paginate.total_pages,
-        current_page: paginate.current_page,
-        next_page: paginate.next_page,
-        prev_page: paginate.prev_page,
-        first_page: 1,
-        last_page: paginate.total_pages
-      },
-      orders: paginate.map{ |orders| single(orders) }
-    }
+    if orders.blank?
+      {
+        orders: []
+      }
+    else
+      paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
+      {
+        paginator: {
+          total_records: paginate.total_count,
+          records_per_page: paginate.limit_value,
+          total_pages: paginate.total_pages,
+          current_page: paginate.current_page,
+          next_page: paginate.next_page,
+          prev_page: paginate.prev_page,
+          first_page: 1,
+          last_page: paginate.total_pages
+        },
+        orders: paginate.map{ |orders| single(orders) }
+      }
+    end
   end
 
   def self.accept_charge_orders reponse_result
@@ -65,7 +71,9 @@ class OrdersQuery < BaseQuery
       fulfillment_status: order.fulfillment_status,
       paid_for_miskre: order.paid_for_miskre,
       shop_name: order.shop.name,
-      total_cost: OrderService.new.sum_money_from_order(order).to_f
+      order_name: order.order_name,
+      total_cost: OrderService.new.sum_money_from_order(order).to_f,
+      products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)}
     }
   end
 
@@ -78,23 +86,21 @@ class OrdersQuery < BaseQuery
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
 
-    if shop_id
+    if current_resource.staff?
       begin
-        current_shop = Shop.find(shop_id)
-        orders = current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+        @orders = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
       rescue ActiveRecord::RecordNotFound
-        current_shop = nil
-        orders = []
+        @orders = []
       end
     else
       unless current_resource.shops.empty?
-        current_shop = current_resource.shops.first
-        orders = current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+        @current_shop = current_resource.shops.first
+        @orders = @current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
       else
-        current_shop = nil
-        orders = []
+        @current_shop = nil
+        @orders = []
       end
     end
-    return [current_shop, orders]
+    return [@current_shop, @orders]
   end
 end

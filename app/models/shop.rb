@@ -17,6 +17,7 @@
 #  global_setting_enable :boolean          default(FALSE)
 #  random_from           :float            default(2.25)
 #  random_to             :float            default(2.75)
+#  plan_name             :string
 #
 # Indexes
 #

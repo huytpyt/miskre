@@ -6,7 +6,7 @@ class OrderService
     shipping_method = order.shipping_method.upcase
     ship_country =  ISO3166::Country.find_by_name(order.ship_country)[0]
     nation = Nation.find_by_code ship_country
-    shipping_type = nation&.shipping_types&.find_by_code shipping_method
+    shipping_type = (nation&.shipping_types&.find_by_code shipping_method) || ShippingType.first
     index = 0
     sum = 0
     if shipping_type.present?
@@ -16,7 +16,7 @@ class OrderService
           user = shop.user
           shipping_cost = CarrierService.cal_cost(shipping_type, product.weight)
           supply_cost = product.cus_cost
-          sum += (quantities[index].to_i * (supply_cost + shipping_cost))
+          sum += (quantities[index].to_i * (supply_cost.to_f + shipping_cost.to_f))
           index += 1
         end
       end

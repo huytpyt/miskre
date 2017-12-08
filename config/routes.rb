@@ -174,6 +174,11 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :balances do
+        collection do
+          get :get_balance
+        end
+      end
       resources :orders do
         collection do
           post :accept_charge_orders
