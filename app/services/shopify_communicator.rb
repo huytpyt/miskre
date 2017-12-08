@@ -46,7 +46,8 @@ class ShopifyCommunicator
       date: o.created_at,
       remark: "",
       shipping_method: shipping_methods.join(","),
-      product_name: products.join(",")
+      product_name: products.join(","),
+      order_name: o.name
     }
   end
 
@@ -135,7 +136,8 @@ class ShopifyCommunicator
                   ship_country: o.shipping_address.country,
                   ship_phone: o.shipping_address.phone,
                   email: o.customer.email,
-                  financial_status: o.financial_status)
+                  financial_status: o.financial_status,
+                  order_name: o.name)
               end
             end
           end
@@ -183,7 +185,7 @@ class ShopifyCommunicator
                     shopify_product_id: new_product.id)
       supply.copy_product_attr_add_product
       if supply.save
-        product.images.each do  |image| 
+        product.images.each do  |image|
           supply_image = supply.images.new(file: ORIGINAL_URL+ image.file.url)
           supply_image.save
         end

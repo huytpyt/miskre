@@ -30,6 +30,10 @@
 #  shopify_id         :string
 #  financial_status   :string
 #  fulfillment_status :string
+#  paid_for_miskre    :boolean          default(FALSE)
+#  invoice_id         :integer
+#  request_charge_id  :integer
+#  order_name         :string
 #
 # Indexes
 #
@@ -38,7 +42,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (shop_id => shops.id)
+#  orders_shop_id_fkey  (shop_id => shops.id)
 #
 
 class Order < ApplicationRecord
@@ -49,6 +53,19 @@ class Order < ApplicationRecord
   has_many :fulfillments
   has_one :billings_order
   has_one :billing, through: :billings_orders
+  belongs_to :invoices
+  belongs_to :request_charge
 
   validates :shopify_id, uniqueness: true
+
+  def self.search(search)
+    if search
+        where("lower(email) LIKE :search OR lower(first_name) LIKE :search
+         OR lower(fulfillment_status) LIKE :search
+         OR CAST(shopify_id AS TEXT) LIKE :search
+         OR lower(last_name) LIKE :search OR lower(financial_status) LIKE :search", { search: "%#{search.downcase}%" })
+    else
+      scoped
+    end
+  end
 end

@@ -41,12 +41,14 @@ class User < ApplicationRecord
   enumerize :role, in: [:admin, :manager, :partner, :user],
     default: :user, predicates: true
 
+  has_one :balance
   has_many :shops
   has_many :products
   has_many :shippings
   has_many :childs, class_name: "Users", foreign_key: "parent_id"
   has_many :request_products
   has_many :user_products
+  has_many :request_charges, dependent: :destroy
   after_create :create_customer
 
   has_many :user_nations, dependent: :destroy

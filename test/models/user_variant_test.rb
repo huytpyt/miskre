@@ -21,7 +21,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_product_id => user_products.id)
+#  user_variants_user_product_id_fkey  (user_product_id => user_products.id)
 #
 
 require 'test_helper'
