@@ -2,15 +2,17 @@ class OrdersQuery < BaseQuery
 
   def self.list(page = 1, per_page = 12, sort, order_by, search, key,
    shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
-    shop, orders = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+    shop, orders, error = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
     sort_options = { "#{order_by}" => sort }
     if orders.blank?
       {
+        error: error,
         orders: []
       }
     else
       paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
       {
+        error: error,
         paginator: {
           total_records: paginate.total_count,
           records_per_page: paginate.limit_value,
@@ -85,22 +87,48 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
+    orders_list = Order.where(query_params)
+    if start_date && end_date
+      orders_list = orders_list.where(date: start_date.beginning_of_day...end_date.end_of_day)
+    elsif start_date && end_date.nil?
+      orders_list = orders_list.where("date > ?", start_date.beginning_of_day)
+    elsif start_date.nil? && end_date
+      orders_list = orders_list.where("date < ?", end_date.end_of_day)
+    end
 
+    @errors = nil
     if current_resource.staff?
       begin
-        @orders = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+        if shop_id
+          @current_shop = shop_id
+          @orders = orders_list.where(shop_id: shop_id).where(query_params)
+        else
+          @current_shop = "all"
+          @orders = orders_list.where(query_params)
+        end
       rescue ActiveRecord::RecordNotFound
+        @current_shop = nil
         @orders = []
       end
     else
       unless current_resource.shops.empty?
-        @current_shop = current_resource.shops.first
-        @orders = @current_shop.orders.where(date: start_date.beginning_of_day..end_date.end_of_day).where(query_params)
+        if shop_id
+          @current_shop = current_resource.shops.where(id: shop_id).first.try(:id)
+          if @current_shop.present?
+            @orders = orders_list.where(shop_id: @current_shop).where(query_params)
+          else
+            @orders = []
+            @errors = "Can not view shop does not belong to you"
+          end
+        else
+          @current_shop = current_resource.shops.pluck(:id)
+          @orders = orders_list.where(shop_id: @current_shop).where(query_params)
+        end
       else
         @current_shop = nil
         @orders = []
       end
     end
-    return [@current_shop, @orders]
+    return [@current_shop, @orders, @errors]
   end
 end

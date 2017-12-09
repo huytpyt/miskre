@@ -11,8 +11,8 @@ class Api::V1::OrdersController < Api::V1::BaseController
     order_by = params[:order_by] || 'id'
     search = params[:q] || ""
     key = params[:key] || nil
-    start_date = params[:start_date]&.to_date || Date.current - 7
-    end_date = params[:end_date]&.to_date || Date.current
+    start_date = params[:start_date]&.to_date || nil
+    end_date = params[:end_date]&.to_date || nil
     financial_status = params[:financial_status].to_s
     fulfillment_status = params[:fulfillment_status].to_s
     shop_id = params[:shop_id] || nil
