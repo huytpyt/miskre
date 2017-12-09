@@ -165,6 +165,14 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :payments, only: [:create] do
+        collection do
+          get "billing_information", to: "payments#billing_information"
+          get "invoices", to: "payments#invoices"
+          patch "update", to: "payments#update"
+          delete "destroy", to: "payments#destroy"
+        end
+      end
       resources :products do
         post "toggle_approve", to: "products#toggle_approve", on: :member
         resources :options
