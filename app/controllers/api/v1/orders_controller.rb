@@ -9,7 +9,7 @@ class Api::V1::OrdersController < Api::V1::BaseController
     total_page = total_page <= 0 ? 1 : total_page
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
-    search = params[:search] || ""
+    search = params[:q] || ""
     key = params[:key] || nil
     start_date = params[:start_date]&.to_date || Date.current - 7
     end_date = params[:end_date]&.to_date || Date.current
