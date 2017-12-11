@@ -59,7 +59,12 @@ class Api::V1::PaymentsController < Api::V1::BaseController
       @customer = Stripe::Customer.create(email: current_user.email) 
       current_user.update(customer_id: @customer.id)
     else
-      @customer = Stripe::Customer.retrieve(current_user.customer_id)
+      begin
+        @customer = Stripe::Customer.retrieve(current_user.customer_id)
+      rescue
+        @customer = Stripe::Customer.create(email: current_user.email) 
+        current_user.update(customer_id: @customer.id)
+      end
     end
   end
 
