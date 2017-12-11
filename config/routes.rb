@@ -165,6 +165,7 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :audits
       resources :payments, only: [:create] do
         collection do
           get "billing_information", to: "payments#billing_information"
