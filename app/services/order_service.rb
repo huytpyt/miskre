@@ -4,7 +4,8 @@ class OrderService
     skus_array = order.skus.split(",").map {|a| a.split("*")[0].strip}
     quantities = order.skus.split(",").map {|a| a.split("*")[1].strip}
     shipping_method = order.shipping_method.upcase
-    ship_country =  ISO3166::Country.find_by_name(order.ship_country)[0]
+    country = ISO3166::Country.find_by_name(order.ship_country)
+    ship_country =  country.present? ? country[0] : "US"
     nation = Nation.find_by_code ship_country
     shipping_type = (nation&.shipping_types&.find_by_code shipping_method) || ShippingType.first
     index = 0
