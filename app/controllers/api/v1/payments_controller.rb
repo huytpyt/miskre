@@ -7,7 +7,7 @@ class Api::V1::PaymentsController < Api::V1::BaseController
     if credit_card
       render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
     else
-      render json: {error: "Please add credit card"}, status: 404
+      render json: {credit_card: nil}, status: 200
     end
   end
 
@@ -50,7 +50,7 @@ class Api::V1::PaymentsController < Api::V1::BaseController
 
   def destroy
     @customer.sources.first.delete
-    render json: {notice: "Remove Successfully"}, status: 500
+    render json: {notice: "Remove Successfully"}, status: 200
   end
 
   private
