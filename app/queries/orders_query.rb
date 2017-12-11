@@ -87,14 +87,7 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
-    orders_list = Order.where(query_params)
-    if start_date && end_date
-      orders_list = orders_list.where(date: start_date.beginning_of_day...end_date.end_of_day)
-    elsif start_date && end_date.nil?
-      orders_list = orders_list.where("date > ?", start_date.beginning_of_day)
-    elsif start_date.nil? && end_date
-      orders_list = orders_list.where("date < ?", end_date.end_of_day)
-    end
+    orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day)
 
     @errors = nil
     if current_resource.staff?
