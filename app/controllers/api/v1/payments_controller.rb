@@ -22,8 +22,8 @@ class Api::V1::PaymentsController < Api::V1::BaseController
     begin
       response = Stripe::Token.create(card: get_params.to_h)
       if response
-        @customer.sources.create(card: response.id)
-        render json: {credit_card: BillingsQuery.single(response)}, status: 200
+        credit_card = @customer.sources.create(card: response.id)
+        render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
       end
     rescue Stripe::InvalidRequestError, Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::StripeError => e
       render json: {error: e.message}, status: 500
@@ -65,7 +65,7 @@ class Api::V1::PaymentsController < Api::V1::BaseController
 
   def check_user
     if current_user.staff?
-      redirect_to root_path
+      render json: {error: "This function only use for User"}, status: 500
     end
   end
 

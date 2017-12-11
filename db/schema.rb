@@ -132,7 +132,7 @@ ActiveRecord::Schema.define(version: 20171208100333) do
   end
 
   create_table "line_items", force: :cascade do |t|
-    t.string   "product_id"
+    t.integer  "product_id"
     t.integer  "order_id"
     t.integer  "quantity"
     t.string   "sku"
@@ -231,10 +231,10 @@ ActiveRecord::Schema.define(version: 20171208100333) do
     t.integer  "user_id"
     t.string   "product_url"
     t.integer  "fulfillable_quantity"
+    t.float    "cus_cost"
     t.float    "cus_epub"
     t.float    "cus_dhl"
     t.float    "suggest_price"
-    t.float    "cus_cost"
     t.integer  "sale_off"
     t.boolean  "shop_owner",           default: false
     t.integer  "shop_id"

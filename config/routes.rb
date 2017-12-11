@@ -165,11 +165,12 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :payments, only: [:create] do
+      resources :payments, only: [] do
         collection do
           get "billing_information", to: "payments#billing_information"
           get "invoices", to: "payments#invoices"
           patch "update", to: "payments#update"
+          post "create", to: "payments#create"
           delete "destroy", to: "payments#destroy"
         end
       end
