@@ -1,6 +1,6 @@
 class Api::V1::PaymentsController < Api::V1::BaseController
   before_action :check_user
-  before_action :get_customer, only: [:billing_information, :invoices, :create, :remove, :edit, :update]
+  before_action :get_customer, only: [:billing_information, :invoices, :create, :destroy, :edit, :update]
   
   def billing_information
     credit_card = @customer.sources&.first

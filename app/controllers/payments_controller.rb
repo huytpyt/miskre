@@ -1,5 +1,5 @@
 class PaymentsController < ApplicationController
-  before_action :get_customer, only: [:index, :create, :destroy, :edit, :update]
+  before_action :get_customer, only: [:index, :create, :remove, :edit, :update]
   before_action :check_user
   def index
     @billing = @customer.sources.first
@@ -57,7 +57,7 @@ class PaymentsController < ApplicationController
     end
   end
 
-  def destroy
+  def remove
     @customer.sources.first.delete
     redirect_to billing_index_path, notice: "Remove Successfully"
   end
