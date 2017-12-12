@@ -19,14 +19,18 @@ class Api::V1::PaymentsController < Api::V1::BaseController
   end
 
   def create
-    begin
-      response = Stripe::Token.create(card: get_params.to_h)
-      if response
-        credit_card = @customer.sources.create(card: response.id)
-        render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
+    unless @customer.sources&.first
+      begin
+        response = Stripe::Token.create(card: get_params.to_h)
+        if response
+          credit_card = @customer.sources.create(card: response.id)
+          render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
+        end
+      rescue Stripe::InvalidRequestError, Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::StripeError => e
+        render json: {error: e.message}, status: 500
       end
-    rescue Stripe::InvalidRequestError, Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::StripeError => e
-      render json: {error: e.message}, status: 500
+    else
+      render json: {error: "Already created for this user"}, status: 500
     end
   end
 
