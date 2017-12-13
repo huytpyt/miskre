@@ -27,7 +27,9 @@ class AuditQuery < BaseQuery
   def self.single audit
     {
       id: audit.id,
-      auditable_type: audit.auditable_type,
+      model: audit.auditable_type,
+      associated_model: audit.associated_type,
+      associated_model_id: audit.associated_id,
       user_id: audit.user_id,
       user_type: audit.user_type,
       username: audit.username,
