@@ -1,13 +1,13 @@
 class Api::V1::PaymentsController < Api::V1::BaseController
   before_action :check_user
-  before_action :get_customer, only: [:billing_information, :invoices, :create, :remove, :edit, :update]
+  before_action :get_customer, only: [:billing_information, :invoices, :create, :destroy, :edit, :update]
   
   def billing_information
     credit_card = @customer.sources&.first
     if credit_card
       render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
     else
-      render json: {error: "Please add credit card"}, status: 404
+      render json: {credit_card: nil}, status: 200
     end
   end
 
@@ -19,14 +19,18 @@ class Api::V1::PaymentsController < Api::V1::BaseController
   end
 
   def create
-    begin
-      response = Stripe::Token.create(card: get_params.to_h)
-      if response
-        @customer.sources.create(card: response.id)
-        render json: {credit_card: BillingsQuery.single(response)}, status: 200
+    unless @customer.sources&.first
+      begin
+        response = Stripe::Token.create(card: get_params.to_h)
+        if response
+          credit_card = @customer.sources.create(card: response.id)
+          render json: {credit_card: BillingsQuery.single(credit_card)}, status: 200
+        end
+      rescue Stripe::InvalidRequestError, Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::StripeError => e
+        render json: {error: e.message}, status: 500
       end
-    rescue Stripe::InvalidRequestError, Stripe::AuthenticationError, Stripe::APIConnectionError, Stripe::StripeError => e
-      render json: {error: e.message}, status: 500
+    else
+      render json: {error: "Already created for this user"}, status: 500
     end
   end
 
@@ -50,7 +54,7 @@ class Api::V1::PaymentsController < Api::V1::BaseController
 
   def destroy
     @customer.sources.first.delete
-    render json: {notice: "Remove Successfully"}, status: 500
+    render json: {notice: "Remove Successfully"}, status: 200
   end
 
   private
@@ -59,13 +63,18 @@ class Api::V1::PaymentsController < Api::V1::BaseController
       @customer = Stripe::Customer.create(email: current_user.email) 
       current_user.update(customer_id: @customer.id)
     else
-      @customer = Stripe::Customer.retrieve(current_user.customer_id)
+      begin
+        @customer = Stripe::Customer.retrieve(current_user.customer_id)
+      rescue
+        @customer = Stripe::Customer.create(email: current_user.email) 
+        current_user.update(customer_id: @customer.id)
+      end
     end
   end
 
   def check_user
     if current_user.staff?
-      redirect_to root_path
+      render json: {error: "This function only use for User"}, status: 500
     end
   end
 
