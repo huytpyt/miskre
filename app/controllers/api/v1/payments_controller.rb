@@ -12,10 +12,14 @@ class Api::V1::PaymentsController < Api::V1::BaseController
   end
 
   def invoices
+    page = params[:page].to_i || 1
+    page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20
     per_page = 20 if per_page.zero?
-    invoices = params[:starting_after].present? ? @customer.invoices(limit: per_page, starting_after: params[:starting_after]) : @customer.invoices(limit: per_page)
-    render json: InvoicesQuery.list(invoices, per_page), status: 200
+    sort = params[:sort] || 'DESC'
+    order_by = params[:order_by] || 'id'
+    invoices = current_user.invoices
+    render json: InvoicesQuery.list(invoices, page, per_page, sort, order_by), status: 200
   end
 
   def create
