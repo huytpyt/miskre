@@ -8,11 +8,13 @@
 #  money_amount :decimal(, )
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  balance      :decimal(, )
+#  memo         :string
 #
 
 class Invoice < ApplicationRecord
   belongs_to :user
   has_many :orders
 
-  enum invoice_type: %w(add_balance order_pay)
+  enum invoice_type: %w(deposit deposit_fee transfer order_pay)
 end

@@ -52,6 +52,7 @@ class User < ApplicationRecord
   after_create :create_customer
 
   has_many :user_nations, dependent: :destroy
+  has_many :invoices
   # def send_devise_notification(notification, *args)
   #   devise_mailer.send(notification, self, *args).deliver_later
   # end
