@@ -7,3 +7,7 @@ STRIPE_PLAINNING = "miskare_pro_plan"
 HAVE_TO_CONFIRM = "You have to confirm your email address before continuing."
 ORIGINAL_URL = "https://miskre.com"
 NOT_EXIST = "not_exist"
+
+DEPOSIT = "Deposit"
+TRANSFER = "Transfer"
+FEE = "Deposit Fee"

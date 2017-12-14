@@ -18,8 +18,12 @@ class Api::V1::UsersController < Api::V1::BaseController
   end
 
   def add_balance
-    response_result = UserQuery.add_balance(params, @user)
-    render json: response_result, status: 200
+    if @user.user?
+      response_result = UserQuery.add_balance(params, @user)
+      render json: response_result, status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
   end
 
   def add_balance_manual

@@ -58,7 +58,7 @@ class OrderService
           user_balance.save!
           request_charge.approved!
           order_list.update_all(paid_for_miskre: true)
-          generate_invoice_for_orders(user, amount_must_paid, order_list)
+          generate_invoice_for_orders(user, -amount_must_paid, order_list, "", new_user_balance)
         else
           @error << "This account does not have enough balance"
         end
@@ -86,10 +86,12 @@ class OrderService
   end
 
   private
-    def generate_invoice_for_orders user, amount, orders
+    def generate_invoice_for_orders user, amount, orders, memo, balance
       invoice = Invoice.create(
         user_id: user.id,
-        money_amount: amount
+        money_amount: amount,
+        memo: memo,
+        balance: balance
       )
       invoice.orders << orders
       invoice.order_pay!

@@ -19,13 +19,11 @@ class UserService
     end
 
     begin
-      @response_result = Stripe::Charge.create(
-        amount: (amount*100).to_i,
-        currency: "usd",
-        description: "Add balance #{amount}$ for user id-#{user.id} email-#{user.email}",
-        customer: user.customer_id
-      )
-
+      begin
+        @response_result = Stripe::Charge.create(amount: (amount*100).to_i, currency: "usd", description: "Add balance #{amount}$ for user id-#{user.id} email-#{user.email}", customer: user.customer_id)
+      rescue Exception => e
+        return [amount, user, e.message.to_s]
+      end
       ActiveRecord::Base.transaction do
         if @response_result.status == "succeeded"
           if user.balance.blank?
@@ -40,10 +38,21 @@ class UserService
             @user_balance.total_amount += amount
             @user_balance.save
           end
-        end
-        if user.save
-          invoice = generate_invoice(user, amount)
-          invoice.add_balance!
+          if user.save
+            invoice = generate_invoice(user, amount, "", user.balance.total_amount)
+            invoice.deposit!
+          end
+          fee = Stripe::BalanceTransaction.retrieve(@response_result&.balance_transaction).fee.to_f/100
+          if fee > 0
+            @user_balance = user.balance
+            @user_balance.lock!
+            @user_balance.total_amount -= fee
+            @user_balance.save
+            if user.save
+              invoice = generate_invoice(user, -fee, "", user.balance.total_amount)
+              invoice.deposit_fee!
+            end
+          end
         end
       end
       return [@response_result.status, amount, user, nil, user.reload.balance.total_amount]
@@ -73,8 +82,8 @@ class UserService
         @user_balance.save!
       end
       if user.save!
-        invoice = generate_invoice(user, amount)
-        invoice.add_balance!
+        invoice = generate_invoice(user, amount, "Added from admin", user.balance)
+        invoice.transfer!
       end
     end
     return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
@@ -83,7 +92,7 @@ class UserService
   end
 
   def self.request_charge_orders order_list_id, user
-    orders_list = Order.where(id: JSON.parse(order_list_id))
+    orders_list = Order.where(id: order_list_id)
     user_balance = user.balance
     if user_balance.nil?
       return { result: "Failed", errors: "You do not have any balance, please add." }
@@ -113,10 +122,12 @@ class UserService
   end
 
   private
-    def self.generate_invoice user, amount
+    def self.generate_invoice user, amount, memo, balance
       invoice = Invoice.create(
           user_id: user.id,
-          money_amount: amount
+          money_amount: amount,
+          memo: memo,
+          balance: balance
       )
     end
 end
