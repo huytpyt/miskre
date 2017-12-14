@@ -21,6 +21,7 @@ class InvoicesQuery < BaseQuery
   def self.single invoice
     {
       id: invoice.id,
+      invoice_type: invoice.invoice_type,
       money_amount: invoice.money_amount,
       balance: invoice.balance,
       memo: invoice.memo,
