@@ -153,17 +153,13 @@ class Api::V1::ProductsController < Api::V1::BaseController
                         if variant_id
                           vt = Variant.find(variant_id)
                           if vt
-                            vt.option1 = variant[:option1].present?
-                            vt.option2 = variant[:option2].present?
-                            vt.option3 = variant[:option3].present?
-                            vt.quantity = variant[:quantity].present?
-                            vt.price = variant[:price].present?
+                            vt.quantity = variant[:quantity]
+                            vt.price = variant[:price]
                             if variant[:image].present?
                               exists_ids = Image.exists?(variant[:image][:id]) ? [variant[:image][:id]] : []
                               vt.image_ids = exists_ids
-                              vt.save
                             end
-                            vt.save if vt.changed?
+                            vt.save
                             vts << vt.id
                           end
                         end
