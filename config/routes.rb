@@ -165,7 +165,12 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :audits
+      resources :audits do
+        collection do
+          get :money_log
+          get :product_log
+        end
+      end
       resources :payments, only: [] do
         collection do
           get "billing_information", to: "payments#billing_information"
