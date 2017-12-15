@@ -37,6 +37,7 @@ class AuditQuery < BaseQuery
       associated_model_id: audit.associated_id,
       user_id: audit.user_id,
       user_type: audit.user_type,
+      user_email: (User.find audit.user_id).email,
       username: audit.username,
       action: audit.action,
       audited_changes: audit.audited_changes,

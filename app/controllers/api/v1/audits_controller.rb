@@ -1,6 +1,6 @@
 class Api::V1::AuditsController < Api::V1::BaseController
 
-  def money_log
+  def money_logs
     page = params[:page].to_i || 1
     page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20
@@ -18,7 +18,7 @@ class Api::V1::AuditsController < Api::V1::BaseController
     end
   end
 
-  def product_log
+  def product_logs
     page = params[:page].to_i || 1
     page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20

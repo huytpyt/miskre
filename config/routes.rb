@@ -167,8 +167,8 @@ Rails.application.routes.draw do
       end
       resources :audits do
         collection do
-          get :money_log
-          get :product_log
+          get :money_logs
+          get :product_logs
         end
       end
       resources :payments, only: [] do
