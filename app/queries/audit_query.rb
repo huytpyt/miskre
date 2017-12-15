@@ -33,6 +33,7 @@ class AuditQuery < BaseQuery
     {
       id: audit.id,
       model: audit.auditable_type,
+      auditable_id: audit.auditable_id,
       associated_model: audit.associated_type,
       associated_model_id: audit.associated_id,
       user_id: audit.user_id,
