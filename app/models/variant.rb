@@ -28,7 +28,7 @@
 #
 
 class Variant < ApplicationRecord
-  audited associated_with: :product
+  audited
   belongs_to :product
   has_many :images, as: :imageable, dependent: :destroy
   serialize :product_ids

@@ -22,6 +22,6 @@
 #
 
 class Option < ApplicationRecord
-  audited associated_with: :product
+  audited
   belongs_to :product
 end
