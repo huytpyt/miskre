@@ -10,5 +10,7 @@
 #
 
 class Balance < ApplicationRecord
+  audited
+
   belongs_to :user
 end

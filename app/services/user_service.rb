@@ -22,7 +22,7 @@ class UserService
       begin
         @response_result = Stripe::Charge.create(amount: (amount*100).to_i, currency: "usd", description: "Add balance #{amount}$ for user id-#{user.id} email-#{user.email}", customer: user.customer_id)
       rescue Exception => e
-        return [amount, user, e.message.to_s]
+        return ["Failed", amount, user, e.message.to_s]
       end
       ActiveRecord::Base.transaction do
         if @response_result.status == "succeeded"

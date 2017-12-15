@@ -13,6 +13,8 @@
 #
 
 class Invoice < ApplicationRecord
+  audited
+
   belongs_to :user
   has_many :orders
 

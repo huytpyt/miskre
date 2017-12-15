@@ -23,11 +23,12 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (product_id => products.id)
-#  fk_rails_...  (user_id => users.id)
+#  variants_product_id_fkey  (product_id => products.id)
+#  variants_user_id_fkey     (user_id => users.id)
 #
 
 class Variant < ApplicationRecord
+  audited associated_with: :product
   belongs_to :product
   has_many :images, as: :imageable, dependent: :destroy
   serialize :product_ids

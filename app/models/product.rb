@@ -47,8 +47,10 @@
 
 # require 'elasticsearch/model'
 class Product < ApplicationRecord
+  audited
   serialize :product_ids
   serialize :cost_per_quantity
+  has_associated_audits
   include ShopifyApp::SessionStorage
 
   # include Elasticsearch::Model
@@ -73,7 +75,7 @@ class Product < ApplicationRecord
 
   has_and_belongs_to_many :categories
   has_many :resource_images
-  
+
   validates :suggest_price, presence: true, numericality: {greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
   validates :product_url, url: {allow_blank: true}
@@ -138,7 +140,7 @@ class Product < ApplicationRecord
     if self.compare_at_price.nil?
       self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
     end
-    
+
     self.epub = (0.2 * beus_us_cost).round(2)
     # self.dhl = (dhl_us_cost - (1-0.2)*epub_us_cost).round(2)
 
