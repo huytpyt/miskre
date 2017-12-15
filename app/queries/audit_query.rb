@@ -1,5 +1,5 @@
 class AuditQuery < BaseQuery
-  def self.list(page, per_page, sort, order_by, search, key, type)
+  def self.list(page, per_page, sort, order_by, search, type)
     sort_options = { "#{order_by}" => sort }
     if type == "money_log"
       audits = Audit.where(auditable_type: ["Balance", "Invoice"])

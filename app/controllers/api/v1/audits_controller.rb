@@ -10,9 +10,8 @@ class Api::V1::AuditsController < Api::V1::BaseController
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q] || ""
-    key = params[:key] || nil
     if current_resource.staff?
-      render json: AuditQuery.list(page, per_page, sort, order_by, search, key, "money_log")
+      render json: AuditQuery.list(page, per_page, sort, order_by, search, "money_log")
     else
       render json: { error: "Permission denied"}
     end
@@ -28,9 +27,8 @@ class Api::V1::AuditsController < Api::V1::BaseController
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q] || ""
-    key = params[:key] || nil
     if current_resource.staff?
-      render json: AuditQuery.list(page, per_page, sort, order_by, search, key, "product_log")
+      render json: AuditQuery.list(page, per_page, sort, order_by, search, "product_log")
     else
       render json: { error: "Permission denied"}
     end
