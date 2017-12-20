@@ -1,8 +1,10 @@
 :logfile: log/sidekiq.log
-# :schedule:
-#   setting:
-#     every: 30m
-#     class: ShopWorker
+:schedule:
+  setting:
+    every: '3h'
+    class: FetchTrackingInfo
+    queue: high
+    description: 'Fetching tracking information'
 # :concurrency: 1
 # :queues:
 #   - default

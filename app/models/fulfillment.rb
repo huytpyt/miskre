@@ -23,5 +23,17 @@
 
 class Fulfillment < ApplicationRecord
   belongs_to :order
+  has_one :tracking_information
   serialize :items
+
+  after_commit do
+    tracking = TrackingInformation.find_or_initialize_by(
+                  fulfillment_id: self.id,
+                  tracking_number: self.tracking_number
+                )
+    if self.tracking_number.present? && tracking.new_record?
+      AfterShip::V4::Tracking.create(self.tracking_number, {name: self.tracking_number})
+    end
+    tracking.save!
+  end
 end

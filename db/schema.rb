@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171215074133) do
+ActiveRecord::Schema.define(version: 20171219181434) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -389,6 +389,16 @@ ActiveRecord::Schema.define(version: 20171215074133) do
     t.datetime "created_at",       precision: 6, null: false
     t.datetime "updated_at",       precision: 6, null: false
     t.index ["supply_id"], name: "index_supply_variants_on_supply_id", using: :btree
+  end
+
+  create_table "tracking_informations", force: :cascade do |t|
+    t.integer  "fulfillment_id"
+    t.string   "tracking_number"
+    t.integer  "status",           default: 0
+    t.string   "tracking_history"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.string   "courier_name"
   end
 
   create_table "tracking_products", force: :cascade do |t|

@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   resources 'shipping_setings', only: [:index] do
     collection do
       get "update_carrier_service/:shop_id", to: "shipping_setings#update_carrier_service", as: "update_carrier"
@@ -163,6 +162,11 @@ Rails.application.routes.draw do
             post :add_balance_manual
             post :request_charge_orders
           end
+        end
+      end
+      resources :tracking_informations do
+        collection do
+          post :fetch_new_tracking_info
         end
       end
       resources :audits do
