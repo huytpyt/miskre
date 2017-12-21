@@ -1,9 +1,6 @@
 :logfile: log/sidekiq.log
-# :schedule:
-#   setting:
-#     every: 30m
-#     class: ShopWorker
-# :concurrency: 1
-# :queues:
-#   - default
-#   - mailers
+:schedule:
+  sync_orders:
+    every: 1h
+    class: SyncOrder
+    queue: high
