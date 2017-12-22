@@ -1,6 +1,6 @@
 :logfile: log/sidekiq.log
 :schedule:
-  setting:
+  fetching_tracking_information:
     every: '3h'
     class: FetchTrackingInfo
     queue: high

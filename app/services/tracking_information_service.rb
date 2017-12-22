@@ -21,8 +21,10 @@ class TrackingInformationService
         tracking_information.tracking_history = [{ status: "Submitted", message: "Packaged by Miskre"}]
         tracking_information.Submited!
       elsif tracking_checkpoint["data"].present?
+        miskre_package = eval(tracking_information.tracking_history)[0]
+        miskre_processed = eval(tracking_information.tracking_history)[1]
         last_status = tracking_checkpoint["data"]["tracking"]["checkpoints"].last.try(:[], "tag")
-        tracking_information.tracking_history = tracking_checkpoint["data"]["tracking"]["checkpoints"].unshift({ status: "Submitted", message: "Packaged by Miskre"})
+        tracking_information.tracking_history = tracking_checkpoint["data"]["tracking"]["checkpoints"].unshift(miskre_processed).unshift(miskre_package)
         tracking_information.courier_name = courier
         tracking_information.send("#{last_status}!") if last_status.present?
         tracking_information.save
