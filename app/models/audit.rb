@@ -30,9 +30,23 @@
 class Audit < Audited::Audit
   def self.search(search)
     if search
+      hash_search = search.to_i.zero? ? search : search.to_i
       where("lower(user_type) LIKE :search OR lower(username) LIKE :search
        OR lower(action) LIKE :search
-       OR lower(remote_address) LIKE :search", { search: "%#{search.downcase}%" })
+       OR lower(remote_address) LIKE :search or auditable_id = :id_search
+       OR associated_id = :id_search
+       OR lower(associated_type) LIKE :search
+       OR lower(auditable_type) LIKE :search
+       OR user_id = :id_search
+       OR remote_address ILIKE :search
+       OR request_uuid ILIKE :search",
+        { search: "%#{search.downcase}%", id_search: search.to_i})
+      .or(
+        Audit.where(id: Audit.select{ |a| a.audited_changes.values.include?(hash_search)}.pluck(:id))
+       )
+       .or(
+        Audit.where(id: Audit.select{ |a| User.find(a.user_id).email == search.to_s }.pluck(:id))
+       )
     else
       scoped
     end

@@ -78,7 +78,10 @@ class Product < ApplicationRecord
 
   validates :suggest_price, presence: true, numericality: {greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
+  validates :desc, presence: true
   validates :product_url, url: {allow_blank: true}
+  validates :resource_url, url: {allow_blank: true}
+  validates :link, url: {allow_blank: true}
   validates :sku, presence: true, uniqueness: true
   validates :quantity, numericality: { only_integer: true}
   validates :cost, numericality: {greater_than_or_equal_to: 0.1}
@@ -135,7 +138,9 @@ class Product < ApplicationRecord
     end
     beus_us_cost = CarrierService.cal_cost(shipping_type, weight).to_f
     # dhl_us_cost = CarrierService.get_dhl_cost('US', weight)
-    self.cus_cost = (self.cost + 1.5).round(2)
+    unless self.is_bundle
+      self.cus_cost = (self.cost + 1.5).round(2)
+    end
     random = rand(2.25 .. 2.75)
     if self.compare_at_price.nil?
       self.compare_at_price = (self.suggest_price * random/ 5).round(0) * 5
