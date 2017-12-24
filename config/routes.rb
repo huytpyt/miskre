@@ -218,6 +218,10 @@ Rails.application.routes.draw do
         collection do
           get "miskre_products", to: "product_lists#miskre_products"
           get "user_products", to: "product_lists#user_products"
+          get "new_bundle", to: "product_lists#new_bundle"
+          post "create_bundle", to: "product_lists#create_bundle"
+          patch "update_bundle", to: "product_lists#update_bundle"
+          get "regen_variants", to: "product_lists#regen_variants"
         end
         get "add_to_shop_info", to: "product_lists#add_to_shop_info"
         post "assign_shop", to: "product_lists#assign_shop"
