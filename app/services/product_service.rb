@@ -1,13 +1,13 @@
 class ProductService
 
-  def variant_name product_name, variant
+  def self.variant_name product_name, variant
     "#{product_name}#{variant.option1.present? ? ' - ' + variant.option1 : ''}#{variant.option2.present? ? ' - ' + variant.option2 : ''}#{variant.option3.present? ? ' - ' + variant.option3 : ''}"
   end
 
   def self.get_product_list shop
     product_ids = shop.supplies.collect {|supply| supply.product.id if (supply.product.is_bundle == false) }
     product_ids = product_ids.compact
-    product_list = Product.where(id: product_ids).select(:id, :name)
+    product_list = Product.where(id: product_ids).select(:id, :name, :suggest_price)
     ProductListsQuery.list product_list
   end
 
@@ -74,7 +74,7 @@ class ProductService
             {status: false, error: "`options` must an array"}
           end
         end
-        ProductsQuery.single(product)
+        ProductsQuery.bundle_single(product)
       else
         {status: false, error: product.errors.full_messages}
       end
@@ -166,8 +166,6 @@ class ProductService
               if variant_id
                 vt = Variant.find(variant_id)
                 if vt
-                  vt.quantity = variant[:quantity]
-                  vt.price = variant[:price]
                   vt.product_ids = product_ids
                   if variant[:image].present?
                     exists_ids = Image.exists?(variant[:image][:id]) ? [variant[:image][:id]] : []
@@ -188,7 +186,7 @@ class ProductService
         product.options.destroy_all
         product.variants.destroy_all
       end
-      ProductsQuery.single(product)
+      ProductsQuery.bundle_single(product)
     else
       {status: false, error: product.errors.full_messages}
     end
