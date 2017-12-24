@@ -1,6 +1,7 @@
 class Api::V1::ShopsController < Api::V1::BaseController
   before_action :check_shop, only: [:show, :destroy, :reload_plan_name]
   load_and_authorize_resource :shop
+  before_action :set_shop, only: [:shipping, :update_global_price_setting, :change_price_option, :bundle_manager]
   before_action :prepare_nation, only: [:shipping] 
 
   def index
@@ -25,7 +26,6 @@ class Api::V1::ShopsController < Api::V1::BaseController
   end
 
   def shipping
-    shop = Shop.find params[:shop_id]
     supply = Supply.find(params[:supply_id])
     product = supply.product
     weight = product.weight
@@ -35,8 +35,8 @@ class Api::V1::ShopsController < Api::V1::BaseController
       if shipping_cost.nil?
         line = {code: shipping_type.code, data: "Weight Not Valid"}
       else
-        diff_cost = shipping_cost  != supply.cost_epub ? (shipping_cost - supply.cost_epub)*shop.shipping_rate : 0
-        shipping_price = ((1 - shop.shipping_rate)*shipping_cost + diff_cost).round(2)
+        diff_cost = shipping_cost  != supply.cost_epub ? (shipping_cost - supply.cost_epub)*@shop.shipping_rate : 0
+        shipping_price = ((1 - @shop.shipping_rate)*shipping_cost + diff_cost).round(2)
         total_price = (supply.price + shipping_price).round(2)
         total_cost = (supply.cost + shipping_cost).round(2)
         line = {code: shipping_type.code, data: {cost: supply.cost, shipping_cost: shipping_cost, price: supply.price, shipping_price: shipping_price, total_cost: total_cost, total_price: total_price, profit: (total_price - total_cost).round(2)}}
@@ -47,10 +47,9 @@ class Api::V1::ShopsController < Api::V1::BaseController
   end
 
   def update_global_price_setting
-    shop = Shop.find(params[:shop_id])
-    if shop.update(global_price_setting_params)
-      ShopService.update_supply shop
-      render json: {cost_rate: shop.cost_rate, shipping_rate: shop.shipping_rate, random_from: shop.random_from, random_to: shop.random_to}, status: 200
+    if @shop.update(global_price_setting_params)
+      ShopService.update_supply @shop
+      render json: {cost_rate: @shop.cost_rate, shipping_rate: @shop.shipping_rate, random_from: @shop.random_from, random_to: @shop.random_to}, status: 200
     else
       render json: {error: "Something went wrong!"}, status: 500
     end
@@ -66,16 +65,15 @@ class Api::V1::ShopsController < Api::V1::BaseController
   end
 
   def change_price_option
-    shop = Shop.find(params[:shop_id])
-    if shop.global_setting_enable == true
-      shop.global_setting_enable = false
-      ShopService.update_price_suggest shop
+    if @shop.global_setting_enable == true
+      @shop.global_setting_enable = false
+      ShopService.update_price_suggest @shop
     else
-      shop.global_setting_enable = true
-      ShopService.update_price_global_setting shop
+      @shop.global_setting_enable = true
+      ShopService.update_price_global_setting @shop
     end
-    if shop.save
-      render json: {global_setting_enable: shop.global_setting_enable}, status: 200
+    if @shop.save
+      render json: {global_setting_enable: @shop.global_setting_enable}, status: 200
     else
       render json: {error: "Something went wrong!"}, status: 500
     end
@@ -86,6 +84,22 @@ class Api::V1::ShopsController < Api::V1::BaseController
     render json: {plan_name: result}, status: 200
   end
 
+  def bundle_manager
+    unless @shop.user == current_user
+      redirect_to root_path
+      return
+    end
+    products = @shop.products.where(is_bundle: true, shop_owner: true)
+    page = params[:page].to_i || 1
+    page = 1 if page.zero?
+    per_page = params[:per_page].to_i || 20
+    per_page = 20 if per_page.zero?
+    sort = params[:sort] || 'DESC'
+    order_by = params[:order_by] || 'id'
+    search = params[:q]
+    render json: ProductsQuery.list_miskre(products, page, per_page, sort, order_by, search), status: 200
+  end
+
   private
   def prepare_nation
     @national = Nation.find_by_code(params[:nation] || 'US')
@@ -94,6 +108,14 @@ class Api::V1::ShopsController < Api::V1::BaseController
 
   def global_price_setting_params
     params.permit(:cost_rate, :shipping_rate, :random_from, :random_to)
+  end
+
+  def set_shop
+    @shop = Shop.find_by_id(params[:shop_id])
+    unless @shop.present?
+      render json: {error: "Shop not found"}, status: 404
+      return
+    end
   end
 
   def check_shop

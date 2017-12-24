@@ -110,10 +110,6 @@ class ProductsQuery < BaseQuery
 	end
 
 	def self.single(product)
-		if product.cost_per_quantity.nil?
-			product.cost_per_quantity = [{"quantity"=>1, "cost"=>product.cost}]
-			product.save
-		end
 		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
 		{
 			id: product.id,
