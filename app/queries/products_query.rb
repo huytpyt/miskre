@@ -109,6 +109,37 @@ class ProductsQuery < BaseQuery
 		}
 	end
 
+	def self.bundle_single(product)
+		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
+		{
+			id: product.id,
+			name: product.name,
+			weight: product.weight,
+			length: product.length,
+			height: product.height,
+			width: product.width,
+			sku: product.sku,
+			desc: product.desc,
+			compare_at_price: product.compare_at_price,
+			epub: product.epub,
+			is_bundle: product.is_bundle,
+			product_ids: product.product_ids,
+			user_id: product.user_id,
+			cus_cost: product.cus_cost,
+			cus_epub: product.cus_epub,
+			suggest_price: product.suggest_price,
+			profit: profit,
+			sale_off: product.sale_off,
+			shop_owner: product.shop_owner,
+			shop_id: product.shop_id,
+			approved: product.approved,
+			created_at: product.created_at,
+			updated_at: product.updated_at,
+			options: options_for(product),
+			variants: variants_for(product),
+			images: images_for(product)
+		}
+	end
 	def self.single(product)
 		profit = ((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)
 		{
