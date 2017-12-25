@@ -1,19 +1,17 @@
 class Api::V1::ProductListsController < Api::V1::BaseController
+  before_action :authentication_user
   before_action :set_product, only: [:show, :add_to_shop_info, :assign_shop, :shipping]
   before_action :prepare_nation, only: [:shipping]
+  before_action :set_shop, only: [:create_bundle, :new_bundle, :update_bundle]
+  before_action :set_bundle_product, only: [:update_bundle, :regen_variants]
   def miskre_products
     staff_ids = User.where.not(role: "user").ids
-    products = Product.all.where(shop_owner: false, user_id: [staff_ids, nil])
+    products = Product.all.where(shop_owner: false, approved: true, user_id: [staff_ids, nil])
     get_products params, products
   end
 
   def user_products
-    if current_resource.staff?
-      user_ids = User.where(role: "user")
-      products = Product.where(shop_owner: false, user_id: user_ids)
-    elsif current_resource.user?
-      products = current_resource.products.where(shop_owner: false)
-    end
+    products = current_resource.products.where(shop_owner: false, approved: true)
     get_products params, products
   end
 
@@ -82,14 +80,76 @@ class Api::V1::ProductListsController < Api::V1::BaseController
     render json: {response: response}, status: 200
   end
 
+  def new_bundle
+    render json: ProductService.get_product_list(@shop), status: 200
+  end
+
+  def create_bundle
+    if params[:product]
+      product = current_resource.products.new(bundle_params)
+      render json: ProductService.create_bundle(product, @shop, params)
+    else
+      render json: {status: false, error: "The params invalid!"}
+    end
+  end
+
+  def regen_variants
+    @product.regen_variants
+    render :json => {status: true, variants: VariantsQuery.list(@product)}, status: 200
+  end
+
+  def update_bundle
+    @product.attributes = bundle_params
+    unless @product.user_id == current_user.id
+      render json: {status: false, error: "You don't have permission"}
+      return
+    end
+    if params[:product]
+      render json: ProductService.update_bundle(@product, @shop, params)
+    else
+      render json: {status: false, error: "The params invalid!"}
+    end
+  end
+
   private
+  def bundle_params
+    params.require(:product).permit(:name, :desc, :sale_off)
+  end
+
+  def set_shop
+    @shop = Shop.find_by_id(params[:shop_id])
+    unless params[:shop_id].present? && @shop.present?
+      render json: {error: "Shop id required"}, status: 500
+      return
+    end
+  end
+
+  def set_bundle_product
+    @product = Product.find(params[:product_id])
+    unless @product.present?
+      render json: {status: false, error: "This product not found"}
+      return
+    end
+    unless @product.user_id == current_user.id
+      render json: {status: false, error: "You don't have permission"}
+      return
+    end
+  end
+
+  def authentication_user
+    unless current_resource.user?
+      render json: {status: false, message: "Permission denied, for user only"}, status: 550
+      return
+    end
+  end
+
   def prepare_nation
     @national = Nation.find_by_code(params[:nation] || 'US')
     @national ||= Nation.first
   end
 
   def set_product
-    @product = Product.find_by_id(params[:id] || params[:product_list_id])
+    @product = Product.where(approved: true).find_by_id(params[:id] || params[:product_list_id])
     if @product.nil?
       render json: {status: false, error: "Not found!"}, status: 404
       return

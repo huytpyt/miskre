@@ -5,7 +5,7 @@
     class: FetchTrackingInfo
     queue: high
     description: 'Fetching tracking information'
-# :concurrency: 1
-# :queues:
-#   - default
-#   - mailers
+  sync_orders:
+    every: 1h
+    class: SyncOrder
+    queue: high

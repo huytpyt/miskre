@@ -39,8 +39,7 @@ class UserService
             @user_balance.save
           end
           if user.save
-            invoice = generate_invoice(user, amount, "", user.balance.total_amount)
-            invoice.deposit!
+            invoice = generate_invoice(user, amount, "", user.balance.total_amount, "deposit")
           end
           fee = Stripe::BalanceTransaction.retrieve(@response_result&.balance_transaction).fee.to_f/100
           if fee > 0
@@ -49,8 +48,7 @@ class UserService
             @user_balance.total_amount -= fee
             @user_balance.save
             if user.save
-              invoice = generate_invoice(user, -fee, "", user.balance.total_amount)
-              invoice.deposit_fee!
+              invoice = generate_invoice(user, -fee, "", user.balance.total_amount, "deposit_fee")
             end
           end
         end
@@ -82,8 +80,7 @@ class UserService
         @user_balance.save!
       end
       if user.save!
-        invoice = generate_invoice(user, amount, "Added from admin", user.balance)
-        invoice.transfer!
+        invoice = generate_invoice(user, amount, "Added from admin", user.balance, "transfer")
       end
     end
     return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
@@ -122,12 +119,13 @@ class UserService
   end
 
   private
-    def self.generate_invoice user, amount, memo, balance
+    def self.generate_invoice user, amount, memo, balance, invoice_type
       invoice = Invoice.create(
           user_id: user.id,
           money_amount: amount,
           memo: memo,
-          balance: balance
+          balance: balance,
+          invoice_type: Invoice::invoice_types[invoice_type]
       )
     end
 end
