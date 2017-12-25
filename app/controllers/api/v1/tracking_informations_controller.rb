@@ -21,6 +21,6 @@ class Api::V1::TrackingInformationsController < Api::V1::BaseController
   def fetch_new_tracking_info
     tracking_information = TrackingInformation.find(params[:tracking_information_id])
     TrackingInformationService.fetch_tracking_information params[:tracking_information_id]
-    render json: TrackingInformationQuery.single(tracking_information), status: 200
+    render json: TrackingInformationQuery.single(tracking_information.reload), status: 200
   end
 end
