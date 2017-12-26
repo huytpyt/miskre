@@ -93,29 +93,12 @@ class OrderService
     order = Order.find order_id
     if order.present?
       ShopifyCommunicator.new(order.shop.id)
-      line_item_id_array = []
       items_name_array = []
-      line_item_sku_array = []
-      line_item_quantity_array = []
-
+      items_id_array = []
       order.line_items.each do |line_item|
-        line_item_id_array << line_item.line_item_id
-        items_name_array << line_item.name
-        line_item_sku_array << line_item.sku
-        line_item_quantity_array << line_item.quantity
+        items_name_array.push({name: line_item.name, quantity: line_item.fulfillable_quantity})
+        items_id_array.push({id: line_item.line_item_id, quantity: line_item.fulfillable_quantity})
       end
-
-      array_size = order.line_items.size
-      line_item_array = []
-      items_array = []
-      items_array_sku = []
-
-      array_size.times do |index|
-        line_item_array.push({id: line_item_id_array[index].to_i, quantity: line_item_quantity_array[index].to_i})
-        items_array.push({name: items_name_array[index], quantity: line_item_quantity_array[index].to_i})
-        items_array_sku.push({sku: line_item_sku_array[index], quantity: line_item_quantity_array[index].to_i})
-      end
-
       get_courier = AfterShip::V4::Courier.detect({ tracking_number: tracking_number })
       courier = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "name")
       courier_url = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "web_url")
@@ -125,26 +108,25 @@ class OrderService
         tracking_number: tracking_number,
         tracking_company: courier,
         tracking_url: courier_url,
-        line_items: line_item_array)
+        line_items: items_id_array)
 
       if fulfillment.save
         order.fulfillments.create(
           fulfillment_id: fulfillment.id,
-          status: fulfillment.status,
+          status: "fulfilled",
           service: fulfillment.service,
           tracking_company: fulfillment.tracking_company,
           shipment_status: fulfillment.shipment_status,
           tracking_number: fulfillment.tracking_number,
           tracking_url: fulfillment.tracking_url,
           shopify_order_id: order.shopify_id,
-          items: items_array)
+          items: items_name_array)
 
-        order.update(fulfillment_status: ShopifyAPI::Order.find(:first, params: {id: order.shopify_id}).fulfillment_status)
-
+        order.update(fulfillment_status: "fulfilled")
+        fulfillment_service.update_line_items order
         return { result: "Success", error: nil}
       else
-        # fulfillment_service.update_line_items order
-        return { result: "Failed", error: fulfillment.status}
+        return { result: "Failed", error: "Fulfilled"}
       end
     end
     return { result: "Failed", error: "Can not find order with id #{order_id}"}
