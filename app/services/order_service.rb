@@ -136,11 +136,12 @@ class OrderService
           shipment_status: fulfillment.shipment_status,
           tracking_number: fulfillment.tracking_number,
           tracking_url: fulfillment.tracking_url,
+          shopify_order_id: order.shopify_id,
           items: items_array)
 
         order.update(fulfillment_status: ShopifyAPI::Order.find(:first, params: {id: order.shopify_id}).fulfillment_status)
 
-        return { result: "Sucess", error: nil}
+        return { result: "Success", error: nil}
       else
         # fulfillment_service.update_line_items order
         return { result: "Failed", error: fulfillment.status}
