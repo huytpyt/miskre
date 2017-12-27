@@ -51,14 +51,13 @@ class ShopifyCommunicator
     }
   end
 
-  def sync_fulfillments(billing_id)
-    order_ids = @shop.orders.ids
-    fulfillments = Fulfillment.where(fulfillment_id: nil, order_id: order_ids)
+  def sync_fulfillments(billing)
+    orders = billing.orders
+    fulfillments = orders.collect {|order| order.fulfillments.first}
     count = fulfillments.size
     total_pages = count / 50 + 1
     fetched_pages = 0
     current_page = 0
-    count_fulfilled = 0
     while fetched_pages < total_pages
       current_page = fetched_pages + 1
       p "Fetching #{current_page} / #{total_pages} pages"
@@ -69,10 +68,8 @@ class ShopifyCommunicator
             if fulfillment.present?
               new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
               if new_fulfilllment.save
-                quantity_array = fulfillment.items.collect{ |item| item[:quantity]}
-                FulfillmentService.new.calculator_quantity quantity_array, fulfillment.order
                 fulfillment.update(fulfillment_id: new_fulfilllment.id)
-                count_fulfilled += 1
+                fulfillment.order.update(fulfillment_status: "fulfilled")
               end
             end
           rescue NoMethodError => e
@@ -81,9 +78,6 @@ class ShopifyCommunicator
         end
         sleep 0.5
       end
-    end
-    if count_fulfilled == count
-      Billing.find_by_id(billing_id).update(status: "pending")
     end
   end
 
@@ -134,6 +128,7 @@ class ShopifyCommunicator
                   ship_state: o.shipping_address.province,
                   ship_zip: o.shipping_address.zip,
                   ship_country: o.shipping_address.country,
+                  country_code: o.shipping_address.country_code,
                   ship_phone: o.shipping_address.phone,
                   email: o.customer.email,
                   financial_status: o.financial_status,

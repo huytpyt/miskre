@@ -4,53 +4,77 @@ class OrdersController < ApplicationController
   def index
     if params[:download].present?
       xls_string = CSV.generate(headers:true) do |csv|
-        column_names =  ["Order Id", "First Name", "Last Name",
-                         "Ship Address1", "Ship Address2", "Ship City",
-                         "Ship State", "Ship Zip", "Ship Country",
-                         "Ship Phone", "Email", "Quantity", "SKUs Info (SKU*Quantity)",
-                         "Unit Price(price1,price2...)", "Date", "Remark", "Shipping Method",
-                         "Tracking No.", "Fulfil Fee$", "Product Name", "Color", "Size"]
+        column_names =  ["Order No.", "Shipping Way", "Country", "Weight (KG)", "Quantity", "Received Name", "Full Adress", "Tel No.", "Post code", "State", "City", "Description", "Declared Name", "Declared Value (USD)", "SKU", "Tracking No."]
         csv << column_names
         @orders.each do |order|
           skus = []
+          product_names = []
           skus_array = order.skus.split(",")
+          weight = 0
           skus_array.each do |item|
             sku_item = item.split("*")
             sku = sku_item[0].strip
             quantity = sku_item[1]
             product = Product.find_by_sku(sku&.first(3))
+            weight +=  ((product.weight.to_f * quantity.to_i).to_f/1000).round(3)
             if product&.is_bundle
               if product.variants.present?
                 variant = Variant.find_by_sku sku
                 variant.product_ids.each do |id|
+                  product_found = Product.find(id[:product_id])
                   if id[:variant_id].nil?
-                    skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
+                    skus.push("#{product_found.sku} * #{quantity}")
+                    product_names.push("#{product_found.name} * #{quantity}")
                   else
-                     skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
+                    variant_found = Variant.find(id[:variant_id]) 
+                    skus.push("#{variant_found.sku} * #{quantity}")
+                    product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
                   end
                 end
               else
                 product.product_ids.each do |id|
+                  product_found = Product.find(id[:product_id])
                   if id[:variant_id].nil?
-                    skus.push("#{Product.find(id[:product_id]).sku} * #{quantity}") 
+                    skus.push("#{product_found.sku} * #{quantity}")
+                    product_names.push("#{product_found.name} * #{quantity}") 
                   else
-                     skus.push("#{Variant.find(id[:variant_id]).sku} * #{quantity}")
+                    variant_found = Variant.find(id[:variant_id]) 
+                    skus.push("#{variant_found.sku} * #{quantity}")
+                    product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
                   end
                 end
               end
             else
               skus.push("#{sku} * #{quantity}")
+              if product.variants.present?
+                variant_found = Variant.find_by_sku sku
+                product_names.push("#{ProductService.variant_name(product.name, variant_found)} * #{quantity}")
+              else
+                product_names.push("#{product.name} * #{quantity}")
+              end
             end
           end
-              
-          row = [order.shopify_id, order.first_name, order.last_name,
-                 order.ship_address1, order.ship_address2,
-                 order.ship_city, order.ship_state,
-                 order.ship_zip, order.ship_country,
-                 order.ship_phone, "",
-                 order.quantity, skus.join(","), "", order.date,
-                 "remark", order.shipping_method, "", "", order.product_name,
-                 "Color", "Size"]
+          country_code_found = ISO3166::Country.find_by_name(order.ship_country)
+          if country_code_found.present?
+            country_code_found = country_code_found[0]
+          end
+          country_code = order.country_code || country_code_found || order.ship_country
+          row = [order.shopify_id, 
+            order.shipping_method, 
+            country_code, 
+            weight, 
+            order.quantity, 
+            order.fullname, 
+            order.full_address, 
+            "", 
+            order.ship_zip, 
+            order.ship_state, 
+            order.ship_city, 
+            product_names.join(", "), 
+            "", 
+            "", 
+            skus.join(", "),
+            ""]
           csv << row
         end
       end
@@ -86,7 +110,7 @@ class OrdersController < ApplicationController
     end
     query_params['financial_status'] = @financial_status unless @financial_status.empty?
 
-    if params[:shop_id]
+    if params[:shop_id] && params[:shop_id] != ""
       begin
         @current_shop = Shop.find(params[:shop_id])
         @orders = @current_shop.orders.where(date: @start_date.beginning_of_day..@end_date.end_of_day).where(query_params)
@@ -95,13 +119,8 @@ class OrdersController < ApplicationController
         @orders = []
       end
     else
-      unless current_user.shops.empty?
-        @current_shop = current_user.shops.first
-        @orders = @current_shop.orders.where(date: @start_date.beginning_of_day..@end_date.end_of_day).where(query_params)
-      else
-        @current_shop = nil
-        @orders = []
-      end
+      @current_shop = nil
+      @orders = Order.where(date: @start_date.beginning_of_day..@end_date.end_of_day, shop_id: current_user.staff? ? Shop.all.ids : current_user.shops.ids).where(query_params)
     end
   end
 end

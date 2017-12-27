@@ -34,6 +34,7 @@
 #  invoice_id         :integer
 #  request_charge_id  :integer
 #  order_name         :string
+#  country_code       :string
 #
 # Indexes
 #
@@ -42,7 +43,7 @@
 #
 # Foreign Keys
 #
-#  orders_shop_id_fkey  (shop_id => shops.id)
+#  fk_rails_...  (shop_id => shops.id)
 #
 
 class Order < ApplicationRecord
@@ -57,6 +58,18 @@ class Order < ApplicationRecord
   belongs_to :request_charge
 
   validates :shopify_id, uniqueness: true
+
+  def fullname
+    "#{self.first_name} #{self.last_name}"
+  end
+
+  def full_address
+    if self.ship_address1.present? && self.ship_address2.present?
+      "#{self.ship_address1} | #{self.ship_address2}" 
+    else
+      "#{self.ship_address1} #{self.ship_address2}"
+    end
+  end
 
   def self.search(search)
     if search
