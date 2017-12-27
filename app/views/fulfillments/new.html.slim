@@ -28,10 +28,7 @@
                         |(g)
                       td
                         row
-                          .column.medium-11
-                            = number_field_tag "quantity[]", nil, max: item.fulfillable_quantity
-                          .column.medium-1
-                            |of #{item.fulfillable_quantity}
+                          = item.fulfillable_quantity
             br
             h6 TRACKING INFORMATION
             .row

@@ -1,9 +1,9 @@
 class JobsService
-  def self.fulfillment billing_id
+  def self.fulfillment billing
     Shop.all.each do |shop|
       p shop.name
       communicator = ShopifyCommunicator.new(shop.id)
-      communicator.sync_fulfillments(billing_id)
+      communicator.sync_fulfillments(billing)
     end
   end
 

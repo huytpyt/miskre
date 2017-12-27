@@ -31,9 +31,9 @@ p#notice
                     tr
                       th = li.name
                       td $#{li.price} x #{li.quantity}
-        / - if @sum > 0
-        /   .fulfillments-button.column.medium-12
-        /     = link_to "Start Fulfilling", new_order_fulfillment_path(@order), class: "button start-fulfilling-btn pull-right"
+        - if @order.fulfillment_status != "fulfilled" && current_user.staff?
+          .fulfillments-button.column.medium-12
+            = link_to "Start Fulfilling", new_order_fulfillment_path(@order), class: "button start-fulfilling-btn pull-right"
         .column.medium-12
           .card 
             .card-divider
