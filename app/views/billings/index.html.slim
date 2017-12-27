@@ -37,12 +37,12 @@ p#notice
         tbody
           - total_money = 0
           - @billings_orders.each do |order|
-            - fulfillment = order.fulfillments.first
+            - fulfillment = order.fulfillments&.first
             - order_money = @order_service.sum_money_from_order(order)
             - total_money += order_money
             tr 
               td = order.shop.name
-              td = fulfillment.updated_at.strftime("%B %d, %Y")
+              td = fulfillment&.updated_at&.strftime("%B %d, %Y")
               td = link_to order.shopify_id, order_path(order)
               td = fulfillment&.fulfillment_id
               td = fulfillment&.tracking_company
