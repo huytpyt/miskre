@@ -20,7 +20,7 @@ class BillingsController < ApplicationController
       end
     else
       @current_shop = nil
-      @billings_orders = Order.where(fulfillment_status: ["fulfilled", "fulfilling"])
+      @billings_orders = Order.where(fulfillment_status: ["fulfilled", "fulfilling"], shop_id: @shops&.ids)
     end
   end
 
