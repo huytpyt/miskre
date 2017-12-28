@@ -157,6 +157,9 @@ Rails.application.routes.draw do
 
     # Routes for API
     namespace :v1 do
+      devise_scope :user do
+        post "sign_up", :to => 'registrations#create'
+      end
       resources :users, defaults: {scope: :users}, only: :show do
         scope module: 'resource', as: :users do
           collection do
