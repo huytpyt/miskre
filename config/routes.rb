@@ -125,7 +125,10 @@ Rails.application.routes.draw do
   end
 
   resources :billings do
-    collection { post :import }
+    collection do
+      post :import
+      get "retry_fulfill/:shop_id/:id", to: "billings#retry_fulfill",as: "retry_fulfill"
+    end
   end
 
   resources :user_products do
