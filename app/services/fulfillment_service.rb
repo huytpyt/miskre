@@ -1,7 +1,23 @@
 class FulfillmentService
+  def initialize(shop_id)
+    begin
+      @shop = Shop.find(shop_id)
+      @session = ShopifyAPI::Session.new(@shop.shopify_domain, @shop.shopify_token)
+      ShopifyAPI::Base.activate_session(@session)
+    rescue
+      p "UnauthorizedAccess"
+    end
+  end
   def update_line_items order
     order.line_items.each do |line_item|
       line_item.update(fulfillable_quantity: 0)
+    end
+  end
+
+  def retry_fulfill fulfillment
+    new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
+    if new_fulfilllment.save
+      fulfillment.update(fulfillment_id: new_fulfilllment.id)
     end
   end
 

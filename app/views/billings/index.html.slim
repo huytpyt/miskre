@@ -44,7 +44,7 @@ p#notice
               td = order.shop.name
               td = fulfillment&.updated_at&.strftime("%B %d, %Y")
               td = link_to order.shopify_id, order_path(order)
-              td = fulfillment&.fulfillment_id
+              td = fulfillment.fulfillment_id || (link_to("Try Fulfill", retry_fulfill_billings_path(order.shop.id, fulfillment&.id)) if fulfillment.present?)
               td = fulfillment&.tracking_company
               td = fulfillment&.tracking_number
               td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"

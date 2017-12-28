@@ -64,6 +64,15 @@ class BillingsController < ApplicationController
     end
   end
 
+  def retry_fulfill
+    fulfillment_id = params[:id]
+    fulfillment = Fulfillment.find_by_id(fulfillment_id)
+    if fulfillment
+      FulfillmentService.new(params[:shop_id]).retry_fulfill(fulfillment)
+    end
+    redirect_to billings_path
+  end
+
   private
   def order_service
     @order_service ||= OrderService.new
