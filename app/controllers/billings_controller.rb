@@ -68,9 +68,12 @@ class BillingsController < ApplicationController
     fulfillment_id = params[:id]
     fulfillment = Fulfillment.find_by_id(fulfillment_id)
     if fulfillment
-      FulfillmentService.new(params[:shop_id]).retry_fulfill(fulfillment)
+      response = FulfillmentService.new(params[:shop_id]).retry_fulfill(fulfillment)
+      redirect_to billings_path, notice: response
+    else
+      redirect_to billings_path, notice: "This fulfillment not present"
     end
-    redirect_to billings_path
+    
   end
 
   private

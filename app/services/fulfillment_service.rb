@@ -15,9 +15,16 @@ class FulfillmentService
   end
 
   def retry_fulfill fulfillment
-    new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
-    if new_fulfilllment.save
-      fulfillment.update(fulfillment_id: new_fulfilllment.id)
+    begin 
+      new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
+      if new_fulfilllment.save
+        fulfillment.update(fulfillment_id: new_fulfilllment.id)
+        "Success!"
+      else
+        "Already fulfilled"
+      end
+    rescue
+      "This shop already removed!"
     end
   end
 
