@@ -100,8 +100,8 @@ class OrderService
         items_id_array.push({id: line_item.line_item_id, quantity: line_item.fulfillable_quantity})
       end
       get_courier = AfterShip::V4::Courier.detect({ tracking_number: tracking_number })
-      courier = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "name")
-      courier_url = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "web_url")
+      courier = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "name") || "MISKRE"
+      courier_url = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "web_url") || "http://www.17track.net/en/track?nums=#{tracking_number}"
 
       fulfillment = ShopifyAPI::Fulfillment.new(
         order_id: order.shopify_id,
