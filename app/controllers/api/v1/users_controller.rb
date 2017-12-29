@@ -1,5 +1,5 @@
 class Api::V1::UsersController < Api::V1::BaseController
-  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :create, :update, :destroy]
+  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :create, :update, :destroy, :index]
   def show
   	user = current_resource
     render json: {
@@ -39,6 +39,23 @@ class Api::V1::UsersController < Api::V1::BaseController
     order_list_id = params[:order_list_id]
     response_result = UserQuery.request_charge_orders(order_list_id, @user)
     render json: response_result, status: 200
+  end
+
+  def index
+    if @user.admin?
+      page = params[:page].to_i || 1
+      page = 1 if page.zero?
+      per_page = params[:per_page].to_i || 20
+      per_page = 20 if per_page.zero?
+      total_page = User.count / per_page
+      total_page = total_page <= 0 ? 1 : total_page
+      sort = params[:sort] || 'DESC'
+      order_by = params[:order_by] || 'id'
+      search = params[:q] || ""
+      render json: UserQuery.list(page, per_page, sort, order_by, search), status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
   end
 
   def create
