@@ -1,5 +1,5 @@
 class Api::V1::UsersController < Api::V1::BaseController
-  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual]
+  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :create, :update, :destroy]
   def show
   	user = current_resource
     render json: {
@@ -41,8 +41,39 @@ class Api::V1::UsersController < Api::V1::BaseController
     render json: response_result, status: 200
   end
 
+  def create
+    if @user.admin?
+      result, errors, user = UserService.create(user_params)
+      render json: { result: result, errors: errors, user: user }, status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
+  end
+
+  def update
+    if @user.admin?
+      result, errors, user = UserService.update(params[:id], user_params)
+      render json: { result: result, errors: errors, user: user }, status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
+  end
+
+  def destroy
+    if @user.admin?
+      result, errors, user = UserService.destroy(params[:id])
+      render json: { result: result, errors: errors, user: user }, status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
+  end
+
   private
     def get_user
       @user = current_resource
+    end
+
+    def user_params
+       params.permit(:name, :fb_link, :password, :password_confirmation, :role, :customer_id, :reference_code, :enable_ref, :id, :email)
     end
 end

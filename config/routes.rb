@@ -160,7 +160,7 @@ Rails.application.routes.draw do
       devise_scope :user do
         post "sign_up", :to => 'registrations#create'
       end
-      resources :users, defaults: {scope: :users}, only: :show do
+      resources :users, defaults: {scope: :users} do
         scope module: 'resource', as: :users do
           collection do
             resource :session
