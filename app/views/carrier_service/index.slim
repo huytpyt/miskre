@@ -1,22 +1,23 @@
 .page-header
   h1 Shipping Rate Provider
 
-.row
-  .column
-    table
-      thead
-        tr 
-          th Shop
-          td
-      tbody
-        - @shops.each do |shop|
-          tr
-            - if shop.use_carrier_service?
-              td = shop.name
-              td = link_to 'Deactivate', deactivate_carrier_service_path(shop_id: shop.id)
-            - else
-              td = shop.name
-              td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
+- if current_user.admin?
+  .row
+    .column
+      table
+        thead
+          tr 
+            th Shop
+            td
+        tbody
+          - @shops.each do |shop|
+            tr
+              - if shop.use_carrier_service?
+                td = shop.name
+                td = link_to 'Deactivate', deactivate_carrier_service_path(shop_id: shop.id)
+              - else
+                td = shop.name
+                td = link_to 'Activate', activate_carrier_service_path(shop_id: shop.id)
 
 #shipping_prices
   = form_tag  find_ship_cost_path, remote: true do
