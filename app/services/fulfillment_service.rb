@@ -13,6 +13,7 @@ class FulfillmentService
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
       if new_fulfilllment.save
         fulfillment.update(fulfillment_id: new_fulfilllment.id)
+        fulfillment.order.update(fulfillment_status: "fulfilled")
         "Success!"
       else
         "Already fulfilled"
