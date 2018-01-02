@@ -2,19 +2,7 @@ class Api::V1::Admin::UsersController < Api::V1::BaseController
   before_action :get_user, only: [:create, :update, :destroy, :show, :index]
 
   def show
-    render json: {
-      id: @user.id,
-      email: @user.email,
-      name: @user.name,
-      role: @user.role,
-      customer_id: @user.customer_id,
-      is_paid: @user.is_paid,
-      period_end: @user.period_end,
-      parent_id: @user.parent_id,
-      reference_code: @user.reference_code,
-      enable_ref: @user.enable_ref,
-      fb_link: @user.fb_link
-    }, status: 200
+    render json: UserQuery.single(@user), status: 200
   end
 
   def index
