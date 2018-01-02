@@ -91,6 +91,6 @@ class Api::V1::UsersController < Api::V1::BaseController
     end
 
     def user_params
-       params.permit(:name, :fb_link, :password, :password_confirmation, :role, :customer_id, :reference_code, :enable_ref, :id, :email)
+       params.permit(:name, :fb_link, :password, :password_confirmation, :role, :enable_ref, :id, :email)
     end
 end
