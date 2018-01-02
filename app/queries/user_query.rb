@@ -61,7 +61,31 @@ class UserQuery < BaseQuery
       parent_id: user.parent_id,
       reference_code: user.reference_code,
       enable_ref: user.enable_ref,
-      fb_link: user.fb_link
+      fb_link: user.fb_link,
+      shops: user.shops.map{ |shop| shop_info(shop)}
+    }
+  end
+
+  def self.shop_info shop
+    {
+      shop_name: shop.name,
+      shop_id: shop.id
+    }
+  end
+
+  def self.user_relations user
+    {
+      current_user: _user(user),
+      parent: _user(user.parent_user),
+      childs: user.child_users.map{ |user| _user(user) }
+    }
+  end
+
+  def self._user user
+    {
+      id: user.id,
+      email: user.email,
+      name: user.name
     }
   end
 

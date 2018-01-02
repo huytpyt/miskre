@@ -49,6 +49,8 @@ class User < ApplicationRecord
   has_many :request_products
   has_many :user_products
   has_many :request_charges, dependent: :destroy
+  has_many :child_users, class_name: "User", foreign_key: "parent_id"
+  belongs_to :parent_user, class_name: "User", foreign_key: "parent_id"
   after_create :create_customer
 
   has_many :user_nations, dependent: :destroy
