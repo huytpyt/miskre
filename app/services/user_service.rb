@@ -120,6 +120,9 @@ class UserService
 
   def self.create user_params
     new_user = User.new(user_params)
+    ref_code = UserService.new.generate_ref_code
+    new_user.reference_code = ref_code unless User.exists?(reference_code: ref_code)
+
     if new_user.valid?
       new_user.save
     else
