@@ -79,6 +79,47 @@ class OrdersQuery < BaseQuery
     }
   end
 
+  def self.order_statistics shop_data
+    status, errors, shop_id, shop_name, orders_shop_data, top_20_product = shop_data
+    data = {}
+    if errors.nil?
+      data = {
+              shop_id: shop_id,
+              shop_name: shop_name,
+              total_orders: orders_shop_data.size,
+              product_ranking: top_20_product.map{|product| single_ranking(product)},
+              order_statistics_details: orders_shop_data.map{|data| single_line_items(data)}
+            }
+    end
+    {
+      status: status,
+      errors: errors
+    }.merge!(data)
+  end
+
+  def self.single_ranking product
+    {
+      sku: product["sku"],
+      name: LineItem.where(sku: product["sku"]).first.name,
+      total_quantity: product["total_quantity"]
+    }
+  end
+
+  def self.single_line_items line_item
+    {
+      order_id: line_item[0],
+      product: line_item[1].map{|product| product_info(product)}
+    }
+  end
+
+  def self.product_info product
+    {
+      sku: product[0],
+      quantity: product[1],
+      name: product[2]
+    }
+  end
+
   def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
     query_params = {}
     if fulfillment_status == "null"

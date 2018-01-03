@@ -85,6 +85,28 @@ class OrderService
     end
   end
 
+  def order_statistics shop_id, current_user, duration
+    duration ||= 7
+    if current_user.user? && !current_user.shops.pluck(:id).include?(shop_id)
+      return ["Failed", "This shop does not belong to you.", nil, nil, nil, nil]
+    end
+    shop = Shop.where(id: shop_id).first
+    return ["Failed", "Can not find shop with id #{shop_id}", nil, nil, nil, nil] if shop.blank?
+    shop_orders = shop.orders.where("created_at > :duration", { duration: duration.days.ago})
+    orders_shop_data = shop_orders.inject({}){|data, order| data.merge!({"#{order.id}" => order.line_items.pluck(:sku, :quantity, :name)}) }
+    raw_sql = "SELECT line_items.sku, SUM(line_items.quantity) AS total_quantity
+      FROM
+      ((shops JOIN orders ON shops.id = orders.shop_id) JOIN line_items ON orders.id = line_items.order_id)
+      WHERE
+      shops.id = #{shop_id}
+      GROUP BY line_items.sku
+      ORDER BY total_quantity desc
+      LIMIT 20"
+
+    top_20_product = Shop.find_by_sql(raw_sql)
+    ["Success", nil, shop.id, shop.name, orders_shop_data, top_20_product]
+  end
+
   private
     def generate_invoice_for_orders user, amount, orders, memo, balance
       invoice = Invoice.create(
