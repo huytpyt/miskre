@@ -70,6 +70,9 @@ GEM
       debug_inspector (>= 0.0.1)
     bower-rails (0.11.0)
     builder (3.2.3)
+    bullet (5.7.0)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     byebug (9.1.0)
     cancancan (1.17.0)
     capistrano (3.9.0)
@@ -369,6 +372,7 @@ GEM
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
     unicode_utils (1.4.0)
+    uniform_notifier (1.10.0)
     vuejs-rails (2.4.2)
     warden (1.2.7)
       rack (>= 1.0)
@@ -391,6 +395,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bower-rails (~> 0.11.0)
+  bullet
   byebug
   cancancan (~> 1.13, >= 1.13.1)
   capistrano (~> 3.9)
