@@ -80,21 +80,29 @@ class OrdersQuery < BaseQuery
   end
 
   def self.order_statistics shop_data
-    status, errors, shop_id, shop_name, orders_shop_data, top_20_product = shop_data
-    data = {}
-    if errors.nil?
-      data = {
-              shop_id: shop_id,
-              shop_name: shop_name,
-              total_orders: orders_shop_data.size,
-              product_ranking: top_20_product.map{|product| single_ranking(product)},
-              order_statistics_details: orders_shop_data.map{|data| single_line_items(data)}
-            }
-    end
+    status, errors, top_20_product, duration = shop_data
     {
-      status: status,
-      errors: errors
-    }.merge!(data)
+      duration: duration,
+      total_orders: Order.where("created_at > :duration", duration: duration.days.ago.end_of_day).count,
+      product_ranking: top_20_product.map{|product| single_ranking(product)}
+    }
+  end
+
+  def self.shop_statistics shop_data
+    status, errors, shop_statistics, shop, duration = shop_data
+    if errors
+      {
+        errors: errors
+      }
+    else
+      {
+        shop_id: shop.id,
+        shop_name: shop.name,
+        duration: duration,
+        total_orders: Order.where("shop_id = :shop_id AND created_at > :duration", { duration: duration.days.ago.end_of_day, shop_id: shop.id }).count,
+        shop_statistics: shop_statistics.map{|product| single_ranking(product)}
+      }
+    end
   end
 
   def self.single_ranking product
@@ -102,21 +110,6 @@ class OrdersQuery < BaseQuery
       sku: product["sku"],
       name: LineItem.where(sku: product["sku"]).first.name,
       total_quantity: product["total_quantity"]
-    }
-  end
-
-  def self.single_line_items line_item
-    {
-      order_id: line_item[0],
-      product: line_item[1].map{|product| product_info(product)}
-    }
-  end
-
-  def self.product_info product
-    {
-      sku: product[0],
-      quantity: product[1],
-      name: product[2]
     }
   end
 
