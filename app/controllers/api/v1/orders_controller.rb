@@ -47,7 +47,7 @@ class Api::V1::OrdersController < Api::V1::BaseController
 
   def order_statistics
     duration = params[:duration].to_i
-    response = OrderService.new.order_statistics(current_user, duration)
+    response = OrderService.new.order_statistics(duration)
     render json: OrdersQuery.order_statistics(response), status: 200
   end
 
