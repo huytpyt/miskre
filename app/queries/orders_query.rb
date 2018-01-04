@@ -98,6 +98,7 @@ class OrdersQuery < BaseQuery
         shop_id: shop.id,
         shop_name: shop.name,
         duration: duration,
+        total_orders: Order.where("shop_id = :shop_id AND created_at > :duration", { duration: duration.days.ago.end_of_day, shop_id: shop.id }).count,
         shop_statistics: shop_statistics.map{|product| single_ranking(product)}
       }
     end
