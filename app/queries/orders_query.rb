@@ -80,17 +80,15 @@ class OrdersQuery < BaseQuery
   end
 
   def self.order_statistics shop_data
-    status, errors, top_20_product, total_revenue, total_profit, duration = shop_data
+    status, errors, top_20_product, duration = shop_data
     {
       duration: duration,
-      total_revenue: total_revenue,
-      total_profit: total_profit,
       product_ranking: top_20_product.map{|product| single_ranking(product)}
     }
   end
 
   def self.shop_statistics shop_data
-    status, errors, shop_statistics, shop, duration = shop_data
+    status, errors, shop_statistics, total_revenue, total_profit, shop, duration = shop_data
     if errors
       {
         errors: errors
@@ -101,6 +99,8 @@ class OrdersQuery < BaseQuery
         shop_name: shop.name,
         duration: duration,
         total_orders: Order.where("shop_id = :shop_id AND created_at > :duration", { duration: duration.days.ago.end_of_day, shop_id: shop.id }).count,
+        total_revenue: total_revenue,
+        total_profit: total_profit,
         shop_statistics: shop_statistics.map{|product| single_ranking(product)}
       }
     end
