@@ -217,6 +217,8 @@ Rails.application.routes.draw do
         collection do
           post :accept_charge_orders
           post :reject_charge_orders
+          post :order_statistics
+          post :shop_statistics
         end
       end
       resources :request_charges
