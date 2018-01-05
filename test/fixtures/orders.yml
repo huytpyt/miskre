@@ -34,6 +34,7 @@
 #  invoice_id         :integer
 #  request_charge_id  :integer
 #  order_name         :string
+#  country_code       :string
 #
 # Indexes
 #

@@ -157,7 +157,19 @@ Rails.application.routes.draw do
 
     # Routes for API
     namespace :v1 do
-      resources :users, defaults: {scope: :users}, only: :show do
+
+      namespace :admin do
+        resources :users do
+          collection do
+            post :user_relations, to: "users#user_relations"
+          end
+        end
+      end
+
+      devise_scope :user do
+        post "sign_up", :to => 'registrations#create'
+      end
+      resources :users, defaults: {scope: :users}, only: [:index, :update] do
         scope module: 'resource', as: :users do
           collection do
             resource :session

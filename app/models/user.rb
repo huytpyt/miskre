@@ -49,6 +49,8 @@ class User < ApplicationRecord
   has_many :request_products
   has_many :user_products
   has_many :request_charges, dependent: :destroy
+  has_many :child_users, class_name: "User", foreign_key: "parent_id"
+  belongs_to :parent_user, class_name: "User", foreign_key: "parent_id"
   after_create :create_customer
 
   has_many :user_nations, dependent: :destroy
@@ -71,13 +73,25 @@ class User < ApplicationRecord
 
   def self.admins
     where(role: 'admin').order(id: :asc)
-  end 
+  end
 
   def self.master_admin
     User.admins.first
-  end   
+  end
 
   def self.ceo
     User.find_by_email("duy@miskre.com")
+  end
+
+  def self.search search
+    if search
+        where("lower(email) LIKE :search OR lower(role) LIKE :search
+         OR lower(customer_id) LIKE :search
+         OR CAST(parent_id AS TEXT) LIKE :search
+         OR lower(reference_code) LIKE :search OR lower(name) LIKE :search
+         OR lower(fb_link) LIKE :search", { search: "%#{search.downcase}%" })
+    else
+      scoped
+    end
   end
 end

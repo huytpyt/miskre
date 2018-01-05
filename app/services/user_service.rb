@@ -89,7 +89,7 @@ class UserService
   end
 
   def self.request_charge_orders order_list_id, user
-    orders_list = Order.where(id: order_list_id)
+    orders_list = Order.where(id: JSON.parse(order_list_id))
     user_balance = user.balance
     if user_balance.nil?
       return { result: "Failed", errors: "You do not have any balance, please add." }
@@ -115,6 +115,44 @@ class UserService
       return { request_charge: "completed", errors: nil }
     elsif !new_request_charge.valid?
       return { request_charge: "error", errors: new_request_charge.errors }
+    end
+  end
+
+  def self.create user_params
+    new_user = User.new(user_params)
+    ref_code = UserService.new.generate_ref_code
+    new_user.reference_code = ref_code unless User.exists?(reference_code: ref_code)
+
+    if new_user.valid?
+      new_user.save
+    else
+      return [ "Failed", new_user.errors.messages, new_user]
+    end
+    return [ "Success", nil, new_user ]
+  end
+
+  def self.update user_id, user_params
+    user = User.where(id: user_id).first
+    if user
+      user.assign_attributes(user_params)
+      if user.valid?
+        user.save
+        return [ "Success", nil, user]
+      else
+        [ "Failed", user.errors.messages, user]
+      end
+    else
+      return [ "Failed", "Can not find user with id #{user_id}", nil]
+    end
+  end
+
+  def self.destroy user_id
+    user = User.where(id: user_id).first
+    if user
+      user.destroy
+      return [ "Success", nil, nil]
+    else
+      [ "Failed", "Can not find user with id #{user_id}", nil ]
     end
   end
 

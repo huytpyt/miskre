@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   include ShopifyApp::LoginProtection
   layout :layout_by_resource
-  protect_from_forgery with: :exception
+  protect_from_forgery with: :null_session
+
   before_action :authenticate_user!
   before_action :set_current_shop
 
