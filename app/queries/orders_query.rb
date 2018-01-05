@@ -80,9 +80,11 @@ class OrdersQuery < BaseQuery
   end
 
   def self.order_statistics shop_data
-    status, errors, top_20_product, duration = shop_data
+    status, errors, top_20_product, total_revenue, total_profit, duration = shop_data
     {
       duration: duration,
+      total_revenue: total_revenue,
+      total_profit: total_profit,
       product_ranking: top_20_product.map{|product| single_ranking(product)}
     }
   end
@@ -105,10 +107,23 @@ class OrdersQuery < BaseQuery
   end
 
   def self.single_ranking product
+    product_info = Product.find_by_sku product["sku"]
     {
+      id: product_info.id,
       sku: product["sku"],
-      name: LineItem.where(sku: product["sku"]).first.name,
-      total_quantity: product["total_quantity"]
+      name: product_info.name,
+      total_quantity: product["total_quantity"],
+      image: images_for(product_info)
+    }
+  end
+
+  def self.images_for(product)
+    image = product.images.first
+    {
+      id: image.id,
+      original: image.file.url,
+      thumb: image.file.url(:thumb),
+      medium: image.file.url(:medium)
     }
   end
 
