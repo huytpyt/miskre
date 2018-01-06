@@ -10,7 +10,7 @@ class OrdersQuery < BaseQuery
         orders: []
       }
     else
-      paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
+      paginate = api_paginate(orders.includes(shop: :user).order(sort_options).search(search), page).per(per_page)
       {
         error: error,
         paginator: {
