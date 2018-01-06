@@ -1,20 +1,9 @@
 class Api::V1::UsersController < Api::V1::BaseController
-  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual]
-  def show
-  	user = current_resource
-    render json: {
-  		id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      customer_id: user.customer_id,
-      is_paid: user.is_paid,
-      period_end: user.period_end,
-      parent_id: user.parent_id,
-      reference_code: user.reference_code,
-      enable_ref: user.enable_ref,
-      fb_link: user.fb_link
-  	}, status: 200
+  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :create, :update, :destroy, :index]
+
+  def index
+    user = current_resource
+    render json: UserQuery.single(user), status: 200
   end
 
   def add_balance
@@ -41,8 +30,17 @@ class Api::V1::UsersController < Api::V1::BaseController
     render json: response_result, status: 200
   end
 
+  def update
+    result, errors, user = UserService.update(@user.id, user_params)
+    render json: { result: result, errors: errors, user: user }, status: 200
+  end
+
   private
     def get_user
       @user = current_resource
+    end
+
+    def user_params
+       params.permit(:name, :fb_link, :password, :password_confirmation, :email)
     end
 end

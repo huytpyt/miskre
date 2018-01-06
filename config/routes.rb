@@ -125,7 +125,10 @@ Rails.application.routes.draw do
   end
 
   resources :billings do
-    collection { post :import }
+    collection do
+      post :import
+      get "retry_fulfill/:shop_id/:id", to: "billings#retry_fulfill",as: "retry_fulfill"
+    end
   end
 
   resources :user_products do
@@ -154,7 +157,19 @@ Rails.application.routes.draw do
 
     # Routes for API
     namespace :v1 do
-      resources :users, defaults: {scope: :users}, only: :show do
+
+      namespace :admin do
+        resources :users do
+          collection do
+            post :user_relations, to: "users#user_relations"
+          end
+        end
+      end
+
+      devise_scope :user do
+        post "sign_up", :to => 'registrations#create'
+      end
+      resources :users, defaults: {scope: :users}, only: [:index, :update] do
         scope module: 'resource', as: :users do
           collection do
             resource :session
@@ -202,6 +217,8 @@ Rails.application.routes.draw do
         collection do
           post :accept_charge_orders
           post :reject_charge_orders
+          post :order_statistics
+          post :shop_statistics
         end
       end
       resources :request_charges

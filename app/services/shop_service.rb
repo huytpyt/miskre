@@ -8,7 +8,8 @@ class ShopService
       get_session shop
       shopify = ShopifyAPI::Shop.current
       shop.update(plan_name: shopify.plan_name)
-    rescue StandardError => e
+      reset_carrier_service shop
+    rescue
       shop.update(plan_name: NOT_EXIST)
     end
     shop.plan_name
@@ -20,9 +21,23 @@ class ShopService
         begin
           get_session shop
           shopify = ShopifyAPI::Shop.current
+          if (shop.plan_name != "unlimited" && shopify.plan_name == "unlimited")
+            reset_carrier_service shop
+          end
+          unless shop.carrier_service_id.nil?
+            begin
+              carrier_service = ShopifyAPI::CarrierService.find(shop.carrier_service_id)
+            rescue
+              carrier_service = nil
+            end
+            unless carrier_service
+              deactivate_carrier_service shop
+            end
+          end 
           shop.update(plan_name: shopify.plan_name)
         rescue
           shop.update(plan_name: NOT_EXIST)
+          deactivate_carrier_service shop
         end
       end
     end
@@ -32,7 +47,8 @@ class ShopService
     if shop.carrier_service_id.nil?
       result = activate_carrier_service shop
     else
-      result = deactivate_carrier_service shop
+      deactivate_carrier_service shop
+      result = activate_carrier_service shop
     end
     result
   end
@@ -41,7 +57,6 @@ class ShopService
     begin
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
       ShopifyAPI::Base.activate_session(session)
-      ShopifyAPI::Shop.current
       carrier_service = ShopifyAPI::CarrierService.new
       carrier_service.name = "MiskreCarrier"
       carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
@@ -61,7 +76,6 @@ class ShopService
   def self.deactivate_carrier_service shop
     session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
     ShopifyAPI::Base.activate_session(session)
-    ShopifyAPI::Shop.current
     begin
       ShopifyAPI::CarrierService.delete(shop.carrier_service_id)
     rescue

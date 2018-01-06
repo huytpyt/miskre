@@ -16,17 +16,8 @@ p#notice
           .columns.large-4
             label
               | Shop
-              - if @current_shop
-                = select_tag :shop_id, options_for_select(available_shops, @current_shop.id)
-              - else
-                = select_tag :shop_id, options_for_select(available_shops)
-          .columns.large-4
-            label
-              | Financial Status
-              = select_tag :status,
-                options_for_select(billing_options, @status),
-                include_blank: true
-          .columns.large-4
+              = select_tag :shop_id, options_for_select(available_shops, @current_shop&.id), include_blank: true
+          .columns.large-8
             label
               br
               = submit_tag "Search", class: "button"
@@ -35,14 +26,28 @@ p#notice
       table#product-table
         thead
           tr
-            th Id
-            th Total Price
-            th Status
-            th
+            th Shop
+            th Date Fulfilled
+            th Shopyfi Order ID
+            th Fulfillment ID
+            th Tracking Company
+            th Tracking Number
+            th Tracking URL
+            th Total Cost
         tbody
-          - @billings.each do |billing|
+          - total_money = 0
+          - @billings_orders.each do |order|
+            - fulfillment = order.fulfillments&.first
+            - order_money = @order_service.sum_money_from_order(order)
+            - total_money += order_money
             tr 
-              td = billing.id 
-              td = number_to_currency @order_service.sum_money_per_bill(billing), precision: 0, unit: "$",  format: "%u %n"
-              td = billing.status
-              td = link_to "Show", billing_path(billing.id)
+              td = order.shop.name
+              td = fulfillment&.updated_at&.strftime("%B %d, %Y")
+              td = link_to order.shopify_id, order_path(order)
+              td = fulfillment.fulfillment_id || (link_to("Try Fulfill", retry_fulfill_billings_path(order.shop.id, fulfillment&.id)) if fulfillment.present?)
+              td = fulfillment&.tracking_company
+              td = fulfillment&.tracking_number
+              td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"
+              td = number_to_currency order_money, precision: 0, unit: "$", format: "%u%n"
+      b Total money 
+      span = number_to_currency total_money, precision: 0, unit: "$", format: "%u%n"

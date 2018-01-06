@@ -7,10 +7,7 @@
       .columns.large-2
         label
           | Shop
-          - if @current_shop
-            = select_tag :shop_id, options_for_select(available_shops, @current_shop.id)
-          - else
-            = select_tag :shop_id, options_for_select(available_shops)
+          = select_tag :shop_id, options_for_select(available_shops, @current_shop&.id), include_blank: true
       .columns.large-2
         label
           | Start Date

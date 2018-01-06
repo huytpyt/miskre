@@ -10,25 +10,18 @@ class BillingsController < ApplicationController
     else
       @shops = current_user.shops&.all
     end
-    if params[:shop_id]
+    if params[:shop_id] && params[:shop_id] != ""
       begin
         @current_shop = @shops.find_by_id(params[:shop_id])
-      rescue ActiveRecord::RecordNotFound
+        @billings_orders = Order.where(shop_id: @current_shop.id, fulfillment_status: ["fulfilled", "fulfilling"])
+      rescue
         @current_shop = nil
-        @billings = []
+        @billings_orders = []
       end
     else
-      unless current_user&.shops&.empty?
-        @current_shop = @shops&.first
-      else
-        @current_shop = nil
-        @billings = []
-      end
+      @current_shop = nil
+      @billings_orders = Order.where(fulfillment_status: ["fulfilled", "fulfilling"], shop_id: @shops&.ids)
     end
-    order_ids = @current_shop&.orders&.ids
-    billings_orders = BillingsOrder.where(order_id: order_ids)
-    billing_ids = billings_orders.pluck(:billing_id).uniq
-    @billings = Billing.where(id: billing_ids).where(query_params)
   end
 
   def new
@@ -65,10 +58,23 @@ class BillingsController < ApplicationController
       if billings_orders[0].billings_orders.none?
         redirect_to billings_path, notice: billings_orders[1]
       else
-        JobsService.delay.fulfillment billings_orders[0].id
+        JobsService.delay.fulfillment billings_orders[0]
         redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
       end
     end
+  end
+
+  def retry_fulfill
+    fulfillment_id = params[:id]
+    shop_id = params[:shop_id]
+    fulfillment = Fulfillment.find_by_id(fulfillment_id)
+    if fulfillment
+      response = FulfillmentService.retry_fulfill(fulfillment, shop_id)
+      redirect_to billings_path, notice: response
+    else
+      redirect_to billings_path, notice: "This fulfillment not present"
+    end
+    
   end
 
   private

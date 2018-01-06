@@ -133,6 +133,96 @@ class OrderService
     return { result: "Failed", error: "Can not find order with id #{order_id}"}
   end
 
+  def order_statistics duration
+    raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      FROM
+      (((shops JOIN orders ON shops.id = orders.shop_id)
+        JOIN line_items ON orders.id = line_items.order_id)
+        JOIN products ON products.id = line_items.product_id)
+      WHERE orders.created_at > '#{duration.days.ago.end_of_day}'
+      GROUP BY products.sku
+      ORDER BY total_quantity desc
+      LIMIT 20"
+
+    top_20_product = Shop.find_by_sql(raw_sql)
+
+    ["Success", nil, top_20_product, duration]
+  end
+
+  def shop_statistics shop_id, current_user, duration
+    duration ||= 7
+    if current_user.user? && !current_user.shops.pluck(:id).include?(shop_id)
+      return ["Failed", "This shop does not belong to you.", nil]
+    end
+    shop = Shop.where(id: shop_id).first
+    if shop
+      raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+        FROM
+        (((shops JOIN orders ON shops.id = orders.shop_id)
+        JOIN line_items ON orders.id = line_items.order_id)
+        JOIN products ON products.id = line_items.product_id)
+        WHERE
+        shops.id = #{shop_id}
+        AND orders.created_at > '#{duration.days.ago.end_of_day}'
+        GROUP BY products.sku
+        ORDER BY total_quantity desc"
+
+      shop_statistics_data = Shop.find_by_sql(raw_sql)
+
+      shop_orders = Order.where("created_at > :duration", duration: duration.days.ago.end_of_day)
+
+    product_quantity_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      FROM
+      (((shops JOIN orders ON shops.id = orders.shop_id)
+      JOIN line_items ON orders.id = line_items.order_id)
+      JOIN products ON products.id = line_items.product_id)
+      WHERE orders.created_at > '#{duration.days.ago.end_of_day}'
+      AND shops.id = #{shop_id}
+      GROUP BY products.sku
+      ORDER BY total_quantity desc"
+
+    product_quantity_sql_result = Shop.find_by_sql(product_quantity_sql)
+
+    total_profit = product_quantity_sql_result.inject(0) do |profit, row|
+                    product = Product.find_by_sku row.sku
+                    profit += (((product.suggest_price + product.epub) - (product.cus_cost + product.cus_epub)).round(2)*row.total_quantity).round(2)
+                  end.round(2)
+
+    product_by_orders_sql = "SELECT products.sku, orders.id AS order_id, shops.id AS shop_id, line_items.quantity
+        FROM
+        (((shops JOIN orders ON shops.id = orders.shop_id)
+        JOIN line_items ON orders.id = line_items.order_id)
+        JOIN products ON products.id = line_items.product_id)
+        WHERE orders.created_at > '#{duration.days.ago.end_of_day}'
+        AND shops.id = #{shop_id}"
+
+    product_by_orders = Product.find_by_sql(product_by_orders_sql)
+
+    total_revenue = product_by_orders.inject(0) do |revenue, row|
+                    shop = Shop.find row["shop_id"]
+                    product = Product.find_by_sku row["sku"]
+                    order = Order.find row["order_id"]
+
+                    country = ISO3166::Country.find_by_name(order.ship_country)
+                    ship_country =  country.present? ? country[0] : "US"
+                    nation = Nation.find_by_code ship_country
+                    shipping_method = order.shipping_method.upcase
+                    shipping_type = (nation&.shipping_types&.find_by_code shipping_method) || ShippingType.first
+                    shipping_cost = CarrierService.cal_cost(shipping_type, product.weight) || 0
+
+                    rate = product.cus_epub*shop.shipping_rate
+                    shipping_price = shipping_cost - rate
+
+                    revenue += (((product.suggest_price + shipping_price).round(2))*row["quantity"]).round(2)
+                  end.round(2)
+
+    else
+      return ["Failed", "Can not find shop with id #{shop_id}", nil]
+    end
+
+    ["Success", nil, shop_statistics_data, total_revenue, total_profit, shop, duration]
+  end
+
   private
     def generate_invoice_for_orders user, amount, orders, memo, balance
       invoice = Invoice.create(

@@ -68,5 +68,18 @@ class Shop < ActiveRecord::Base
     self.name = shop.name
     self.domain = shop.domain
     self.plan_name = shop.plan_name
+    if ["unlimited", "affiliate"].include?(shop.plan_name)
+      begin
+        carrier_service = ShopifyAPI::CarrierService.new
+        carrier_service.name = "MiskreCarrier"
+        carrier_service.callback_url = Rails.application.secrets.shipping_rates_url
+        carrier_service.service_discovery = false
+        carrier_service.save
+        if carrier_service.persisted?
+          self.carrier_service_id = carrier_service.id
+          self.use_carrier_service = true
+        end
+      end
+    end
   end
 end
