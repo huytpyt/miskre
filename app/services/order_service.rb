@@ -34,7 +34,7 @@ class OrderService
     return total_money
   end
 
-  def accept_charge_orders request_charge_id, tracking_number_array
+  def accept_charge_orders request_charge_id
     reponse_result = []
     request_charge = RequestCharge.find request_charge_id
     ActiveRecord::Base.transaction do
@@ -59,10 +59,10 @@ class OrderService
           request_charge.approved!
           order_list.update_all(paid_for_miskre: true)
           generate_invoice_for_orders(user, -amount_must_paid, order_list, "", new_user_balance)
-          eval(tracking_number_array).each do |tracking_info|
-            result, error = create_fulfillment_for_order(tracking_info[:order_id].to_i, tracking_info[:tracking_number].to_s)
-            raise ActiveRecord::Rollback if error.present?
-          end
+          # eval(tracking_number_array).each do |tracking_info|
+          #   result, error = create_fulfillment_for_order(tracking_info[:order_id].to_i, tracking_info[:tracking_number].to_s)
+          #   raise ActiveRecord::Rollback if error.present?
+          # end
         else
           @error << "This account does not have enough balance"
         end
@@ -84,6 +84,7 @@ class OrderService
     if request_charge.approved?
       return { result: "Failed", errors: "This order is approved." }
     else
+      request_charge.orders.update(request_charge_id: nil)
       request_charge.rejected!
       return { result: "Success", errors: nil }
     end

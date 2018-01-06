@@ -1,8 +1,8 @@
 class OrdersQuery < BaseQuery
 
   def self.list(page = 1, per_page = 12, sort, order_by, search, key,
-   shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
-    shop, orders, error = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+   shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
+    shop, orders, error = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
     sort_options = { "#{order_by}" => sort }
     if orders.blank?
       {
@@ -79,7 +79,7 @@ class OrdersQuery < BaseQuery
     }
   end
 
-  def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+  def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
     query_params = {}
     if fulfillment_status == "null"
       query_params['fulfillment_status'] = nil
@@ -87,7 +87,17 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
-    orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day)
+
+    if option
+      if option == "not_requested"
+        orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day, request_charge_id: nil )
+      else
+        orders_list = Order.joins(:request_charge)
+          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses[option.to_s]})
+      end
+    else
+      orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
+    end
 
     @errors = nil
     if current_resource.staff?
