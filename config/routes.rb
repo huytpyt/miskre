@@ -179,6 +179,7 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :inventories
       resources :tracking_informations do
         collection do
           post :fetch_new_tracking_info

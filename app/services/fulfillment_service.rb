@@ -9,7 +9,7 @@ class FulfillmentService
     begin
       shop = Shop.find(shop_id)
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
-      ShopifyAPI::Base.activate_session(session) 
+      ShopifyAPI::Base.activate_session(session)
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
       if new_fulfilllment.save
         fulfillment.update(fulfillment_id: new_fulfilllment.id)
@@ -20,6 +20,22 @@ class FulfillmentService
       end
     rescue
       "This shop already removed!"
+    end
+  end
+
+  def calculate_inventory_after_fulfill orders_list
+    orders_list.each do |order|
+      data = order.line_items.map{|o| {quantity: o.quantity, product_id: o.product_id}}
+      update_inventory_quantity(data)
+    end
+  end
+
+  def update_inventory_quantity data_list
+    data_list.each do |data|
+      product = Product.find data[:product_id]
+      inventory = product.inventory
+      inventory.quantity -= data.quantity
+      inventory.save
     end
   end
 
