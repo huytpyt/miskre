@@ -21,9 +21,10 @@ class OrdersQuery < BaseQuery
           next_page: paginate.next_page,
           prev_page: paginate.prev_page,
           first_page: 1,
-          last_page: paginate.total_pages
+          last_page: paginate.total_pages,
+          option: option
         },
-        orders: paginate.map{ |orders| single(orders) }
+        orders: paginate.map{ |order| single(order) }
       }
     end
   end
@@ -75,8 +76,28 @@ class OrdersQuery < BaseQuery
       shop_name: order.shop.name,
       order_name: order.order_name,
       total_cost: OrderService.new.sum_money_from_order(order).to_f,
+      product_info: OrdersQuery.product_info_by_order(order),
       products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)}
     }
+  end
+
+  def self.product_info_by_order order
+    product_info = []
+    order_raw_sql = "SELECT products.sku AS sku, SUM(line_items.quantity) AS total_quantity
+                    FROM
+                    (orders JOIN line_items ON orders.id = line_items.order_id
+                    JOIN products ON products.id = line_items.product_id)
+                    WHERE orders.id = #{order.id}
+                    GROUP BY products.sku"
+    result = Order.find_by_sql(order_raw_sql)
+    result.each do |data|
+      json = {
+              product_sku: data.sku,
+              quantity: data.total_quantity
+            }
+      product_info << json
+    end
+    product_info
   end
 
   def self.order_statistics shop_data
@@ -135,10 +156,21 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
-
     if option
       if option == "not_requested"
         orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day, request_charge_id: nil )
+      elsif option == "available_fulfill_orders"
+        orders_list_to_check = Order.joins(:request_charge)
+          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses["approved"]})
+
+        available_orders, unvailable_orders = OrderService.check_order_available(orders_list_to_check)
+        orders_list = available_orders
+      elsif option == "unavailable_fulfill_orders"
+        orders_list_to_check = Order.joins(:request_charge)
+          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses["approved"]})
+
+        available_orders, unvailable_orders = OrderService.check_order_available(orders_list_to_check)
+        orders_list = unvailable_orders
       else
         orders_list = Order.joins(:request_charge)
           .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses[option.to_s]})
@@ -182,4 +214,7 @@ class OrdersQuery < BaseQuery
     end
     return [@current_shop, @orders, @errors]
   end
+
+
+
 end

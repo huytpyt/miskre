@@ -59,6 +59,11 @@ class Api::V1::OrdersController < Api::V1::BaseController
     render json: OrdersQuery.shop_statistics(response), status: 200
   end
 
+  def download_orders
+    response = OrderService.download_orders(params[:order_list_id])
+    render json: { result: "OK", file_path: response}, status: 200
+  end
+
   private
     def order_params
       params.require(:order).permit(:id)

@@ -220,6 +220,7 @@ Rails.application.routes.draw do
           post :reject_charge_orders
           post :order_statistics
           post :shop_statistics
+          post :download_orders, format: 'xlsx'
         end
       end
       resources :request_charges

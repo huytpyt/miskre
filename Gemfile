@@ -103,3 +103,7 @@ gem 'stripe', '~> 3.3', '>= 3.3.1'
 gem 'audited', '~> 4.2', '>= 4.2.1'
 # Tracking logistic
 gem "aftership", "~> 4.3.1"
+#Export to excel file
+gem 'rubyzip', '~> 1.1.0'
+gem 'axlsx', '2.1.0.pre'
+gem 'axlsx_rails'

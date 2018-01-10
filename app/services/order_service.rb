@@ -223,6 +223,76 @@ class OrderService
     ["Success", nil, shop_statistics_data, total_revenue, total_profit, shop, duration]
   end
 
+  def self.check_order_available order_list
+    order_list_id = order_list.pluck(:id)
+    product_info_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity, orders.id AS order_id
+      FROM
+      (((shops JOIN orders ON shops.id = orders.shop_id)
+      JOIN line_items ON orders.id = line_items.order_id)
+      JOIN products ON products.id = line_items.product_id)
+      WHERE orders.id IN #{order_list_id.to_s.gsub("[", "(").gsub("]", ")")}
+      GROUP BY products.sku, orders.id
+      ORDER BY total_quantity desc"
+
+    product_info_result = Product.find_by_sql(product_info_sql)
+
+    product_sku_array = product_info_result.pluck(:sku)
+
+    inventory_by_product_sql = "SELECT products.sku, SUM(inventories.quantity) as total_quantity
+      FROM (products JOIN inventories ON products.id = inventories.product_id)
+      WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
+      GROUP BY products.sku"
+
+
+    inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
+
+    orders_available_id = []
+    orders_unavailabe_id = []
+    product_info_result.each do |product|
+      product_in_inventory = inventory_by_product_result.select{|a| a.sku == product.sku}.first
+      if product_in_inventory.present? && product.total_quantity < product_in_inventory.try(:total_quantity).to_i
+        orders_available_id << product.order_id
+        product_in_inventory.total_quantity - product.total_quantity
+      else
+        orders_unavailabe_id << product.order_id
+      end
+    end
+
+    orders_available_id = orders_available_id.uniq - orders_unavailabe_id.uniq
+    orders_available = Order.where(id: orders_available_id)
+    orders_unavailabe_id = Order.where(id: orders_unavailabe_id.uniq)
+    [orders_available, orders_unavailabe_id]
+  end
+
+  def self.download_orders order_list_id
+    orders = Order.where(id: order_list_id)
+    excel = Axlsx::Package.new do |p|
+              p.workbook.add_worksheet(name: "Orders") do |sheet|
+                sheet.add_row ["Order ID", "Products"]
+                orders.each do |order|
+                  info = product_info(order)
+                  sheet.add_row [order.id, info], height: 50
+                end
+              end
+            end
+    out_file = File.new(File.join(Dir.pwd, "/excel_file/Orders_#{Time.zone.now}.xlsx"), "w")
+    out_file.write(excel.to_stream.read)
+    out_file.close
+    out_file.path
+  end
+
+  def self.product_info order
+    info = ""
+    order.line_items.each do |item|
+      product_sku = item.product.sku
+      line_item_sku = item.sku
+      quantity = item.quantity
+      product_name = item.product.name
+      info << "Product Name: #{product_name} SKU: #{product_sku} (#{line_item_sku}), Quantity: #{quantity}" + "\n"
+    end
+    return info
+  end
+
   private
     def generate_invoice_for_orders user, amount, orders, memo, balance
       invoice = Invoice.create(
@@ -242,4 +312,6 @@ class OrderService
     def fulfillment_service
       @fulfillment_service ||= FulfillmentService.new
     end
+
+
 end
