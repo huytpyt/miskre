@@ -16,8 +16,9 @@ class Api::V1::OrdersController < Api::V1::BaseController
     financial_status = params[:financial_status].to_s
     fulfillment_status = params[:fulfillment_status].to_s
     shop_id = params[:shop_id] || nil
+    option = params[:option] || nil
     render json: OrdersQuery.list(page, per_page, sort, order_by, search, key,
-      shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource), status: 200
+      shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option), status: 200
   end
 
   def show
