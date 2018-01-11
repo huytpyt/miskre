@@ -183,7 +183,6 @@ class ShopifyCommunicator
         product.images.each do  |image|
           supply_image = supply.images.new(file: ORIGINAL_URL + image.file.url)
           supply_image.save
-          p "save image"
         end
         product.variants.each do |variant|
           variant_image = variant.images&.first
