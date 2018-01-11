@@ -181,8 +181,9 @@ class ShopifyCommunicator
       supply.copy_product_attr_add_product
       if supply.save
         product.images.each do  |image|
-          supply_image = supply.images.new(file: ORIGINAL_URL+ image.file.url)
+          supply_image = supply.images.new(file: ORIGINAL_URL + image.file.url)
           supply_image.save
+          p "save image"
         end
         product.variants.each do |variant|
           variant_image = variant.images&.first
