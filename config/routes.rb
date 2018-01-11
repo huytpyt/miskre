@@ -175,6 +175,7 @@ Rails.application.routes.draw do
             resource :session
             post :add_balance
             post :add_balance_manual
+            post :refund_balance
             post :request_charge_orders
           end
         end

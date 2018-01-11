@@ -14,7 +14,7 @@ class UserService
   def self.add_new_balance params, user
     amount = params[:amount].to_f
     if amount <= 0
-      errors = "Amount must me greater than 0"
+      errors = "Amount must be greater than 0"
       return ["Failed", amount, user, errors, user.balance.total_amount]
     end
 
@@ -55,37 +55,85 @@ class UserService
       end
       return [@response_result.status, amount, user, nil, user.reload.balance.total_amount]
     rescue Exception => e
-      return [@response_result.status, amount, user, e.message.to_s, user.balance.total_amount]
+      return [@response_result.status, amount, user, e.message.to_s, user.balance&.total_amount]
     end
   end
 
-  def self.add_balance_manual params, user
+  def self.add_balance_manual params
+    user = User.find_by_id params[:user_id]
     amount = params[:amount].to_f
     if amount <= 0
-      errors = "Amount must me greater than 0"
-      return ["Failed", amount, user, errors, user.balance.total_amount]
+      errors = "Amount must be greater than 0"
+      return ["Failed", amount, user, errors, user&.balance&.total_amount]
     end
 
-    ActiveRecord::Base.transaction do
-      if user.balance.blank?
-        new_balance = Balance.new(
-          total_amount: amount
-        )
-        new_balance.lock!
-        user.balance = new_balance
+    unless user.present?
+      errors = "User not present"
+      return ["Failed", amount, user, errors, nil]
+    else
+      unless user.user?
+        errors = "User don't have balance"
+        return ["Failed", amount, user, errors, nil]
       else
-        @user_balance = user.balance
-        @user_balance.lock!
-        @user_balance.total_amount += amount
-        @user_balance.save!
-      end
-      if user.save!
-        invoice = generate_invoice(user, amount, "Added from admin", user.balance, "transfer")
+        ActiveRecord::Base.transaction do
+          if user.balance.blank?
+            new_balance = Balance.new(
+              total_amount: amount
+            )
+            new_balance.lock!
+            user.balance = new_balance
+          else
+            @user_balance = user.balance
+            @user_balance.lock!
+            @user_balance.total_amount += amount
+            @user_balance.save!
+          end
+          if user.save!
+            invoice = generate_invoice(user, amount, "Added from admin", user.balance, "transfer")
+          end
+        end
+        return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
       end
     end
-    return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
   rescue Exception => e
-    return ["Failed", amount, user, e.message.to_s, user.balance.total_amount]
+    return ["Failed", amount, user, e.message.to_s, user&.balance&.total_amount]
+  end
+
+  def self.refund_balance params
+    user = User.find_by_id params[:user_id]
+    amount = params[:amount].to_f
+    if amount <= 0
+      errors = "Amount must be greater than 0"
+      return ["Failed", amount, user, errors, user&.balance&.total_amount]
+    end
+
+    unless user.present?
+      errors = "User not present"
+      return ["Failed", amount, user, errors, nil]
+    else
+      unless user.user?
+        errors = "User don't have balance"
+        return ["Failed", amount, user, errors, nil]
+      else
+        ActiveRecord::Base.transaction do
+          if user.balance.blank?
+            errors = "User don't have balance"
+            return ["Failed", amount, user, errors, nil]
+          else
+            @user_balance = user.balance
+            @user_balance.lock!
+            @user_balance.total_amount += amount
+            @user_balance.save!
+          end
+          if user.save!
+            invoice = generate_invoice(user, amount, "Refunded from admin", user.balance, "refund")
+          end
+        end
+        return ["Succeeded", amount, user, nil, user.reload.balance.total_amount]
+      end
+    end
+  rescue Exception => e
+    return ["Failed", amount, user, e.message.to_s, user&.balance&.total_amount]
   end
 
   def self.request_charge_orders order_list_id, user
