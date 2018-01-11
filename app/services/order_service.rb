@@ -265,11 +265,12 @@ class OrderService
   end
 
   def self.download_orders order_list_id
+    order_list_id = JSON.parse(order_list_id)
     orders = Order.where(id: order_list_id)
     excel = Axlsx::Package.new do |p|
               p.workbook.add_worksheet(name: "Orders") do |sheet|
                 sheet.add_row ["Order ID", "Products"]
-                orders.each do |order|
+                orders.includes(:line_items).each do |order|
                   info = product_info(order)
                   sheet.add_row [order.id, info], height: 50
                 end
