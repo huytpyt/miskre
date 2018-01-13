@@ -179,7 +179,7 @@ class ShopifyCommunicator
         supply.copy_product_attr_add_product
         if supply.save
           ProductService.delay.sync_images(product, supply)
-          ProductService.delay.assign(@shop, new_product, product, supply)
+          ProductService.assign(@shop, new_product, product, supply)
         end
       end
     end
