@@ -5,24 +5,22 @@ class SuppliesController < ApplicationController
   end
 
   def update
-    respond_to do |format|
-      @supply.attributes = supply_params
-      if @supply.price_changed? || @supply.compare_at_price_changed?
-        @supply.supply_variants.each do | variant|
-          variant.update(price: @supply.price, compare_at_price: @supply.compare_at_price)
+    @supply.attributes = supply_params
+    if @supply.price_changed? || @supply.compare_at_price_changed?
+      @supply.supply_variants.each do | variant|
+        variant.update(price: @supply.price, compare_at_price: @supply.compare_at_price)
+      end
+    end
+    if @supply.update(supply_params)
+      if params[:supply][:images]
+        params[:supply][:images].each do |img|
+          @supply.images.create(file: img)
         end
       end
-      if @supply.update(supply_params)
-        if params[:supply][:images]
-          params[:supply][:images].each do |img|
-            @supply.images.create(file: img)
-          end
-        end
-        JobsService.delay.sync_this_supply @supply.id
-        format.html { redirect_to edit_supply_path(@supply), notice: 'Product was successfully updated.' }
-      else
-        format.html { render :edit }
-      end
+      JobsService.delay.sync_this_supply @supply.id
+      redirect_to edit_supply_path(@supply), notice: 'Product was successfully updated.'
+    else
+      render :edit
     end
   end
 

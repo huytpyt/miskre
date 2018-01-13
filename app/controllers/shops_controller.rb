@@ -8,7 +8,7 @@ class ShopsController < ApplicationController
   end
 
   def show
-    supplies = @shop.supplies.where(is_deleted: false)
+    supplies = @shop.supplies.where(is_deleted: false).includes(product: :images)
     @supplies = params[:search].present? ? supplies.search(params[:search]) : supplies
     @supplies = @supplies.page(params[:page])
     @global_settting = @shop.global_setting_enable
