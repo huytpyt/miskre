@@ -26,6 +26,23 @@ class Api::V1::OrdersController < Api::V1::BaseController
     render json: OrdersQuery.single(order), status: 200
   end
 
+  def find_shopify_order
+    shopify_id = params[:shopify_id]
+    order = Order.find_by_shopify_id shopify_id
+    if order
+      render json: OrdersQuery.single(order), status: 200
+    else
+      render json: { errors: "Can not find order with shopify_id: #{shopify_id}"}, status: 200
+    end
+  end
+
+  def fulfill_order
+    order_id = params[:order_id]
+    tracking_number = params[:tracking_number]
+    result, errors = OrderService.new.create_fulfillment_for_order(order_id, tracking_number)
+    render json: { result: result, errors: errors }, status: 200
+  end
+
   def accept_charge_orders
     if current_user.staff?
       request_charge_id = params["request_charge_id"]

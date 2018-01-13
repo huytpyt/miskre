@@ -59,10 +59,6 @@ class OrderService
           request_charge.approved!
           order_list.update_all(paid_for_miskre: true)
           generate_invoice_for_orders(user, -amount_must_paid, order_list, "", new_user_balance)
-          # eval(tracking_number_array).each do |tracking_info|
-          #   result, error = create_fulfillment_for_order(tracking_info[:order_id].to_i, tracking_info[:tracking_number].to_s)
-          #   raise ActiveRecord::Rollback if error.present?
-          # end
         else
           @error << "This account does not have enough balance"
         end
@@ -124,13 +120,48 @@ class OrderService
           items: items_name_array)
 
         order.update(fulfillment_status: "fulfilled")
+
         fulfillment_service.update_line_items order
+
+        calculate_inventory_quantity(order)
+
         return { result: "Success", error: nil}
       else
         return { result: "Failed", error: "Fulfilled"}
       end
     end
     return { result: "Failed", error: "Can not find order with id #{order_id}"}
+  end
+
+  def calculate_inventory_quantity order
+    product_info_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      FROM
+      (((shops JOIN orders ON shops.id = orders.shop_id)
+      JOIN line_items ON orders.id = line_items.order_id)
+      JOIN products ON products.id = line_items.product_id)
+      WHERE orders.id = #{order.id}
+      GROUP BY products.sku
+      ORDER BY total_quantity desc"
+
+    product_info_result = Order.find_by_sql(product_info_sql)
+
+    product_info_result.each do |product|
+      inventories = Product.find_by_sku(product.sku).inventories
+      quantity_must_fulfill = product.total_quantity
+
+      inventories.in_stock.each do |inventory|
+        if !quantity_must_fulfill.zero?
+          if quantity_must_fulfill > inventory.quantity
+            quantity_must_fulfill -= inventory.quantity
+            inventory.quantity = 0
+          else
+            inventory.quantity -= quantity_must_fulfill
+            quantity_must_fulfill = 0
+          end
+        end
+        inventory.save
+      end
+    end
   end
 
   def order_statistics duration

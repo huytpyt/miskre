@@ -221,6 +221,8 @@ Rails.application.routes.draw do
           post :order_statistics
           post :shop_statistics
           post :download_orders, format: 'xlsx'
+          post :fulfill_order
+          get :find_shopify_order
         end
       end
       resources :request_charges
