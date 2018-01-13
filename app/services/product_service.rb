@@ -1,4 +1,85 @@
 class ProductService
+  def self.sync_images product, supply
+    product.images.each do |image|
+      supply_image = supply.images.new(file: ORIGINAL_URL + image.file.url)
+      supply_image.save
+      sleep 0.5
+    end
+    product.variants.each do |variant|
+      variant_image = variant.images&.first
+      supply_variant = supply.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
+      if supply_variant.save
+        if variant_image
+          supply_variant_image = supply_variant.images.new(file: ORIGINAL_URL + variant_image.file.url)
+          supply_variant_image.save
+          sleep 0.5
+        end
+      end
+    end
+  end
+
+  def self.assign(shop, shopify_product, product, supply)
+    shopify_product.title = product.name
+    shopify_product.vendor = shop.shopify_domain
+    shopify_product.body_html = product.desc
+    shopify_product.images = product.images.collect do |i|
+      { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
+      raw_content = Paperclip.io_adapters.for(i.file).read
+      encoded_content = Base64.encode64(raw_content)
+      { "attachment" => encoded_content }
+    end
+
+    variants = []
+    unless product.variants.empty?
+      shopify_product.options = product.options.collect do |o|
+        { "name" => o.name.capitalize }
+      end
+      variants = product.variants.collect do |v|
+        {
+          'option1': v.option1,
+          'option2': v.option2,
+          'option3': v.option3,
+          'weight': product.weight,
+          'weight_unit': 'g',
+          'compare_at_price': v.compare_at_price,
+          'price': v.price,
+          'sku': v.sku
+        }
+      end
+    else
+      variants = [{
+        'weight': product.weight,
+        'weight_unit': 'g',
+        'price': product.suggest_price,
+        'compare_at_price': product.compare_at_price,
+        'sku': product.sku
+      }]
+    end
+    shopify_product.variants = variants
+    success = shopify_product.save
+    if success == true
+      supply.update(shopify_product_id: shopify_product.id)
+      unless product.variants.empty?
+        product.variants.each do |v|
+          unless v.images.empty?
+            shopify_v = shopify_product.variants.find {|sv| sv.sku == v.sku}
+
+            img = v.images.first
+            raw_content = Paperclip.io_adapters.for(img.file).read
+            encoded_content = Base64.encode64(raw_content)
+
+            image_params = {
+              "variant_ids" => [shopify_v.id],
+              "attachment" => encoded_content,
+              "filename" => img.file_file_name
+            }
+            shopify_img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
+            shopify_img.save
+          end
+        end
+      end
+    end
+  end
 
   def self.variant_name product_name, variant
     "#{product_name}#{variant.option1.present? ? ' - ' + variant.option1 : ''}#{variant.option2.present? ? ' - ' + variant.option2 : ''}#{variant.option3.present? ? ' - ' + variant.option3 : ''}"
