@@ -183,7 +183,6 @@ class ShopifyCommunicator
         end
       end
     end
-
   end
 
   def sync_product(supply_id)
