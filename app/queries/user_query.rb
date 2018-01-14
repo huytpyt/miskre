@@ -12,13 +12,25 @@ class UserQuery < BaseQuery
     }
   end
 
-  def self.add_balance_manual params, user
-    response_result, amount, user, errors, current_balance = UserService.add_balance_manual(params, user)
+  def self.add_balance_manual params
+    response_result, amount, user, errors, current_balance = UserService.add_balance_manual(params)
     {
       status: response_result,
       amount: amount,
-      user_id: user.id,
-      email: user.email,
+      user_id: user&.id,
+      email: user&.email,
+      errors: errors,
+      current_balance: current_balance
+    }
+  end
+
+  def self.refund_balance params
+    response_result, amount, user, errors, current_balance = UserService.refund_balance(params)
+    {
+      status: response_result,
+      amount: amount,
+      user_id: user&.id,
+      email: user&.email,
       errors: errors,
       current_balance: current_balance
     }
