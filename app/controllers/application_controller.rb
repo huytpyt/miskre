@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   before_action :authenticate_user!
-  before_action :set_current_shop
+  before_action :set_current_shop, :check_user_active
 
   # untill december
   # before_action :check_paid_monthly
@@ -25,6 +25,18 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def check_user_active
+    if user_signed_in?
+      if params[:controller] == "users/sessions" && params[:action] == "destroy"
+        return
+      end
+      unless current_user.active == true
+        redirect_to user_signout_path
+        return
+      end
+    end
+  end
 
   def check_paid_monthly
     if user_signed_in?

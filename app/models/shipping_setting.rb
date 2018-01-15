@@ -17,7 +17,7 @@
 #
 # Foreign Keys
 #
-#  shipping_settings_user_shipping_type_id_fkey  (user_shipping_type_id => user_shipping_types.id)
+#  fk_rails_...  (user_shipping_type_id => user_shipping_types.id)
 #
 
 class ShippingSetting < ApplicationRecord
