@@ -177,6 +177,7 @@ Rails.application.routes.draw do
             post :add_balance_manual
             post :refund_balance
             post :request_charge_orders
+            post :accept_new_product
           end
         end
       end
@@ -189,6 +190,12 @@ Rails.application.routes.draw do
         collection do
           get :money_logs
           get :product_logs
+        end
+      end
+      resources :user_products do
+        collection do
+          post :accept_with_matched_product
+          post :accept_as_new_product
         end
       end
       resources :payments, only: [] do

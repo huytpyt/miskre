@@ -24,6 +24,7 @@
 #  enable_ref             :boolean          default(FALSE)
 #  name                   :text
 #  fb_link                :text
+#  active                 :boolean          default(TRUE)
 #
 # Indexes
 #

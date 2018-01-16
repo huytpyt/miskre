@@ -44,6 +44,11 @@ class Api::V1::UsersController < Api::V1::BaseController
     render json: { result: result, errors: errors, user: user }, status: 200
   end
 
+  def accept_new_product
+    UserService.accept_new_product(params[:shopify_product_id])
+    render json: { result: "Success"}, status: 200
+  end
+
   private
     def get_user
       @user = current_resource
