@@ -85,4 +85,14 @@ class UserProduct < ApplicationRecord
     beus_us_cost = CarrierService.cal_cost(shipping_type, weight).to_f
     (0.2 * beus_us_cost).round(2)
   end
+
+  def self.search search
+    if search
+        where("lower(sku) LIKE :search OR lower(user_products.desc) LIKE :search
+         OR lower(shopify_product_id) LIKE :search
+         OR lower(name) LIKE :search", { search: "%#{search.downcase}%" })
+    else
+      scoped
+    end
+  end
 end

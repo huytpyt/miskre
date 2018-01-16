@@ -204,6 +204,12 @@ class UserService
     end
   end
 
+  def self.accept_new_product shopify_product_id
+    supply = Supply.find_by_shopify_product_id shopify_product_id
+    supply.is_deleted = false
+    supply.save
+  end
+
   private
     def self.generate_invoice user, amount, memo, balance, invoice_type
       invoice = Invoice.create(
