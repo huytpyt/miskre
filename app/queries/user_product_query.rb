@@ -3,7 +3,7 @@ class UserProductQuery < BaseQuery
   def self.list(page = 1, per_page = 12, sort, order_by, search)
     user_products = UserProduct.all
     sort_options =  { "#{order_by}" => sort }
-    paginate = api_paginate(user_products.order(sort_options).search(search), page).per(per_page)
+    paginate = api_paginate(user_products.includes(:images).order(sort_options).search(search), page).per(per_page)
     {
       paginator: {
         total_records: paginate.total_count,
