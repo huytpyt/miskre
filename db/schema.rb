@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180115035802) do
+ActiveRecord::Schema.define(version: 20180116132146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -217,16 +217,17 @@ ActiveRecord::Schema.define(version: 20180115035802) do
     t.string   "color"
     t.string   "size"
     t.integer  "shop_id"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
     t.string   "shopify_id"
     t.string   "financial_status"
     t.string   "fulfillment_status"
-    t.boolean  "paid_for_miskre",    default: false
+    t.boolean  "paid_for_miskre",      default: false
     t.integer  "invoice_id"
     t.integer  "request_charge_id"
     t.string   "order_name"
     t.string   "country_code"
+    t.string   "tracking_number_real"
     t.index ["shop_id"], name: "index_orders_on_shop_id", using: :btree
     t.index ["shopify_id"], name: "index_orders_on_shopify_id", using: :btree
   end

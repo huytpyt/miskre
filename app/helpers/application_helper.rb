@@ -20,6 +20,10 @@ module ApplicationHelper
      ['Partially fulfilled', 'partial']]
   end
 
+  def tracking_number_option
+    [['None', 'none']]
+  end
+
   def billing_options
     [['Pending', 'pending'], ['Paid', 'paid'], ['Refunded', 'refunded']]
   end

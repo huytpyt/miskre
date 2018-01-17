@@ -180,9 +180,10 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :tracking_informations do
+      resources :tracking_informations, only: [] do
         collection do
-          post :fetch_new_tracking_info
+          get :fetch_new_tracking_info
+          get :show_info
         end
       end
       resources :audits do

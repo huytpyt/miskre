@@ -1,4 +1,33 @@
 class FulfillmentService
+
+  # New system no need fulfill_for_order
+  def fulfill_for_order order
+    tracking_number = generate_tracking_number(order.country_code)
+    while Fulfillment.exists?(tracking_number: tracking_number)
+      tracking_number = generate_tracking_number(order.country_code)
+    end
+    tracking_url = TRACKING_URL + "?orderNo=" + order.shopify_id
+
+    new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, 
+      tracking_number: tracking_number, 
+      tracking_url: tracking_url, 
+      tracking_company: TRACKING_COMPANY
+    )
+    if new_fulfilllment.save
+      order.fulfillments.create(
+        shopify_order_id: order.shopify_id, 
+        fulfillment_id: new_fulfilllment.id, 
+        status: "success", 
+        service: "manual", 
+        tracking_company: TRACKING_COMPANY, 
+        tracking_number: tracking_number,
+        tracking_url: tracking_url, 
+        items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
+      )
+      order.update(fulfillment_status: "fulfilled", tracking_number_real: "none")
+    end
+  end
+
   def update_line_items order
     order.line_items.each do |line_item|
       line_item.update(fulfillable_quantity: 0)
@@ -49,5 +78,11 @@ class FulfillmentService
       end
       quantity_index += 1
     end
+  end
+
+  private 
+
+  def generate_tracking_number country
+    "MK" + rand(100000000..999999999).to_s + country
   end
 end
