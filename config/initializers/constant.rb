@@ -1,4 +1,4 @@
-TRACKING_URL = "https://tracking.miskre.com/"
+TRACKING_URL = "https://track.miskre.com/"
 TRACKING_COMPANY = "MISKRE"
 UNDEFINED = "undefined"
 TIME_FORMAT = "%Y-%m-%d 00:00:00"

@@ -283,7 +283,7 @@ class ProductService
     product = Product.find_by_sku(sku&.first(3))
     if product.present?
       fulfillable_quantity = (product&.fulfillable_quantity || 0) - quantity.to_i
-      product.update(fulfillable_quantity: fulfillable_quantity)
+      product.update_column(:fulfillable_quantity, fulfillable_quantity)
     end
   end
 
@@ -291,7 +291,7 @@ class ProductService
     product = Product.find_by_sku(sku&.first(3))
     if product.present?
       fulfillable_quantity = (product&.fulfillable_quantity || 0) + quantity.to_i
-      product.update(fulfillable_quantity: fulfillable_quantity)
+      product.update_column(:fulfillable_quantity, fulfillable_quantity)
     end
   end
 
