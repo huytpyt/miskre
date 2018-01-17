@@ -1,0 +1,73 @@
+doctype html
+html
+  head
+    meta charset="utf-8" /
+    meta content="width=device-width, initial-scale=1.0, user-scalable = no" name="viewport" /
+    meta content="yes" name="apple-mobile-web-app-capable" /
+    meta content="Miskre" name="apple-mobile-web-app-title" /
+    meta content="black" name="apple-mobile-web-app-status-bar-style" /
+    link href="/icon.png" rel="apple-touch-icon" /
+    link href="/launch.png" rel="apple-touch-startup-image" /
+    link href="/favicon.ico" rel=("shortcut icon") type="image/x-icon" /
+    link href="/favicon.ico" rel="icon" type="image/x-icon" /
+    title Tracking - Miskre
+    = stylesheet_link_tag "tracking_information"
+  body
+    .top-bar
+      .ctn
+        .rw
+          .cl
+            h1
+              | Hi,&nbsp;
+              strong> = [@order.first_name, @order.last_name].join(" ")
+    .ctn
+      .rw
+        .cl.md-8
+          .content
+            .confirmation
+              h2.title Your order has been processed and shipment is confirmed.
+              .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
+            .code
+              h2.type = @fulfillment&.tracking_company
+              .number = @fulfillment&.tracking_number
+            ul.timeline
+              - if @fulfillment.present?
+                -  @tracking_information[:tracking_history].sort_by{|hash| hash["checkpoint_time"]}.each do |infomation|
+                  li.date = infomation["checkpoint_time"].to_date
+                  li.done
+                    .time = DateTime.parse(infomation["checkpoint_time"]).strftime("%I:%M%p")
+                    .position = infomation["location"].presence || @fulfillment.tracking_company
+                    .status = infomation["message"]
+
+        .cl.md-4
+          .side-bar
+            .customer-information.side-block
+              .title Customer Information
+              dl.information
+                dt Shipping Address
+                dd
+                  .name = [@order.first_name, @order.last_name].join(" ")
+                  .address
+                    = @order.ship_address1
+                    br
+                    = @order.ship_city
+                    br
+                    = @order.ship_state
+                    br
+                    = @order.ship_country
+                    br
+                    = @order.ship_phone
+                dt Shipping Method
+                dd = @fulfillment&.tracking_company
+            .order-number.side-block
+              .title = "Order ##{@order.id}"
+              ul.orders
+                -if @products.present?
+                  - @products.each do |item|
+                    li
+                      .image
+                        img src="#{item[:images].first[:original]}"
+                      .info
+                        a.name href="#" target="_blank" = item[:item_name]
+                        .amount = item[:quantity]
+

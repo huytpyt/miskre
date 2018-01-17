@@ -15,7 +15,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_nation_id => user_nations.id)
+#  user_shipping_types_user_nation_id_fkey  (user_nation_id => user_nations.id)
 #
 
 class UserShippingType < ApplicationRecord

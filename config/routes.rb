@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/orderNo=:id', to: 'tracking_informations#show'
+
   resources :nations do
     collection do
       get 'sync_shipping', to: "nations#sync_shipping"
