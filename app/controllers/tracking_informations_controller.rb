@@ -1,12 +1,27 @@
 class TrackingInformationsController < ActionController::Base
   def show
-    @order = Order.find params[:id]
-    @fulfillment = @order.fulfillments.first
-    if @fulfillment.present?
-      @tracking_information = @fulfillment.tracking_information
-      @tracking_information = TrackingInformationQuery.single(@tracking_information, @order)
-      @products = @order.line_items.includes(product: :images).includes(product: :options).includes(product: :variants)
-        .map{|item| ProductsQuery.single_for_list(item.product).merge!({ quantity: item.quantity}).merge!({item_name: item.name})}
+    @order = Order.find_by_shopify_id params[:id]
+    if @order
+      @success = true
+      @fulfillment = @order.fulfillments.first
+      if @fulfillment.present?
+        @tracking_information = @fulfillment.tracking_information
+        @tracking_information = TrackingInformationQuery.single(@tracking_information, @order)
+        @products = @order.line_items.map{|item| {image: find_image(item.sku), quantity: item.quantity, item_name: item.name}}
+      end
+    else
+      @success = false
     end
+  end
+
+  private
+
+  def find_image sku
+    if sku.length == 3
+      image = Product.find_by_sku(sku)&.images&.first
+    elsif sku.length == 6
+      image = Variant.find_by_sku(sku)&.images&.first
+    end
+    image
   end
 end

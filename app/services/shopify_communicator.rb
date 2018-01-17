@@ -157,7 +157,7 @@ class ShopifyCommunicator
 
   def add_line_items(order, line_items)
     line_items.each do |li|
-      product_id =  Product.find_by_sku(li.sku)&.id
+      product_id =  Product.find_by_sku(li.sku.first(3))&.id
       li_params = {
         product_id: product_id,
         quantity: li.quantity,
