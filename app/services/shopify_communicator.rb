@@ -141,7 +141,11 @@ class ShopifyCommunicator
                 )
                 unless order.fulfillments.present?
                   if order.financial_status == "paid"
-                    FulfillmentService.new.fulfill_for_order order
+                    begin
+                      FulfillmentService.new.fulfill_for_order order
+                    rescue
+                      p "#{order.id} Can't fulfill"
+                    end
                   end
                 end
               end
