@@ -3,10 +3,14 @@ class FetchTrackingInfo
   include Sidekiq::Worker
 
   def perform
-    TrackingInformation.pluck(:id).each do |id|
-      sleep(3)
-      p "start fetch"
-      TrackingInformationService.fetch_tracking_information(id)
+    TrackingInformation.all.each do |tracking|
+      tracking_real = tracking&.fulfillment&.order&.tracking_number_real
+      if tracking_real.present?
+      	unless tracking_real == "none"
+      	  p "start fetch"
+  	      TrackingInformationService.fetch_tracking_information(tracking)
+      	end
+      end
     end
   end
 end

@@ -35,9 +35,6 @@ class Fulfillment < ApplicationRecord
                   tracking_number: self.tracking_number
                 )
     tracking.tracking_history = tracking_history
-    if self.tracking_number.present? && tracking.new_record?
-      AfterShip::V4::Tracking.create(self.tracking_number, {name: self.tracking_number})
-    end
     tracking.save!
   end
 end

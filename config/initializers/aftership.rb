@@ -1,1 +1,1 @@
-AfterShip.api_key = '2a7a844d-b973-4e9b-a1bb-ab23972069c8'
+AfterShip.api_key = '5ca9f5dc-2a33-4d0f-8a72-b59b9bbb85ae'
