@@ -6,7 +6,7 @@ class FulfillmentService
     while Fulfillment.exists?(tracking_number: tracking_number)
       tracking_number = generate_tracking_number(order.country_code)
     end
-    tracking_url = TRACKING_URL + "orderNo=" + order.shopify_id
+    tracking_url = Settings.tracking_url + "orderNo=" + order.shopify_id
 
     new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, 
       tracking_number: tracking_number, 

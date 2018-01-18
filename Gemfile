@@ -103,3 +103,5 @@ gem 'stripe', '~> 3.3', '>= 3.3.1'
 gem 'audited', '~> 4.2', '>= 4.2.1'
 # Tracking logistic
 gem "aftership", "~> 4.3.1"
+# Manage multi-environment settings
+gem 'config', '~> 1.4'
