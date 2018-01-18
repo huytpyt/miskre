@@ -29,7 +29,7 @@ html
                 h2.title Your order has been processed and shipment is confirmed.
                 .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
               .code
-                h2.type = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize
+                h2.type = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
                 .number = @fulfillment&.tracking_number
               ul.timeline
                 - if @fulfillment.present?
@@ -61,7 +61,7 @@ html
                       br
                       = @order.ship_phone
                   dt Shipping Method
-                  dd = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize
+                  dd = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
               .order-number.side-block
                 .title = "Order ##{@order.id}"
                 ul.orders
