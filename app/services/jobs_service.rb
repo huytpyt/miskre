@@ -2,14 +2,22 @@ class JobsService
   def self.fulfillment billing
     Shop.all.each do |shop|
       p shop.name
-      communicator = ShopifyCommunicator.new(shop.id)
-      communicator.sync_fulfillments(billing)
+      begin
+        communicator = ShopifyCommunicator.new(shop.id)
+        communicator.sync_fulfillments(billing)
+      rescue
+        p "This shop already removed"
+      end
     end
   end
 
   def self.add_product shop_id, product_id
-    communicator = ShopifyCommunicator.new(shop_id)
-    communicator.add_product(product_id)
+    begin
+      communicator = ShopifyCommunicator.new(shop_id)
+      communicator.add_product(product_id)
+    rescue
+      p "This shop already removed"
+    end
   end
 
   def self.sync_product product_id
@@ -24,8 +32,12 @@ class JobsService
   def self.sync_supply supply_id
     supply = Supply.find_by_id(supply_id)
     if supply.present?
-      c = ShopifyCommunicator.new(supply.shop_id)
-      c.sync_product(supply_id)
+      begin
+        c = ShopifyCommunicator.new(supply.shop_id)
+        c.sync_product(supply_id)
+      rescue
+        p "This shop already removed"
+      end
     end
   end
 
@@ -36,7 +48,7 @@ class JobsService
         c = ShopifyCommunicator.new(supply.shop_id)
         c.sync_supply(supply_id)
       rescue
-        p "This shop should be upgrade"
+        p "This shop already removed"
       end
     end
   end
@@ -46,7 +58,7 @@ class JobsService
       c = ShopifyCommunicator.new(shop_id)
       c.remove_product(shopify_product_id)
     rescue
-      p "This shop should be upgrade"
+      p "This shop already removed"
     end
   end
 
