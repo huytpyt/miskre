@@ -86,9 +86,12 @@ class ShopService
 
   def self.sync_orders
     Shop.all.each do |shop|
-      p shop.name
-      communicator = ShopifyCommunicator.new(shop.id)
-      communicator.sync_orders(60.days.ago, DateTime.now)
+      begin
+        communicator = ShopifyCommunicator.new(shop.id)
+        communicator.sync_orders
+      rescue
+        p "This shop already removed"
+      end
     end
   end
 
