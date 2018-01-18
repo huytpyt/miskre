@@ -141,7 +141,7 @@ class ShopifyCommunicator
                 )
                 unless order.fulfillments.present?
                   if order.financial_status == "paid"
-                    FulfillmentService.new.fulfill_for_order new_order
+                    FulfillmentService.new.fulfill_for_order order
                   end
                 end
               end
