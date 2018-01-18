@@ -5,6 +5,7 @@ class FetchTrackingInfo
   def perform
     TrackingInformation.pluck(:id).each do |id|
       sleep(3)
+      p "start fetch"
       TrackingInformationService.fetch_tracking_information(id)
     end
   end

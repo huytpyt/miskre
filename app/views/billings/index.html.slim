@@ -32,11 +32,13 @@ p#notice
             th Fulfillment ID
             th Tracking Company
             th Tracking Number
+            - if current_user.staff?
+              th Real Tracking Number
             th Tracking URL
             th Total Cost
         tbody
           - total_money = 0
-          - @billings_orders.each do |order|
+          - @billings_orders.includes(shop: :user).each do |order|
             - fulfillment = order.fulfillments&.first
             - order_money = @order_service.sum_money_from_order(order)
             - total_money += order_money
@@ -47,6 +49,8 @@ p#notice
               td = fulfillment.fulfillment_id || (link_to("Try Fulfill", retry_fulfill_billings_path(order.shop.id, fulfillment&.id)) if fulfillment.present?)
               td = fulfillment&.tracking_company
               td = fulfillment&.tracking_number
+              - if current_user.staff?
+                td = order.tracking_number_real
               td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"
               td = number_to_currency order_money, precision: 0, unit: "$", format: "%u%n"
       b Total money 

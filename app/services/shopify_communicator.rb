@@ -36,6 +36,7 @@ class ShopifyCommunicator
       ship_state: o.shipping_address.province,
       ship_zip: o.shipping_address.zip,
       ship_country: o.shipping_address.country,
+      country_code: o.shipping_address.country_code,
       ship_phone: o.shipping_address.phone,
       email: o.customer.email,
       financial_status: o.financial_status,
@@ -112,6 +113,10 @@ class ShopifyCommunicator
                   new_order = @shop.orders.new(order_params)
                   if new_order.save
                     add_line_items(new_order, select_items)
+                    # New system no need
+                    if new_order.financial_status == "paid"
+                      FulfillmentService.new.fulfill_for_order new_order
+                    end
                   end
                 rescue NoMethodError => e
                   p 'invalid order'
@@ -132,7 +137,13 @@ class ShopifyCommunicator
                   ship_phone: o.shipping_address.phone,
                   email: o.customer.email,
                   financial_status: o.financial_status,
-                  order_name: o.name)
+                  order_name: o.name
+                )
+                unless order.fulfillments.present?
+                  if order.financial_status == "paid"
+                    FulfillmentService.new.fulfill_for_order new_order
+                  end
+                end
               end
             end
           end
@@ -146,7 +157,7 @@ class ShopifyCommunicator
 
   def add_line_items(order, line_items)
     line_items.each do |li|
-      product_id =  Product.find_by_sku(li.sku)&.id
+      product_id =  Product.find_by_sku(li.sku.first(3))&.id
       li_params = {
         product_id: product_id,
         quantity: li.quantity,

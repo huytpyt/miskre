@@ -15,7 +15,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  user_nations_user_id_fkey  (user_id => users.id)
 #
 
 class UserNation < ApplicationRecord

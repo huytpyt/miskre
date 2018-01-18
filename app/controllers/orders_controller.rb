@@ -101,7 +101,7 @@ class OrdersController < ApplicationController
     @end_date = params[:end_date]&.to_date || Date.current
     @financial_status = params[:financial_status].to_s
     @fulfillment_status = params[:fulfillment_status].to_s
-
+    @tracking_number_real = params[:tracking_number_real].to_s
     query_params = {}
     if @fulfillment_status == "null"
       query_params['fulfillment_status'] = nil
@@ -109,7 +109,7 @@ class OrdersController < ApplicationController
       query_params['fulfillment_status'] = @fulfillment_status unless @fulfillment_status.empty?
     end
     query_params['financial_status'] = @financial_status unless @financial_status.empty?
-
+    query_params['tracking_number_real'] = @tracking_number_real unless @tracking_number_real.empty?
     if params[:shop_id] && params[:shop_id] != ""
       begin
         @current_shop = Shop.find(params[:shop_id])

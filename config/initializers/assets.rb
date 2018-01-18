@@ -29,4 +29,5 @@ Rails.application.config.assets.precompile += %w(
   Tween.js
   globe.js
   welcome.js
+  tracking_information.css
 )

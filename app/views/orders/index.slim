@@ -28,6 +28,13 @@
           = select_tag :fulfillment_status,
             options_for_select(fulfillment_options, @fulfillment_status),
             include_blank: true
+      - if current_user.staff?
+        .columns.large-2
+          label
+            | Real Tracking Number
+            = select_tag :tracking_number_real,
+              options_for_select(tracking_number_option, @tracking_number_real),
+              include_blank: true
       .columns.large-1
         input type="submit" value="View" name="view" class="button tiny"
       .columns.large-1

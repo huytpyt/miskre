@@ -1,7 +1,7 @@
 class ProductService
   def self.sync_images product, supply
     product.images.each do |image|
-      supply_image = supply.images.new(file: ORIGINAL_URL + image.file.url)
+      supply_image = supply.images.new(file: Settings.original_url + image.file.url)
       supply_image.save
       sleep 0.5
     end
@@ -10,7 +10,7 @@ class ProductService
       supply_variant = supply.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
       if supply_variant.save
         if variant_image
-          supply_variant_image = supply_variant.images.new(file: ORIGINAL_URL + variant_image.file.url)
+          supply_variant_image = supply_variant.images.new(file: Settings.original_url + variant_image.file.url)
           supply_variant_image.save
           sleep 0.5
         end
@@ -283,7 +283,7 @@ class ProductService
     product = Product.find_by_sku(sku&.first(3))
     if product.present?
       fulfillable_quantity = (product&.fulfillable_quantity || 0) - quantity.to_i
-      product.update(fulfillable_quantity: fulfillable_quantity)
+      product.update_column(:fulfillable_quantity, fulfillable_quantity)
     end
   end
 
@@ -291,7 +291,7 @@ class ProductService
     product = Product.find_by_sku(sku&.first(3))
     if product.present?
       fulfillable_quantity = (product&.fulfillable_quantity || 0) + quantity.to_i
-      product.update(fulfillable_quantity: fulfillable_quantity)
+      product.update_column(:fulfillable_quantity, fulfillable_quantity)
     end
   end
 

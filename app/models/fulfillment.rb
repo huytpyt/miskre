@@ -27,7 +27,7 @@ class Fulfillment < ApplicationRecord
   serialize :items
 
   after_commit do
-    miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => Time.zone.now.to_s}
+    miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => (Time.zone.now - 6.minutes).to_s}
     miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => Time.zone.now.to_s}
     tracking_history = [miskre_package, miskre_processed]
     tracking = TrackingInformation.find_or_initialize_by(

@@ -31,7 +31,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  supplies_user_id_fkey  (user_id => users.id)
 #
 
 class Supply < ApplicationRecord
@@ -101,7 +101,7 @@ class Supply < ApplicationRecord
         supply_variant = self.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: compare_at_price)
         if supply_variant.save
           if variant_image
-            supply_variant_image = supply_variant.images.new(file: ORIGINAL_URL + variant_image.file.url)
+            supply_variant_image = supply_variant.images.new(file: Settings.original_url + variant_image.file.url)
             supply_variant_image.save
             sleep 0.5
           end
