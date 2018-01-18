@@ -20,7 +20,7 @@ html
             .cl
               h1
                 | Hi,&nbsp;
-                strong> = [@order.first_name, @order.last_name].join(" ")
+                strong> = [@order.first_name, @order.last_name].join(" ") + "!"
       .ctn
         .rw
           .cl.md-8
@@ -29,16 +29,18 @@ html
                 h2.title Your order has been processed and shipment is confirmed.
                 .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
               .code
-                h2.type = @fulfillment&.tracking_company
+                h2.type = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize
                 .number = @fulfillment&.tracking_number
               ul.timeline
                 - if @fulfillment.present?
-                  -  @tracking_information[:tracking_history].sort_by{|hash| hash["checkpoint_time"]}.each do |infomation|
-                    li.date = infomation["checkpoint_time"].to_date
-                    li.done
-                      .time = DateTime.parse(infomation["checkpoint_time"]).strftime("%I:%M%p")
-                      .position = infomation["location"].presence || @fulfillment.tracking_company
-                      .status = infomation["message"]
+                  - @tracking_information[:tracking_history].group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
+                    li.date = infomation.first.strftime("%a, %d %b %Y")
+                    - data = infomation.count
+                    - infomation.reverse().take(data - 1).flatten.sort{ |a,b|  DateTime.parse(b["checkpoint_time"]) <=> DateTime.parse(a["checkpoint_time"]) }.each_with_index do |detail, index_|
+                      li class = "#{(index.zero? && index_.zero?) ? 'done' : nil}"
+                        .time = DateTime.parse(detail["checkpoint_time"]).strftime("%I:%M%p")
+                        .position = detail["location"].presence || @fulfillment.tracking_company
+                        .status = detail["message"]
 
           .cl.md-4
             .side-bar
@@ -59,7 +61,7 @@ html
                       br
                       = @order.ship_phone
                   dt Shipping Method
-                  dd = @fulfillment&.tracking_company
+                  dd = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize
               .order-number.side-block
                 .title = "Order ##{@order.id}"
                 ul.orders
@@ -69,8 +71,8 @@ html
                         .image
                           - unless item[:image].nil?
                             img src="#{item[:image].file_url}"
-                          - else 
-                            = image_tag "default.jpg" 
+                          - else
+                            = image_tag "default.jpg"
                         .info
                           a.name href="#" target="_blank" = item[:item_name]
                           .amount = item[:quantity]
