@@ -1,11 +1,9 @@
 :logfile: log/sidekiq.log
 :schedule:
-  fetching_tracking_information:
-    every: '3h'
+  fetch_tracking_info:
+    every: 3h
     class: FetchTrackingInfo
-    queue: high
     description: 'Fetching tracking information'
-  sync_orders:
+  sync_order:
     every: 1h
     class: SyncOrder
-    queue: high
