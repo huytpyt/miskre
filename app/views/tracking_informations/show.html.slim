@@ -30,7 +30,7 @@ html
                 .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
               .code
                 h2.type = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
-                .number = @order.tracking_number_real || @fulfillment&.tracking_number
+                .number = (@order.tracking_number_real if @order.tracking_number_real != "none") || @fulfillment&.tracking_number
               ul.timeline
                 - if @fulfillment.present?
                   - @tracking_information[:tracking_history].group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
