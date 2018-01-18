@@ -32,7 +32,10 @@ class BillingService
       order = Order.find_by_shopify_id row["Order No."].to_i
       if order
         if [nil, "none"].include? order.tracking_number_real
-          order.update(tracking_number_real: row["Tracking No."].to_s)
+          if row["Tracking No."].to_s.length > 5
+            order.update(tracking_number_real: row["Tracking No."].to_s) 
+            AfterShip::V4::Tracking.create(row["Tracking No."].to_s, {name: row["Tracking No."].to_s})
+          end
           notice += "#{row["Order No."]}[Sucess] update tracking number success | "
         else
           notice += "#{row["Order No."]}[Error] already created tracking number | "

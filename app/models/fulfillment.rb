@@ -27,17 +27,14 @@ class Fulfillment < ApplicationRecord
   serialize :items
 
   after_commit do
-    miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => (Time.zone.now - 6.minutes).to_s}
-    miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => Time.zone.now.to_s}
+    miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => (order.created_at - 6.minutes).to_s}
+    miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => order.created_at.to_s}
     tracking_history = [miskre_package, miskre_processed]
     tracking = TrackingInformation.find_or_initialize_by(
                   fulfillment_id: self.id,
                   tracking_number: self.tracking_number
                 )
     tracking.tracking_history = tracking_history
-    if self.tracking_number.present? && tracking.new_record?
-      AfterShip::V4::Tracking.create(self.tracking_number, {name: self.tracking_number})
-    end
     tracking.save!
   end
 end
