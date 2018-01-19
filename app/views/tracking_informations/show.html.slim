@@ -29,11 +29,13 @@ html
                 h2.title Your order has been processed and shipment is confirmed.
                 .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
               .code
-                h2.type = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
+                h2.type = @fulfillment&.tracking_informations.last&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
                 .number = (@order.tracking_number_real if @order.tracking_number_real != "none") || @fulfillment&.tracking_number
               ul.timeline
                 - if @fulfillment.present?
-                  - @tracking_information[:tracking_history].group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
+                  - tracking_data = []
+                  - @tracking_information.each{|tracking_info| tracking_data << tracking_info[:tracking_history]}
+                  - tracking_data.flatten.group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
                     li.date = infomation.first.strftime("%a, %d %b %Y")
                     - data = infomation.count
                     - infomation.reverse().take(data - 1).flatten.sort{ |a,b|  DateTime.parse(b["checkpoint_time"]) <=> DateTime.parse(a["checkpoint_time"]) }.each_with_index do |detail, index_|
@@ -61,7 +63,7 @@ html
                       br
                       = @order.ship_phone
                   dt Shipping Method
-                  dd = @fulfillment&.tracking_information&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
+                  dd = @fulfillment&.tracking_informations.last&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
               .order-number.side-block
                 .title = "Order ##{@order.id}"
                 ul.orders

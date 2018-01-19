@@ -23,13 +23,13 @@
 
 class Fulfillment < ApplicationRecord
   belongs_to :order
-  has_one :tracking_information, dependent: :destroy
+  has_many :tracking_informations, dependent: :destroy
   serialize :items
 
   after_commit do
     if self.order
-      miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => (self.order.created_at - 6.minutes).to_s}
-      miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => self.order.created_at.to_s}
+      miskre_package = { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (self.order.created_at - 6.days).to_s}
+      miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (self.order.created_at - 5.days).to_s}
       tracking_history = [miskre_package, miskre_processed]
       tracking = TrackingInformation.find_or_initialize_by(
                     fulfillment_id: self.id,
