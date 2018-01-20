@@ -48,9 +48,14 @@ class TrackingInformationService
       fulfillment = tracking_information.fulfillment
       tracking_label = tracking_information&.fulfillment&.order&.tracking_number_real
       order = tracking_information&.fulfillment&.order
-      ship_to_country_code = order.country_code
-      ship_to_country = order.ship_country
-      iso3_country_code = IsoCountryCodes.find(ship_to_country_code)&.alpha3 || IsoCountryCodes.search_by_name(ship_to_country)&.first&.alpha3
+      ship_to_country_code = order.country_code.to_s
+      ship_to_country = order.ship_country.to_s
+
+      begin
+        iso3_country_code = IsoCountryCodes.find(ship_to_country_code)&.alpha3
+      rescue
+        iso3_country_code = IsoCountryCodes.search_by_name(ship_to_country)&.first&.alpha3
+      end
 
       courier_list = COURIER.select{|key, value| key.include?(iso3_country_code)}.values.flatten
       courier_list.each do |courier|
