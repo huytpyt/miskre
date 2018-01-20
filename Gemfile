@@ -105,3 +105,5 @@ gem 'audited', '~> 4.2', '>= 4.2.1'
 gem "aftership", "~> 4.3.1"
 # Manage multi-environment settings
 gem 'config', '~> 1.4'
+# For convert iso country codes
+gem 'iso_country_codes', '~> 0.7.5'

@@ -48,7 +48,8 @@ class ShopifyCommunicator
       remark: "",
       shipping_method: shipping_methods.join(","),
       product_name: products.join(","),
-      order_name: o.name
+      order_name: o.name,
+      tracking_number_real: "none"
     }
   end
 
@@ -115,7 +116,7 @@ class ShopifyCommunicator
                     add_line_items(new_order, select_items)
                     # New system no need
                     if new_order.financial_status == "paid"
-                      FulfillmentService.new.fulfill_for_order new_order
+                      FulfillmentService.delay_for(24.hour).fulfill_for_order(new_order, @shop)
                     end
                   end
                 rescue NoMethodError => e
@@ -139,10 +140,10 @@ class ShopifyCommunicator
                   financial_status: o.financial_status,
                   order_name: o.name
                 )
-                unless order.fulfillments.present?
-                  if order.financial_status == "paid"
+                unless order.fulfillment_status == "fulfilled"
+                  if order.financial_status == "paid" && order.tracking_number_real.nil?
                     begin
-                      FulfillmentService.new.fulfill_for_order order
+                      FulfillmentService.delay_for(24.hour).fulfill_for_order(order, @shop)
                     rescue
                       p "#{order.id} Can't fulfill"
                     end

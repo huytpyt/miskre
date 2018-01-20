@@ -1,30 +1,31 @@
 class FulfillmentService
-
   # New system no need fulfill_for_order
-  def fulfill_for_order order
-    tracking_number = generate_tracking_number(order.country_code)
-    while Fulfillment.exists?(tracking_number: tracking_number)
+  def self.fulfill_for_order(order, shop)
+    order.update(fulfillment_status: "fulfilled")
+    begin
+      session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
+      ShopifyAPI::Base.activate_session(session)
       tracking_number = generate_tracking_number(order.country_code)
-    end
-    tracking_url = Settings.tracking_url + "orderNo=" + order.shopify_id
+      while Fulfillment.exists?(tracking_number: tracking_number)
+        tracking_number = generate_tracking_number(order.country_code)
+      end
+      tracking_url = Settings.tracking_url + "orderNo=" + order.shopify_id
 
-    new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, 
-      tracking_number: tracking_number, 
-      tracking_url: tracking_url, 
-      tracking_company: TRACKING_COMPANY
-    )
-    if new_fulfilllment.save
-      order.fulfillments.create(
-        shopify_order_id: order.shopify_id, 
-        fulfillment_id: new_fulfilllment.id, 
-        status: "success", 
-        service: "manual", 
-        tracking_company: TRACKING_COMPANY, 
-        tracking_number: tracking_number,
-        tracking_url: tracking_url, 
-        items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
-      )
-      order.update(fulfillment_status: "fulfilled", tracking_number_real: "none")
+      new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, tracking_number: tracking_number, tracking_url: tracking_url, tracking_company: TRACKING_COMPANY)
+      if new_fulfilllment.save
+        order.fulfillments.create(
+          shopify_order_id: order.shopify_id, 
+          fulfillment_id: new_fulfilllment.id, 
+          status: "success", 
+          service: "manual", 
+          tracking_company: TRACKING_COMPANY, 
+          tracking_number: tracking_number,
+          tracking_url: tracking_url, 
+          items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
+        )
+      end
+    rescue
+      p "Something went wrong!"
     end
   end
 
@@ -80,9 +81,7 @@ class FulfillmentService
     end
   end
 
-  private 
-
-  def generate_tracking_number country
+  def self.generate_tracking_number country
     "MK" + rand(100000000..999999999).to_s + country
   end
 end

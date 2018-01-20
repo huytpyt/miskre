@@ -5,14 +5,15 @@ class TrackingInformationsController < ActionController::Base
       @success = true
       @fulfillment = @order.fulfillments.first
       if @fulfillment.present?
-        @tracking_information = @fulfillment.tracking_information
+        @tracking_information = @fulfillment.tracking_informations
         if @order.tracking_number_real.present?
           unless @order.tracking_number_real == "none"
-            TrackingInformationService.delay.fetch_tracking_information @tracking_information
+            TrackingInformationService.delay.fetch_tracking_information @tracking_information.first
+            TrackingInformationService.delay.fetch_additional_tracking_information @tracking_information.first
           end
         end
         @tracking_information.reload
-        @tracking_information = TrackingInformationQuery.single(@tracking_information, @order)
+        @tracking_information = @tracking_information.map{|info| TrackingInformationQuery.single(info, @order) }
         @products = @order.line_items.map{|item| {image: find_image(item.sku), quantity: item.quantity, item_name: item.name}}
       end
     else

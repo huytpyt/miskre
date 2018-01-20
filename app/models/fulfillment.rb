@@ -23,14 +23,16 @@
 
 class Fulfillment < ApplicationRecord
   belongs_to :order
-  has_one :tracking_information, dependent: :destroy
+  has_many :tracking_informations, dependent: :destroy
   serialize :items
 
   after_commit do
     if self.order
-      miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => (self.order.created_at - 6.minutes).to_s}
-      miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => self.order.created_at.to_s}
-      tracking_history = [miskre_package, miskre_processed]
+      miskre_noti = { "tag" => "Submitted", "message" => "Electronic Notification Received", "location" => "Merchant", "checkpoint_time" => (Time.now - 9.minutes).to_s}
+      miskre_submit = { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now + 5.days + 15.minutes).to_s}
+      miskre_process = { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now + 7.days).to_s}
+      miskre_ship = { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now + 8.days + 11.minutes).to_s}
+      tracking_history = [miskre_noti, miskre_submit, miskre_process, miskre_ship]
       tracking = TrackingInformation.find_or_initialize_by(
                     fulfillment_id: self.id,
                     tracking_number: self.tracking_number
