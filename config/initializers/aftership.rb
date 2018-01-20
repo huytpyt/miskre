@@ -1,4 +1,4 @@
-AfterShip.api_key = 'a38ada6e-15ae-4341-a7c4-84450350da1a'
+AfterShip.api_key = '5ca9f5dc-2a33-4d0f-8a72-b59b9bbb85ae'
 
 COURIER ={["ITA"]=>
   [{:courier=>"italy-sda", :country=>["ITA"]},
