@@ -28,10 +28,10 @@ class Fulfillment < ApplicationRecord
 
   after_commit do
     if self.order
-      miskre_noti = { "tag" => "Submitted", "message" => "Electronic Notification Received", "location" => "Merchant", "checkpoint_time" => (Time.now - 9.minutes).to_s}
-      miskre_submit = { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now + 2.days + 15.minutes).to_s}
-      miskre_process = { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now + 3.days).to_s}
-      miskre_ship = { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now + 5.days + 11.minutes).to_s}
+      miskre_noti = { "tag" => "Submitted", "message" => "Electronic Notification Received", "location" => "Merchant", "checkpoint_time" => (Time.now.utc - 9.minutes).to_s}
+      miskre_submit = { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 2.days + 15.minutes).to_s}
+      miskre_process = { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 3.days).to_s}
+      miskre_ship = { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 5.days + 11.minutes).to_s}
       tracking_history = [miskre_noti, miskre_submit, miskre_process, miskre_ship]
       tracking = TrackingInformation.find_or_initialize_by(
                     fulfillment_id: self.id,

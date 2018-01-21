@@ -5,9 +5,9 @@ class FulfillmentService
     begin
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
       ShopifyAPI::Base.activate_session(session)
-      tracking_number = generate_tracking_number(order.country_code)
+      tracking_number = generate_tracking_number(order&.country_code || "HK")
       while Fulfillment.exists?(tracking_number: tracking_number)
-        tracking_number = generate_tracking_number(order.country_code)
+        tracking_number = generate_tracking_number(order&.country_code || "HK")
       end
       tracking_url = Settings.tracking_url + "orderNo=" + order.shopify_id
 

@@ -24,10 +24,10 @@ class TrackingInformationService
         end
         if tracking_information.tracking_history.nil? && !tracking_checkpoint["data"].present?
           tracking_information.tracking_history = [
-            { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now - 9.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now + 2.days + 15.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (self.order.created_at + 3.days).to_s},
-            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now + 5.days + 11.minutes).to_s}
+            { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc - 9.minutes).to_s},
+            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 2.days + 15.minutes).to_s},
+            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 3.days).to_s},
+            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 5.days + 11.minutes).to_s}
           ]
           tracking_information.Submited!
         elsif tracking_checkpoint["data"].present?
@@ -48,9 +48,11 @@ class TrackingInformationService
       fulfillment = tracking_information.fulfillment
       tracking_label = tracking_information&.fulfillment&.order&.tracking_number_real
       order = tracking_information&.fulfillment&.order
-      ship_to_country_code = order.country_code.to_s
-      ship_to_country = order.ship_country.to_s
-
+      ship_to_country_code = order&.country_code&.to_s
+      ship_to_country = order&.ship_country&.to_s
+      if ship_to_country_code.nil? && ship_to_country.nil?
+        return
+      end
       begin
         iso3_country_code = IsoCountryCodes.find(ship_to_country_code)&.alpha3
       rescue

@@ -36,7 +36,7 @@ html
                   - tracking_data = []
                   - @tracking_information.each{|tracking_info| tracking_data << tracking_info[:tracking_history]}
                   - tracking_data.flatten.group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
-                    - if infomation.first <= DateTime.now
+                    - if infomation.first <= Time.now.utc
                       li.date = infomation.first.strftime("%a, %d %b %Y")
                       - data = infomation.count
                       - infomation.reverse().take(data - 1).flatten.sort{ |a,b|  DateTime.parse(b["checkpoint_time"]) <=> DateTime.parse(a["checkpoint_time"]) }.each_with_index do |detail, index_|
