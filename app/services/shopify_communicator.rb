@@ -116,7 +116,7 @@ class ShopifyCommunicator
                     add_line_items(new_order, select_items)
                     # New system no need
                     if new_order.financial_status == "paid"
-                      FulfillmentService.delay_for(24.hour).fulfill_for_order(new_order, @shop)
+                      FulfillmentService.delay_for(5.day).fulfill_for_order(new_order, @shop)
                     end
                   end
                 rescue NoMethodError => e
@@ -143,7 +143,7 @@ class ShopifyCommunicator
                 unless order.fulfillment_status == "fulfilled"
                   if order.financial_status == "paid" && order.tracking_number_real.nil?
                     begin
-                      FulfillmentService.delay_for(24.hour).fulfill_for_order(order, @shop)
+                      FulfillmentService.delay_for(5.day).fulfill_for_order(order, @shop)
                     rescue
                       p "#{order.id} Can't fulfill"
                     end

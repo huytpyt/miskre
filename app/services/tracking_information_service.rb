@@ -25,9 +25,9 @@ class TrackingInformationService
         if tracking_information.tracking_history.nil? && !tracking_checkpoint["data"].present?
           tracking_information.tracking_history = [
             { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now - 9.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now + 5.days + 15.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (self.order.created_at + 7.days).to_s},
-            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now + 8.days + 11.minutes).to_s}
+            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now + 2.days + 15.minutes).to_s},
+            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (self.order.created_at + 3.days).to_s},
+            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now + 5.days + 11.minutes).to_s}
           ]
           tracking_information.Submited!
         elsif tracking_checkpoint["data"].present?
