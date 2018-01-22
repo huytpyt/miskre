@@ -21,7 +21,7 @@ module ApplicationHelper
   end
 
   def tracking_number_option
-    [['None', 'none']]
+    [['None', 'none'], ["Nil", 'nil']]
   end
 
   def billing_options
