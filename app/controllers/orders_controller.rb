@@ -120,7 +120,12 @@ class OrdersController < ApplicationController
       query_params['fulfillment_status'] = @fulfillment_status unless @fulfillment_status.empty?
     end
     query_params['financial_status'] = @financial_status unless @financial_status.empty?
-    query_params['tracking_number_real'] = @tracking_number_real unless @tracking_number_real.empty?
+    unless @tracking_number_real.empty?
+      if @tracking_number_real == "nil"
+        @tracking_number_real = nil
+      end
+      query_params['tracking_number_real'] = @tracking_number_real 
+    end
     if params[:shop_id] && params[:shop_id] != ""
       begin
         @current_shop = Shop.find(params[:shop_id])
