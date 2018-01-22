@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
   def index
     if params[:download].present?
       xls_string = CSV.generate(headers:true) do |csv|
-        column_names =  ["Order No.", "Shipping Way", "Country", "Weight (KG)", "Quantity", "Received Name", "Full Adress", "Tel No.", "Post code", "State", "City", "Description", "Declared Name", "Declared Value (USD)", "SKU", "Tracking No."]
+        column_names =  ["Order No.", "Shipping Way", "Country", "Weight (KG)", "Quantity", "Received Name", "Full Adress", "Tel No.", "Post code", "State", "City", "Description", "Declared Name", "Declared Value (USD)", "SKU", "Tracking No.", "Date"]
         csv << column_names
         @orders.each do |order|
           skus = []
@@ -74,7 +74,8 @@ class OrdersController < ApplicationController
             "", 
             "", 
             skus.join(", "),
-            ""]
+            "", 
+            order.date.strftime("%F")]
           csv << row
         end
       end
