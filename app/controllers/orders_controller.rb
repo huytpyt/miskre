@@ -16,41 +16,51 @@ class OrdersController < ApplicationController
             sku = sku_item[0].strip
             quantity = sku_item[1]
             product = Product.find_by_sku(sku&.first(3))
-            weight +=  ((product.weight.to_f * quantity.to_i).to_f/1000).round(3)
-            if product&.is_bundle
-              if product.variants.present?
-                variant = Variant.find_by_sku sku
-                variant.product_ids.each do |id|
-                  product_found = Product.find(id[:product_id])
-                  if id[:variant_id].nil?
-                    skus.push("#{product_found.sku} * #{quantity}")
-                    product_names.push("#{product_found.name} * #{quantity}")
-                  else
-                    variant_found = Variant.find(id[:variant_id]) 
-                    skus.push("#{variant_found.sku} * #{quantity}")
-                    product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
+            if product
+              weight +=  ((product.weight.to_f * quantity.to_i).to_f/1000).round(3)
+              if product&.is_bundle
+                if product.variants.present?
+                  variant = Variant.find_by_sku sku
+                  variant.product_ids.each do |id|
+                    product_found = Product.find(id[:product_id])
+                    if product_found.present?
+                      if id[:variant_id].nil?
+                        skus.push("#{product_found.sku} * #{quantity}")
+                        product_names.push("#{product_found.name} * #{quantity}")
+                      else
+                        variant_found = Variant.find(id[:variant_id])
+                        if variant_found
+                          skus.push("#{variant_found.sku} * #{quantity}")
+                          product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
+                        end
+                      end
+                    end
+                  end
+                else
+                  product.product_ids.each do |id|
+                    product_found = Product.find_by_id(id[:product_id])
+                    if product_found.present?
+                      if id[:variant_id].nil?
+                        skus.push("#{product_found.sku} * #{quantity}")
+                        product_names.push("#{product_found.name} * #{quantity}") 
+                      else
+                        variant_found = Variant.find(id[:variant_id]) 
+                        if variant_found
+                          skus.push("#{variant_found.sku} * #{quantity}")
+                          product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
+                        end
+                      end
+                    end
                   end
                 end
               else
-                product.product_ids.each do |id|
-                  product_found = Product.find(id[:product_id])
-                  if id[:variant_id].nil?
-                    skus.push("#{product_found.sku} * #{quantity}")
-                    product_names.push("#{product_found.name} * #{quantity}") 
-                  else
-                    variant_found = Variant.find(id[:variant_id]) 
-                    skus.push("#{variant_found.sku} * #{quantity}")
-                    product_names.push("#{ProductService.variant_name(product_found.name, variant_found)} * #{quantity}")
-                  end
+                skus.push("#{sku} * #{quantity}")
+                if product.variants.present?
+                  variant_found = Variant.find_by_sku sku
+                  product_names.push("#{ProductService.variant_name(product.name, variant_found)} * #{quantity}") if variant_found.present?
+                else
+                  product_names.push("#{product.name} * #{quantity}")
                 end
-              end
-            else
-              skus.push("#{sku} * #{quantity}")
-              if product.variants.present?
-                variant_found = Variant.find_by_sku sku
-                product_names.push("#{ProductService.variant_name(product.name, variant_found)} * #{quantity}")
-              else
-                product_names.push("#{product.name} * #{quantity}")
               end
             end
           end
