@@ -84,7 +84,7 @@ class OrdersController < ApplicationController
             "", 
             "", 
             skus.join(", "),
-            "", 
+            order&.fulfillments&.first&.tracking_number, 
             order.date.strftime("%F")]
           csv << row
         end
