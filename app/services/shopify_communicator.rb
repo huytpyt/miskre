@@ -271,6 +271,56 @@ class ShopifyCommunicator
     end
   end
 
+  def sync_customers(start_date=365.day.ago, end_date=DateTime.now)
+    params = {
+      status: 'any',
+      created_at_min: start_date.strftime("%FT%T%:z"),
+      created_at_max: end_date.strftime("%FT%T%:z")
+    }
+    customer_data = ShopifyAPI::Order.find(:all, params: params )
+    p "Start Fetch"
+    customer_data.each do |data|
+      customer_attributes = data.attributes['customer']
+
+      customer_params = {
+        shopify_order_id: data.id,
+        email: customer_attributes.email,
+        token: customer_attributes.id,
+        fullname: customer_attributes.default_address.name,
+        ship_address1: customer_attributes.default_address.address1,
+        ship_address2: customer_attributes.default_address.address2,
+        ship_city: customer_attributes.default_address.city,
+        ship_state: customer_attributes.default_address.province,
+        ship_zip: customer_attributes.default_address.zip,
+        ship_country: customer_attributes.default_address.country,
+        ship_phone: customer_attributes.default_address.phone,
+        shipping_method: data.attributes["fulfillments"]&.first&.tracking_company,
+        country_code: customer_attributes.default_address.country_code
+      }
+
+      @customer = Customer.find_or_initialize_by(email: customer_params[:email])
+      @customer.update_attributes(customer_params)
+      p "Customer #{customer_attributes.default_address.name}"
+
+      data.attributes["line_items"].each do |item|
+        cus_line_item_params = {
+          customer_id: @customer.present? ? @customer.id : Customer.find_by_email(customer_attributes.email).id,
+          sku: item.sku,
+          quantity: item.quantity,
+          price: item.price,
+          title: item.title,
+          shopify_line_item_id: item.id,
+          name: item.name,
+          on_system: Product.exists?(sku: item.sku.first(3)),
+          shop_id: @shop.id
+          }
+        cus_line_item = CusLineItem.find_or_initialize_by(shopify_line_item_id: item.id)
+        cus_line_item.update_attributes(cus_line_item_params)
+        p "Create/Update cus line items"
+      end
+    end
+  end
+
   def remove_product(product_id)
     ShopifyAPI::Product.delete(product_id)
   rescue ActiveResource::ResourceNotFound

@@ -33,7 +33,7 @@ class ShopService
             unless carrier_service
               deactivate_carrier_service shop
             end
-          end 
+          end
           shop.update(plan_name: shopify.plan_name)
         rescue
           shop.update(plan_name: NOT_EXIST)
@@ -68,7 +68,7 @@ class ShopService
       else
         carrier_service.errors.messages[:base][0]
       end
-    rescue 
+    rescue
       "You need to add payment methods on shopify first!"
     end
   end
@@ -124,7 +124,7 @@ class ShopService
   end
 
   def self.update_price_global_setting shop
-    Supply.transaction do 
+    Supply.transaction do
       shop.supplies.each do |supply|
         unless supply.keep_custom == true
           price = (supply.cost * shop.cost_rate + supply.cost_epub * shop.shipping_rate).round(2)
@@ -140,7 +140,7 @@ class ShopService
   end
 
   def self.update_price_suggest shop
-    Supply.transaction do 
+    Supply.transaction do
       shop.supplies.includes(:product).each do |supply|
         unless supply.keep_custom == true
           product = supply.product
@@ -157,7 +157,7 @@ class ShopService
   end
 
   def self.update_supply shop
-    Supply.transaction do 
+    Supply.transaction do
       shop.supplies.includes(:product).each do |supply|
         unless supply.keep_custom == true
           product = supply.product
