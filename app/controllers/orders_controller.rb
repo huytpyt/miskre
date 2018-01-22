@@ -122,9 +122,10 @@ class OrdersController < ApplicationController
     query_params['financial_status'] = @financial_status unless @financial_status.empty?
     unless @tracking_number_real.empty?
       if @tracking_number_real == "nil"
-        @tracking_number_real = nil
+        query_params['tracking_number_real'] = nil
+      else
+        query_params['tracking_number_real'] = @tracking_number_real
       end
-      query_params['tracking_number_real'] = @tracking_number_real 
     end
     if params[:shop_id] && params[:shop_id] != ""
       begin
