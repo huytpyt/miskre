@@ -182,7 +182,11 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :customers
+      resources :customers do
+        collection do
+          get :customers_statictis
+        end
+      end
       resources :tracking_informations, only: [] do
         collection do
           get :fetch_new_tracking_info

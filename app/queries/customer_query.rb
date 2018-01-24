@@ -26,7 +26,6 @@ class CustomerQuery < BaseQuery
     sort_options = { "#{order_by}" => sort }
     paginate = api_paginate(Customer.search(search).order(sort_options), page).per(per_page)
     {
-      status: true,
       paginator: {
         total_records: paginate.total_count,
         records_per_page: paginate.limit_value,
@@ -38,6 +37,24 @@ class CustomerQuery < BaseQuery
         last_page: paginate.total_pages
       },
       customers: paginate.includes(:cus_line_items).map{ |customer| single(customer) }
+    }
+  end
+
+  def self.customers_statictis(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, search = '')
+    customers_statictis = CustomerService.customers_statictis
+    paginate = paginate_array(customers_statictis.select{|item| item[:title].include?(search)}, page).per(per_page)
+    {
+        paginator: {
+            total_records: paginate.total_count,
+            records_per_page: paginate.limit_value,
+            total_pages: paginate.total_pages,
+            current_page: paginate.current_page,
+            next_page: paginate.next_page,
+            prev_page: paginate.prev_page,
+            first_page: 1,
+            last_page: paginate.total_pages
+        },
+        data: paginate.map{|data| data }
     }
   end
 end

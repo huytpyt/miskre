@@ -109,7 +109,7 @@ class OrderService
     end
     shop = Shop.where(id: shop_id).first
     if shop
-      raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      raw_sql ='SELECT products.sku, SUM(line_items.quantity) AS total_quantity
         FROM
         (((shops JOIN orders ON shops.id = orders.shop_id)
         JOIN line_items ON orders.id = line_items.order_id)
@@ -118,7 +118,7 @@ class OrderService
         shops.id = #{shop_id}
         AND orders.created_at > '#{duration.days.ago.end_of_day}'
         GROUP BY products.sku
-        ORDER BY total_quantity desc"
+        ORDER BY total_quantity desc'
 
       shop_statistics_data = Shop.find_by_sql(raw_sql)
 

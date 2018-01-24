@@ -281,6 +281,7 @@ class ShopifyCommunicator
     p "Start Fetch"
     customer_data.each do |data|
       customer_attributes = data.attributes['customer']
+      shipping_method = data.attributes['shipping_lines'].inject([]){|shipping_method, line| shipping_method << line.code }.join(",")
 
       customer_params = {
         shopify_order_id: data.id,
@@ -294,7 +295,7 @@ class ShopifyCommunicator
         ship_zip: customer_attributes.default_address.zip,
         ship_country: customer_attributes.default_address.country,
         ship_phone: customer_attributes.default_address.phone,
-        shipping_method: data.attributes["fulfillments"]&.first&.tracking_company,
+        shipping_method: shipping_method,
         country_code: customer_attributes.default_address.country_code
       }
 
