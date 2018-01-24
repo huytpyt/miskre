@@ -22,7 +22,7 @@ class CustomerQuery < BaseQuery
     }
   end
 
-  def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '')
+  def self.list(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'total_quantity', search = '')
     sort_options = { "#{order_by}" => sort }
     paginate = api_paginate(Customer.search(search).order(sort_options), page).per(per_page)
     {
