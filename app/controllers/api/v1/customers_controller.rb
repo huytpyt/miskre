@@ -17,12 +17,12 @@ class Api::V1::CustomersController < Api::V1::BaseController
     render json: CustomerQuery.single(customer), status: 200
   end
 
-  def customers_statictis
+  def customers_statistic
     page = params[:page].to_i || 1
     page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20
     per_page = 20 if per_page.zero?
     search = params[:q] || ""
-    render json: CustomerQuery.customers_statictis(page, per_page, search)
+    render json: CustomerQuery.customers_statistic(page, per_page, search)
   end
 end

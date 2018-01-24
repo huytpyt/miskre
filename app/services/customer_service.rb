@@ -11,7 +11,7 @@ class CustomerService
       end
     end
 
-    def customers_statictis
+    def customers_statistic
       item_statistic_sql = 'SELECT cus_line_items.title,
         SUM(cus_line_items.quantity) AS total_quantity FROM cus_line_items
         JOIN customers ON customers.id = cus_line_items.customer_id

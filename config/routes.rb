@@ -184,7 +184,7 @@ Rails.application.routes.draw do
       end
       resources :customers do
         collection do
-          get :customers_statictis
+          get :customers_statistic
         end
       end
       resources :tracking_informations, only: [] do

@@ -40,9 +40,9 @@ class CustomerQuery < BaseQuery
     }
   end
 
-  def self.customers_statictis(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, search = '')
-    customers_statictis = CustomerService.customers_statictis
-    paginate = paginate_array(customers_statictis.select{|item| item[:title].include?(search)}, page).per(per_page)
+  def self.customers_statistic(page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, search = '')
+    customers_statistic = CustomerService.customers_statistic
+    paginate = paginate_array(customers_statistic.select{|item| item[:title].include?(search)}, page).per(per_page)
     {
         paginator: {
             total_records: paginate.total_count,
