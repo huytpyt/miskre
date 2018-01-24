@@ -143,7 +143,7 @@ class UserService
       return { result: "Failed", errors: "You do not have any balance, please add." }
     end
 
-    amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += OrderService.new.sum_money_from_order(order).to_f }
+    amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += OrderService.new.sum_money_from_order(order, false).to_f }
     user_balance.lock!
     if amount_must_paid > user_balance.total_amount
       return { result: "Failed", errors: "Your account does not have enough balance" }
