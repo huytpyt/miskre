@@ -40,7 +40,7 @@ p#notice
           - total_money = 0
           - @billings_orders.includes(shop: :user).each do |order|
             - fulfillment = order.fulfillments&.first
-            - order_money = @order_service.sum_money_from_order(order)
+            - order_money = @order_service.sum_money_from_order(order, false)
             - total_money += order_money
             tr 
               td = order.shop.name
