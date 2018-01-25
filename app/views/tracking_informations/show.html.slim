@@ -80,9 +80,9 @@ html
                         .info
                           a.name href="#" target="_blank" = item[:item_name]
                           .amount = item[:quantity]
-              .order-number.side-block
-                .title = "Your Other Orders"
-                - if @orders_history.present?
+              - if @orders_history.present?
+                .order-number.side-block
+                  .title = "Your Other Orders"
                   - @orders_history.includes(:line_items).each do |order|
                     - products = order.products_in_order
                     - trackable = order&.fulfillments&.first&.tracking_number.present?
