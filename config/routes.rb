@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/orderNo=:id', to: 'tracking_informations#show'
+  get '/orderNo=:id', to: 'tracking_informations#show', as: "order_tracking"
 
   resources :nations do
     collection do

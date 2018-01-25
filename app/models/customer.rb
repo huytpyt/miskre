@@ -24,6 +24,13 @@
 class Customer < ApplicationRecord
   has_many :cus_line_items, dependent: :destroy
 
+  def generate_token
+    self.token = loop do
+      random_token = SecureRandom.urlsafe_base64(nil, false)
+      break random_token unless Customer.exists?(token: random_token)
+    end
+  end
+
   def self.search(search)
     if search
         where("lower(email) LIKE :search OR lower(fullname) LIKE :search

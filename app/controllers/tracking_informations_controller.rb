@@ -1,7 +1,8 @@
 class TrackingInformationsController < ActionController::Base
   def show
     @order = Order.find_by_shopify_id params[:id]
-    if @order
+    token = params[:token]
+    if token && @order && @order.fulfillments.present? && @order.is_order_owner?(token)
       @success = true
       @fulfillment = @order.fulfillments.first
       if @fulfillment.present?
@@ -14,21 +15,11 @@ class TrackingInformationsController < ActionController::Base
         end
         @tracking_information.reload
         @tracking_information = @tracking_information.map{|info| TrackingInformationQuery.single(info, @order) }
-        @products = @order.line_items.map{|item| {image: find_image(item.sku), quantity: item.quantity, item_name: item.name}}
+        @products = @order.line_items.map{|item| {image: ProductService.find_image(item.sku), quantity: item.quantity, item_name: item.name}}
+        @orders_history = Order.where(email: @order.email).where.not(id: @order.id)
       end
     else
       @success = false
     end
-  end
-
-  private
-
-  def find_image sku
-    if sku.length == 3
-      image = Product.find_by_sku(sku)&.images&.first
-    elsif sku.length == 6
-      image = Variant.find_by_sku(sku)&.images&.first
-    end
-    image
   end
 end

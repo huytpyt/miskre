@@ -66,10 +66,27 @@ class Order < ApplicationRecord
 
   def full_address
     if self.ship_address1.present? && self.ship_address2.present?
-      "#{self.ship_address1} | #{self.ship_address2}" 
+      "#{self.ship_address1} | #{self.ship_address2}"
     else
       "#{self.ship_address1} #{self.ship_address2}"
     end
+  end
+
+  def encode_token
+    Base64.encode64(Customer.where(email: email).first.token)
+  end
+
+  def decode_token token
+    Base64.decode64(token)
+  end
+
+  def is_order_owner? token
+    token = decode_token(token)
+    email == Customer.where(token: token).first.email
+  end
+
+  def products_in_order
+    line_items.map{|item| {image: ProductService.find_image(item.sku), quantity: item.quantity, item_name: item.name}}
   end
 
   def self.search(search)

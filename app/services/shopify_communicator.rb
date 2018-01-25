@@ -286,7 +286,6 @@ class ShopifyCommunicator
       customer_params = {
         shopify_order_id: data.id,
         email: customer_attributes.email,
-        token: customer_attributes.id,
         fullname: customer_attributes.default_address.name,
         ship_address1: customer_attributes.default_address.address1,
         ship_address2: customer_attributes.default_address.address2,
@@ -300,6 +299,10 @@ class ShopifyCommunicator
       }
 
       @customer = Customer.find_or_initialize_by(email: customer_params[:email])
+      if @customer.new_record?
+        @customer.generate_token
+        @customer.save
+      end
       @customer.update_attributes(customer_params)
       p "Customer #{customer_attributes.default_address.name}"
 
