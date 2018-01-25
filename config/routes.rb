@@ -119,7 +119,7 @@ Rails.application.routes.draw do
   end
 
   resources :orders, only: [:index, :show] do
-    resources :fulfillments, only: [:new, :create]
+    resources :fulfillments, only: [:new, :create, :edit, :update]
     get 'fetch', on: :collection
     collection do
       get 'fetch_orders', to: "orders#fetch_orders", as: "fetch_orders"
