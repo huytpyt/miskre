@@ -1,0 +1,22 @@
+#new-fulfillment-page
+  .row
+    .column.medium-12
+      .card
+        .card-divider
+          h4 Fulfillment
+        .card-section
+          = form_for(@fulfillment, as: "fulfillment", url: order_fulfillment_path(@order, @fulfillment)) do |f|
+            h6 TRACKING INFORMATION
+            .row
+              .form-group.column.medium-4
+                = label_tag :tracking_number, nil, class: "control-label"
+                = f.text_field :tracking_number, class: "form-control"
+              .form-group.column.medium-4
+                = label_tag :shipping_carrier, nil, class: "control-label"
+                = f.text_field :tracking_company, class: "form-control"
+              .form-group.column.medium-4
+                = label_tag :tracking_url, "Tracking URL", class: "control-label"
+                = f.text_field :tracking_url, class: "form-control"
+              .form-group.column
+              	= f.submit
+          

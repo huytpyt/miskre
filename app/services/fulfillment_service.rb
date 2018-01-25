@@ -84,4 +84,21 @@ class FulfillmentService
   def self.generate_tracking_number country
     "MK" + rand(100000000..999999999).to_s + country
   end
+
+  def update_fulfillment order, fulfillment, get_params
+    begin
+      ShopifyCommunicator.new(order.shop.id)
+      fulfillment.update(get_params)
+      shopify_fulfillment = ShopifyAPI::Fulfillment.first(params: {order_id: fulfillment.shopify_order_id, id: fulfillment.fulfillment_id})
+      shopify_fulfillment.tracking_number = get_params[:tracking_number]
+      shopify_fulfillment.tracking_numbers = [get_params[:tracking_number]]
+      shopify_fulfillment.tracking_url = get_params[:tracking_url]
+      shopify_fulfillment.tracking_urls = [get_params[:tracking_url]]
+      shopify_fulfillment.tracking_company = get_params[:tracking_company]
+      shopify_fulfillment.save
+      return "Update succesfully"
+    rescue Exception => e  
+      return e.message  
+    end
+  end
 end
