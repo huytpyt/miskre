@@ -1,5 +1,6 @@
 class FulfillmentsController < ApplicationController
   before_action :set_order
+  before_action :set_fulfillment, only: [:edit, :update]
   def new
   end
 
@@ -24,11 +25,31 @@ class FulfillmentsController < ApplicationController
     end
   end
 
-  def set_order
-    @order = Order.find_by_id params[:order_id]
+  def edit
+  end
+
+  def update
+    notice = fulfillment_service.update_fulfillment @order, @fulfillment, get_params
+    flash[:notice] = notice
+    redirect_to @order
   end
 
   private
+
+  def get_params
+    params.require(:fulfillment).permit(:tracking_number, :tracking_company, :tracking_url)
+  end
+
+  def set_fulfillment
+    @fulfillment = Fulfillment.find(params[:id])
+  end
+
+  def set_order
+    @order = Order.find_by_id params[:order_id]
+    unless current_user.staff?
+      redirect_to @order
+    end
+  end
 
   def fulfillment_service
     @fulfillment_service ||= FulfillmentService.new

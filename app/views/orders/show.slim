@@ -64,4 +64,5 @@ p#notice
                      | #{item[:name]} x #{item[:quantity]}
                      br
 
+                = link_to "Update tracking", edit_order_fulfillment_path(@order, fulfillment), class: "button pull-right"
                 hr
