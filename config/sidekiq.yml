@@ -7,3 +7,4 @@
   sync_order:
     every: 1h
     class: SyncOrder
+    description: 'Sync orders from shopify'

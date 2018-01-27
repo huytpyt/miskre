@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180118075744) do
+ActiveRecord::Schema.define(version: 20180127144948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,38 @@ ActiveRecord::Schema.define(version: 20180118075744) do
     t.integer "category_id"
     t.index ["category_id"], name: "index_categories_products_on_category_id", using: :btree
     t.index ["product_id"], name: "index_categories_products_on_product_id", using: :btree
+  end
+
+  create_table "cus_line_items", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.string   "sku"
+    t.integer  "quantity"
+    t.string   "shopify_line_item_id"
+    t.string   "price"
+    t.string   "title"
+    t.string   "name"
+    t.boolean  "on_system"
+    t.integer  "shop_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string   "email"
+    t.string   "token"
+    t.string   "fullname"
+    t.string   "ship_address1"
+    t.string   "ship_address2"
+    t.string   "ship_city"
+    t.string   "ship_state"
+    t.string   "ship_zip"
+    t.string   "ship_country"
+    t.string   "ship_phone"
+    t.string   "shipping_method"
+    t.string   "country_code"
+    t.integer  "total_quantity"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "detail_no_handlings", force: :cascade do |t|

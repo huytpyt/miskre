@@ -109,7 +109,7 @@ class OrderService
     end
     shop = Shop.where(id: shop_id).first
     if shop
-      raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      raw_sql ="SELECT products.sku, SUM(line_items.quantity) AS total_quantity
         FROM
         (((shops JOIN orders ON shops.id = orders.shop_id)
         JOIN line_items ON orders.id = line_items.order_id)

@@ -275,6 +275,15 @@ class ProductService
     end
   end
 
+  def self.find_image sku
+    if sku.length == 3
+      image = Product.find_by_sku(sku)&.images&.first
+    elsif sku.length == 6
+      image = Variant.find_by_sku(sku)&.images&.first
+    end
+    image
+  end
+
   def update_fulfillable_quantity_descrease items_array_sku
     items_array_sku.each do |item|
       update_fulfillable_quantity_each_item item[:sku], item[:quantity]

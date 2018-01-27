@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/orderNo=:id', to: 'tracking_informations#show'
+  get '/orderNo=:id', to: 'tracking_informations#show', as: "order_tracking"
 
   resources :nations do
     collection do
@@ -180,6 +180,11 @@ Rails.application.routes.draw do
             post :refund_balance
             post :request_charge_orders
           end
+        end
+      end
+      resources :customers do
+        collection do
+          get :customers_statistic
         end
       end
       resources :tracking_informations, only: [] do
