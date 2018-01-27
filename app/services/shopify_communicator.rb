@@ -84,7 +84,7 @@ class ShopifyCommunicator
     end
   end
 
-  def sync_orders(start_date=365.day.ago, end_date=DateTime.now)
+  def sync_orders(start_date = 5.day.ago, end_date = DateTime.now)
     params = {
       status: 'any',
       created_at_min: start_date.strftime("%FT%T%:z"),
