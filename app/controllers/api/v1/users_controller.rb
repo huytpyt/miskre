@@ -40,7 +40,7 @@ class Api::V1::UsersController < Api::V1::BaseController
   end
 
   def update
-    result, errors, user = UserService.update(@user.id, user_params)
+    result, errors, user = UserService.update(@user.id, user_params, supplier_params)
     render json: { result: result, errors: errors, user: user }, status: 200
   end
 
@@ -51,5 +51,9 @@ class Api::V1::UsersController < Api::V1::BaseController
 
     def user_params
        params.permit(:name, :fb_link, :password, :password_confirmation, :email)
+    end
+
+    def supplier_params
+       params.permit(:company_name, :address, :active)
     end
 end

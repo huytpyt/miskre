@@ -179,12 +179,13 @@ class UserService
     return [ "Success", nil, new_user ]
   end
 
-  def self.update user_id, user_params
+  def self.update user_id, user_params, supplier_params
     user = User.where(id: user_id).first
     if user
       user.assign_attributes(user_params)
       if user.valid?
         user.save
+        SupplierService.update (supplier_params, user_id) if supplier_params
         return [ "Success", nil, user]
       else
         [ "Failed", user.errors.messages, user]

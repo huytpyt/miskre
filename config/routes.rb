@@ -170,6 +170,9 @@ Rails.application.routes.draw do
 
       devise_scope :user do
         post "sign_up", :to => 'registrations#create'
+        get 'forgetpass', :to => 'forget_password#new'
+        post 'forgetpass', :to => 'forget_password#create'
+        put 'forgetpass', :to => 'forget_password#update'
       end
       resources :users, defaults: {scope: :users}, only: [:index, :update] do
         scope module: 'resource', as: :users do
