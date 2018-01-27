@@ -2,7 +2,6 @@ class CustomerQuery < BaseQuery
   def self.single customer
     {
       id: customer.id,
-      shopify_order_id: customer.shopify_order_id,
       email: customer.email,
       token: customer.token,
       fullname: customer.fullname,

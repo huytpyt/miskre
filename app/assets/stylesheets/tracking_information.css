@@ -2272,6 +2272,13 @@ hr{
     height:0;
     margin:1.786rem 0 1.786rem
 }
+hr.hr_black {
+    border:solid #000;
+    border-width:1px 0 0;
+    clear:both;
+    height:0;
+    margin:1.786rem 0 1.786rem
+}
 dl,ol,ul{
     font-size:1rem;
     line-height:1.6;

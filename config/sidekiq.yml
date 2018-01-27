@@ -8,7 +8,3 @@
     every: 1h
     class: SyncOrder
     description: 'Sync orders from shopify'
-  sync_customer:
-    every: 1h
-    class: SyncCustomers
-    description: 'Sync customers from shopify'

@@ -2,23 +2,22 @@
 #
 # Table name: customers
 #
-#  id               :integer          not null, primary key
-#  shopify_order_id :string
-#  email            :string
-#  token            :string
-#  fullname         :string
-#  ship_address1    :string
-#  ship_address2    :string
-#  ship_city        :string
-#  ship_state       :string
-#  ship_zip         :string
-#  ship_country     :string
-#  ship_phone       :string
-#  shipping_method  :string
-#  country_code     :string
-#  total_quantity   :integer
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
+#  id              :integer          not null, primary key
+#  email           :string
+#  token           :string
+#  fullname        :string
+#  ship_address1   :string
+#  ship_address2   :string
+#  ship_city       :string
+#  ship_state      :string
+#  ship_zip        :string
+#  ship_country    :string
+#  ship_phone      :string
+#  shipping_method :string
+#  country_code    :string
+#  total_quantity  :integer
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 
 class Customer < ApplicationRecord
@@ -41,7 +40,6 @@ class Customer < ApplicationRecord
          OR lower(ship_country) LIKE :search
          OR lower(ship_phone) LIKE :search
          OR lower(shipping_method) LIKE :search
-         OR lower(shopify_order_id) LIKE :search
          OR lower(country_code) LIKE :search
          OR lower(ship_address1) LIKE :search OR lower(ship_address2) LIKE :search", { search: "%#{search.downcase}%" })
     else
