@@ -7,11 +7,11 @@ class Api::V1::ForgetPasswordController < Devise::PasswordsController
 
   # POST /resource/password
   def create
-    self.resource = resource_class.send_reset_password_instructions(resource_params)
+    self.resource = resource_class.send_reset_password_instructions(for_get_password_params)
     yield resource if block_given?
 
     if successfully_sent?(resource)
-      respond_with({}, location: after_sending_reset_password_instructions_path_for(resource_name))
+      respond_with({}, location: after_sending_reset_password_instructions_path_for(for_get_password_params))
     else
       respond_with(resource)
     end
@@ -26,7 +26,7 @@ class Api::V1::ForgetPasswordController < Devise::PasswordsController
 
   # PUT /resource/password
   def update
-    self.resource = resource_class.reset_password_by_token(resource_params)
+    self.resource = resource_class.reset_password_by_token(for_get_password_params)
     yield resource if block_given?
 
     if resource.errors.empty?
@@ -44,4 +44,10 @@ class Api::V1::ForgetPasswordController < Devise::PasswordsController
       respond_with resource
     end
   end
+
+  private
+  def for_get_password_params
+    params.permit(:email)
+  end
+
 end

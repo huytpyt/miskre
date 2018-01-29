@@ -54,6 +54,6 @@ class Api::V1::UsersController < Api::V1::BaseController
     end
 
     def supplier_params
-       params.permit(:company_name, :address, :active)
+       params.permit(:company_name, :address, :activate)
     end
 end

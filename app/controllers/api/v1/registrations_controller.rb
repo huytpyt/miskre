@@ -4,6 +4,7 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   def create
     resource = User.new(sign_up_params_new)
     if params[:registration_type] == "supplier"
+      resource.role = "supplier"
       resource.save
       supplier = Supplier.new(supplier_params)
       supplier.user_id = resource.id
@@ -49,6 +50,6 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   end
 
   def supplier_params
-    params.permit(:company_name, :address, :active)
+    params.permit(:company_name, :address, :activate)
   end
 end

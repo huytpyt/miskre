@@ -166,13 +166,18 @@ class UserService
     end
   end
 
-  def self.create user_params
+  def self.create user_params, supplier_params
     new_user = User.new(user_params)
     ref_code = UserService.new.generate_ref_code
     new_user.reference_code = ref_code unless User.exists?(reference_code: ref_code)
 
     if new_user.valid?
       new_user.save
+      if supplier_params && user_params[:role] == "supplier"
+        supplier = Supplier.new(supplier_params)
+        supplier.user_id = new_user.id
+        supplier.save
+      end
     else
       return [ "Failed", new_user.errors.messages, new_user]
     end
@@ -185,7 +190,7 @@ class UserService
       user.assign_attributes(user_params)
       if user.valid?
         user.save
-        SupplierService.update (supplier_params, user_id) if supplier_params
+        SupplierService.update(supplier_params, user_id) if supplier_params
         return [ "Success", nil, user]
       else
         [ "Failed", user.errors.messages, user]

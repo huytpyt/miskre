@@ -2,7 +2,8 @@ class Api::V1::Admin::UsersController < Api::V1::BaseController
   before_action :get_user, only: [:create, :update, :destroy, :show, :index]
 
   def show
-    render json: UserQuery.single(@user), status: 200
+    user = User.find(params[:id])
+    render json: UserQuery.single(user), status: 200
   end
 
   def index
@@ -15,16 +16,17 @@ class Api::V1::Admin::UsersController < Api::V1::BaseController
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q] || ""
-    render json: UserQuery.list(page, per_page, sort, order_by, search), status: 200
+    type = params[:user_type] || nil
+    render json: UserQuery.list(page, per_page, type, sort, order_by, search), status: 200
   end
 
   def create
-    result, errors, user = UserService.create(user_params)
+    result, errors, user = UserService.create(user_params, supplier_params)
     render json: { result: result, errors: errors, user: user }, status: 200
   end
 
   def update
-    result, errors, user = UserService.update(params[:id], user_params)
+    result, errors, user = UserService.update(params[:id], user_params, supplier_params)
     render json: { result: result, errors: errors, user: user }, status: 200
   end
 
@@ -48,6 +50,10 @@ class Api::V1::Admin::UsersController < Api::V1::BaseController
     end
 
     def user_params
-      params.permit(:name, :fb_link, :password, :password_confirmation, :role, :enable_ref, :id, :email, :active)
+      params.permit(:name, :fb_link, :password, :password_confirmation, :role, :enable_ref, :id, :email, :active, :phone, :birthday, :active)
+    end
+
+    def supplier_params
+       params.permit(:company_name, :address, :activate)
     end
 end
