@@ -94,14 +94,20 @@ class Supply < ApplicationRecord
       self.epub = (1 - shop.shipping_rate)*product.cus_epub
       
       self.supply_variants.destroy_all
+      random_for_variant = rand(shop.random_from .. shop.random_to)
       product.variants.each do |variant|
-        random = rand(shop.random_from .. shop.random_to)
-        compare_at_price = (variant.price * random/ 5).round(0) * 5
-        self.supply_variants.create(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: compare_at_price)
+        compare_at_price = (variant.price * random_for_variant/ 5).round(0) * 5
+        variant_image = variant.images&.first
+        supply_variant = self.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: compare_at_price)
+        if supply_variant.save
+          if variant_image
+            supply_variant_image = supply_variant.images.new
+            supply_variant_image.file_remote_url = Settings.original_url + variant_image.file.url
+            supply_variant_image.save
+            sleep 0.5
+          end
+        end
       end
     end
-
-    # TODO sync images
-    # self.images = product.images
   end
 end

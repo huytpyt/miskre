@@ -25,7 +25,7 @@
                 td = fulfillment&.tracking_company
                 td = fulfillment&.tracking_number
                 td = link_to fulfillment&.tracking_url, fulfillment&.tracking_url, target: "_blank"
-                td = number_to_currency @order_service.sum_money_from_order(order), precision: 0, unit: "$", format: "%u%n"
+                td = number_to_currency @order_service.sum_money_from_order(order, false), precision: 0, unit: "$", format: "%u%n"
         b Total money 
         span = number_to_currency @order_service.sum_money_per_bill(@billing), precision: 0, unit: "$", format: "%u %n"
     - if current_user.staff?

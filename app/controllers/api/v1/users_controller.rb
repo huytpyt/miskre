@@ -1,5 +1,5 @@
 class Api::V1::UsersController < Api::V1::BaseController
-  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :create, :update, :destroy, :index]
+  before_action :get_user, only: [:add_balance, :request_charge_orders, :add_balance_manual, :refund_balance, :create, :update, :destroy, :index]
 
   def index
     user = current_resource
@@ -17,7 +17,16 @@ class Api::V1::UsersController < Api::V1::BaseController
 
   def add_balance_manual
     if @user.admin?
-      response_result = UserQuery.add_balance_manual(params, @user)
+      response_result = UserQuery.add_balance_manual(params)
+      render json: response_result, status: 200
+    else
+      render json: { result: "Permission denied" }, status: 200
+    end
+  end
+
+  def refund_balance
+    if @user.admin?
+      response_result = UserQuery.refund_balance(params)
       render json: response_result, status: 200
     else
       render json: { result: "Permission denied" }, status: 200

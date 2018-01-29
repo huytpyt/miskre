@@ -11,7 +11,7 @@ class SupplyService
       supply = product.supplies.find_by_shop_id shop_id
       if supply.present?
         fulfillable_quantity = (supply&.fulfillable_quantity || 0) - quantity.to_i
-        supply.update(fulfillable_quantity: fulfillable_quantity)
+        supply.update_column(:fulfillable_quantity, fulfillable_quantity)
       end
     end
   end
@@ -22,7 +22,7 @@ class SupplyService
       supply = product.supplies.find_by_shop_id shop_id
       if supply.present?
         fulfillable_quantity = (supply&.fulfillable_quantity || 0) + quantity.to_i
-        supply.update(fulfillable_quantity: fulfillable_quantity)
+        supply.update_column(:fulfillable_quantity, fulfillable_quantity)
       end
     end
   end

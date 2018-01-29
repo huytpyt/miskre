@@ -1,5 +1,5 @@
 class OrderService
-  def sum_money_from_order order
+  def sum_money_from_order order, base_cost
     shop = order.shop
     skus_array = order.skus.split(",").map {|a| a.split("*")[0].strip}
     quantities = order.skus.split(",").map {|a| a.split("*")[1].strip}
@@ -16,7 +16,7 @@ class OrderService
         if product.present?
           user = shop.user
           shipping_cost = CarrierService.cal_cost(shipping_type, product.weight)
-          supply_cost = product.cus_cost
+          supply_cost = base_cost ? product.cost : product.cus_cost
           sum += (quantities[index].to_i * (supply_cost.to_f + shipping_cost.to_f))
           index += 1
         end
@@ -29,7 +29,7 @@ class OrderService
     bill = Billing.find bill_id
     total_money = 0
     bill.orders.each do |order|
-      total_money += sum_money_from_order(order)
+      total_money += sum_money_from_order(order, false)
     end
     return total_money
   end
@@ -187,7 +187,7 @@ class OrderService
     end
     shop = Shop.where(id: shop_id).first
     if shop
-      raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      raw_sql ="SELECT products.sku, SUM(line_items.quantity) AS total_quantity
         FROM
         (((shops JOIN orders ON shops.id = orders.shop_id)
         JOIN line_items ON orders.id = line_items.order_id)

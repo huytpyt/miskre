@@ -23,21 +23,22 @@
 
 class Fulfillment < ApplicationRecord
   belongs_to :order
-  has_one :tracking_information, dependent: :destroy
+  has_many :tracking_informations, dependent: :destroy
   serialize :items
 
   after_commit do
-    miskre_package = { "tag" => "Submitted", "message" => "SUBMITTED", "location" => "Merchant", "checkpoint_time" => Time.zone.now.to_s}
-    miskre_processed = { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => Time.zone.now.to_s}
-    tracking_history = [miskre_package, miskre_processed]
-    tracking = TrackingInformation.find_or_initialize_by(
-                  fulfillment_id: self.id,
-                  tracking_number: self.tracking_number
-                )
-    tracking.tracking_history = tracking_history
-    if self.tracking_number.present? && tracking.new_record?
-      AfterShip::V4::Tracking.create(self.tracking_number, {name: self.tracking_number})
+    if self.order
+      miskre_noti = { "tag" => "Submitted", "message" => "Electronic Notification Received", "location" => "Merchant", "checkpoint_time" => (Time.now.utc - 9.minutes).to_s}
+      miskre_submit = { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 2.days + 15.minutes).to_s}
+      miskre_process = { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 3.days).to_s}
+      miskre_ship = { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 5.days + 11.minutes).to_s}
+      tracking_history = [miskre_noti, miskre_submit, miskre_process, miskre_ship]
+      tracking = TrackingInformation.find_or_initialize_by(
+                    fulfillment_id: self.id,
+                    tracking_number: self.tracking_number
+                  )
+      tracking.tracking_history = tracking_history
+      tracking.save!
     end
-    tracking.save!
   end
 end

@@ -75,8 +75,8 @@ class OrdersQuery < BaseQuery
       paid_for_miskre: order.paid_for_miskre,
       shop_name: order.shop.name,
       order_name: order.order_name,
-      total_cost: OrderService.new.sum_money_from_order(order).to_f,
       product_info: OrdersQuery.product_info_by_order(order),
+      total_cost: OrderService.new.sum_money_from_order(order, false).to_f,
       products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)}
     }
   end

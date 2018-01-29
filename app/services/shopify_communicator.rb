@@ -6,6 +6,7 @@ class ShopifyCommunicator
       ShopifyAPI::Base.activate_session(@session)
     rescue
       p "UnauthorizedAccess"
+      return
     end
   end
 
@@ -36,6 +37,7 @@ class ShopifyCommunicator
       ship_state: o.shipping_address.province,
       ship_zip: o.shipping_address.zip,
       ship_country: o.shipping_address.country,
+      country_code: o.shipping_address.country_code,
       ship_phone: o.shipping_address.phone,
       email: o.customer.email,
       financial_status: o.financial_status,
@@ -47,7 +49,8 @@ class ShopifyCommunicator
       remark: "",
       shipping_method: shipping_methods.join(","),
       product_name: products.join(","),
-      order_name: o.name
+      order_name: o.name,
+      tracking_number_real: "none"
     }
   end
 
@@ -81,7 +84,7 @@ class ShopifyCommunicator
     end
   end
 
-  def sync_orders(start_date=10.day.ago, end_date=DateTime.now)
+  def sync_orders(start_date = 5.day.ago, end_date = DateTime.now)
     params = {
       status: 'any',
       created_at_min: start_date.strftime("%FT%T%:z"),
@@ -102,6 +105,7 @@ class ShopifyCommunicator
           fetched_pages += 1
 
           orders.each do |o|
+            sync_customers(o)
             unless Order.exists?(shopify_id: o.id)
               select_items = o.line_items.select do |o_item|
                 o_item if Product.exists?(sku: o_item.sku.first(3))
@@ -112,6 +116,10 @@ class ShopifyCommunicator
                   new_order = @shop.orders.new(order_params)
                   if new_order.save
                     add_line_items(new_order, select_items)
+                    # New system no need
+                    if new_order.financial_status == "paid"
+                      FulfillmentService.delay_for(5.days).fulfill_for_order(new_order, @shop)
+                    end
                   end
                 rescue NoMethodError => e
                   p 'invalid order'
@@ -132,7 +140,17 @@ class ShopifyCommunicator
                   ship_phone: o.shipping_address.phone,
                   email: o.customer.email,
                   financial_status: o.financial_status,
-                  order_name: o.name)
+                  order_name: o.name
+                )
+                unless order.fulfillment_status == "fulfilled"
+                  if order.financial_status == "paid" && order.tracking_number_real.nil?
+                    begin
+                      FulfillmentService.delay_for(5.days).fulfill_for_order(order, @shop)
+                    rescue
+                      p "#{order.id} Can't fulfill"
+                    end
+                  end
+                end
               end
             end
           end
@@ -146,9 +164,9 @@ class ShopifyCommunicator
 
   def add_line_items(order, line_items)
     line_items.each do |li|
-      product = Product.find_by_sku li.sku
+      product_id =  Product.find_by_sku(li.sku.first(3))&.id
       li_params = {
-        product_id: product.id,
+        product_id: product_id,
         quantity: li.quantity,
         sku: li.sku,
         variant_id: li.variant_id,
@@ -170,30 +188,16 @@ class ShopifyCommunicator
 
   def add_product(product_id)
     product = Product.find(product_id)
-
     new_product = ShopifyAPI::Product.new
-    assign(new_product, product)
-
     if @shop.present?
-      supply = Supply.new(shop_id: @shop.id,
-                    product_id: product.id,
-                    user_id: @shop.user_id,
-                    shopify_product_id: new_product.id)
-      supply.copy_product_attr_add_product
-      if supply.save
-        product.images.each do  |image|
-          supply_image = supply.images.new(file: ORIGINAL_URL+ image.file.url)
-          supply_image.save
-        end
-        product.variants.each do |variant|
-          variant_image = variant.images&.first
-          supply_variant = supply.supply_variants.new(option1: variant.option1, option2: variant.option2, option3: variant.option3, price: variant.price, sku: variant.sku, compare_at_price: variant.compare_at_price)
-          if supply_variant.save
-            if variant_image
-              supply_variant_image = supply_variant.images.new(file: ORIGINAL_URL + variant_image.file.url)
-              supply_variant_image.save
-            end
-          end
+      ActiveRecord::Base.transaction do
+        supply = Supply.new(shop_id: @shop.id,
+                      product_id: product.id,
+                      user_id: @shop.user_id)
+        supply.copy_product_attr_add_product
+        if supply.save
+          ProductService.delay.sync_images(product, supply)
+          ProductService.assign(@shop, new_product, product, supply)
         end
       end
     end
@@ -202,7 +206,7 @@ class ShopifyCommunicator
   def sync_product(supply_id)
     supply = Supply.find(supply_id)
     shopify_product = ShopifyAPI::Product.find(supply.shopify_product_id)
-    assign(shopify_product, supply.product, supply)
+    ProductService.assign(@shop, shopify_product, supply.product, supply)
   end
 
   def sync_supply(supply_id)
@@ -269,63 +273,48 @@ class ShopifyCommunicator
     end
   end
 
-  def assign(shopify_product, product, supply=nil)
-    shopify_product.title = product.name
-    shopify_product.vendor = @shop.shopify_domain
-    shopify_product.body_html = product.desc
-    shopify_product.images = product.images.collect do |i|
-      { "src" => URI.join(Rails.application.secrets.default_host, i.file.url(:original)).to_s }
-      raw_content = Paperclip.io_adapters.for(i.file).read
-      encoded_content = Base64.encode64(raw_content)
-      { "attachment" => encoded_content }
+  def sync_customers(data)
+    customer_attributes = data.attributes['customer']
+    unless customer_attributes&.email&.present?
+      return
     end
+    shipping_method = data.attributes['shipping_lines'].inject([]){|shipping_method, line| shipping_method << line.code }.join(",")
 
-    variants = []
-    unless product.variants.empty?
-      shopify_product.options = product.options.collect do |o|
-        { "name" => o.name.capitalize }
-      end
-      variants = product.variants.collect do |v|
-        {
-          'option1': v.option1,
-          'option2': v.option2,
-          'option3': v.option3,
-          'weight': product.weight,
-          'weight_unit': 'g',
-          'compare_at_price': v.compare_at_price,
-          'price': v.price,
-          'sku': v.sku
+    customer_params = {
+      email: customer_attributes.email,
+      fullname: customer_attributes.default_address.name,
+      ship_address1: customer_attributes.default_address.address1,
+      ship_address2: customer_attributes.default_address.address2,
+      ship_city: customer_attributes.default_address.city,
+      ship_state: customer_attributes.default_address.province,
+      ship_zip: customer_attributes.default_address.zip,
+      ship_country: customer_attributes.default_address.country,
+      ship_phone: customer_attributes.default_address.phone,
+      shipping_method: shipping_method,
+      country_code: customer_attributes.default_address.country_code
+    }
+
+    @customer = Customer.find_or_initialize_by(email: customer_params[:email])
+    if @customer.new_record?
+      @customer.generate_token
+      @customer.save
+    end
+    @customer.update_attributes(customer_params)
+
+    data.attributes["line_items"].each do |item|
+      cus_line_item_params = {
+        customer_id: @customer.present? ? @customer.id : Customer.find_by_email(customer_attributes.email).id,
+        sku: item.sku,
+        quantity: item.quantity,
+        price: item.price,
+        title: item.title,
+        shopify_line_item_id: item.id,
+        name: item.name,
+        on_system: Product.exists?(sku: item.sku.first(3)),
+        shop_id: @shop.id
         }
-      end
-    else
-      variants = [{
-        'weight': product.weight,
-        'weight_unit': 'g',
-        'price': product.suggest_price,
-        'compare_at_price': product.compare_at_price,
-        'sku': product.sku
-      }]
-    end
-    shopify_product.variants = variants
-    success = shopify_product.save
-    if success == true && !product.variants.empty?
-      product.variants.each do |v|
-        unless v.images.empty?
-          shopify_v = shopify_product.variants.find {|sv| sv.sku == v.sku}
-
-          img = v.images.first
-          raw_content = Paperclip.io_adapters.for(img.file).read
-          encoded_content = Base64.encode64(raw_content)
-
-          image_params = {
-            "variant_ids" => [shopify_v.id],
-            "attachment" => encoded_content,
-            "filename" => img.file_file_name
-          }
-          shopify_img = ShopifyAPI::Image.new(product_id: shopify_product.id, image: image_params)
-          shopify_img.save
-        end
-      end
+      cus_line_item = CusLineItem.find_or_initialize_by(shopify_line_item_id: item.id)
+      cus_line_item.update_attributes(cus_line_item_params)
     end
   end
 

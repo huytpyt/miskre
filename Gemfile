@@ -107,3 +107,9 @@ gem "aftership", "~> 4.3.1"
 gem 'rubyzip', '~> 1.1.0'
 gem 'axlsx', '2.1.0.pre'
 gem 'axlsx_rails'
+# Manage multi-environment settings
+gem 'config', '~> 1.4'
+# For convert iso country codes
+gem 'iso_country_codes', '~> 0.7.5'
+#For coding stle, coding convetion
+gem 'rubocop', '~> 0.39.0'

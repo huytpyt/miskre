@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/orderNo=:id', to: 'tracking_informations#show', as: "order_tracking"
+
   resources :nations do
     collection do
       get 'sync_shipping', to: "nations#sync_shipping"
@@ -117,7 +119,7 @@ Rails.application.routes.draw do
   end
 
   resources :orders, only: [:index, :show] do
-    resources :fulfillments, only: [:new, :create]
+    resources :fulfillments, only: [:new, :create, :edit, :update]
     get 'fetch', on: :collection
     collection do
       get 'fetch_orders', to: "orders#fetch_orders", as: "fetch_orders"
@@ -175,14 +177,21 @@ Rails.application.routes.draw do
             resource :session
             post :add_balance
             post :add_balance_manual
+            post :refund_balance
             post :request_charge_orders
           end
         end
       end
       resources :inventories
-      resources :tracking_informations do
+      resources :customers do
         collection do
-          post :fetch_new_tracking_info
+          get :customers_statistic
+        end
+      end
+      resources :tracking_informations, only: [] do
+        collection do
+          get :fetch_new_tracking_info
+          get :show_info
         end
       end
       resources :audits do

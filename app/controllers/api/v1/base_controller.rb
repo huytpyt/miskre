@@ -9,8 +9,17 @@ class Api::V1::BaseController < Api::ApiController
 	protect_from_forgery with: :null_session
 
 	before_action :authenticate_any!, if: :skip_new_session
-
   before_action :add_allow_credentials_headers
+  before_action :check_user_active
+
+  def check_user_active
+    if user_signed_in?
+      unless current_user.active == true
+        current_user.timeout_access_token_by(access_token)
+        return
+      end
+    end
+  end
 
   def add_allow_credentials_headers
     response.headers['Access-Control-Allow-Origin'] = request.headers['Origin'] || '*'

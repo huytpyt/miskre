@@ -52,15 +52,8 @@ class BillingsController < ApplicationController
         redirect_to new_billing_path, notice: "Unknown file type"
         return
       end
-      
       billings_orders = billing_service.update_data spreadsheet
-
-      if billings_orders[0].billings_orders.none?
-        redirect_to billings_path, notice: billings_orders[1]
-      else
-        JobsService.delay.fulfillment billings_orders[0]
-        redirect_to billings_path, notice: "Upload successfully!  #{billings_orders[1]}"
-      end
+      redirect_to billings_path, notice: billings_orders
     end
   end
 

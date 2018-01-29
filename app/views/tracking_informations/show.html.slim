@@ -1,0 +1,113 @@
+doctype html
+html
+  head
+    meta charset="utf-8" /
+    meta content="width=device-width, initial-scale=1.0, user-scalable = no" name="viewport" /
+    meta content="yes" name="apple-mobile-web-app-capable" /
+    meta content="Miskre" name="apple-mobile-web-app-title" /
+    meta content="black" name="apple-mobile-web-app-status-bar-style" /
+    link href="/icon.png" rel="apple-touch-icon" /
+    link href="/launch.png" rel="apple-touch-startup-image" /
+    link href="/favicon.ico" rel=("shortcut icon") type="image/x-icon" /
+    link href="/favicon.ico" rel="icon" type="image/x-icon" /
+    title Tracking - Miskre
+    = stylesheet_link_tag "tracking_information"
+  body
+    - if @success
+      .top-bar
+        .ctn
+          .rw
+            .cl
+              h1
+                | Hi,&nbsp;
+                strong> = [@order.first_name, @order.last_name].join(" ") + "!"
+      .ctn
+        .rw
+          .cl.md-8
+            .content
+              .confirmation
+                h2.title Your order has been processed and shipment is confirmed.
+                .note We've accepted your order, and we're getting it ready. Come back to this page for updates on your shipment status.
+              .code
+                h2.type = @fulfillment&.tracking_informations.last&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
+                .number = (@order.tracking_number_real if @order.tracking_number_real != "none") || @fulfillment&.tracking_number
+              ul.timeline
+                - if @fulfillment.present?
+                  - tracking_data = []
+                  - @tracking_information.each{|tracking_info| tracking_data << tracking_info[:tracking_history]}
+                  - tracking_data.flatten.group_by{|hash| hash["checkpoint_time"].to_date }.sort{ |a,b|  DateTime.parse(b.first.to_s) <=> DateTime.parse(a.first.to_s) }.each_with_index do |infomation, index|
+                    - if infomation.first <= Time.now.utc
+                      li.date = infomation.first.strftime("%a, %d %b %Y")
+                      - data = infomation.count
+                      - infomation.reverse().take(data - 1).flatten.sort{ |a,b|  DateTime.parse(b["checkpoint_time"]) <=> DateTime.parse(a["checkpoint_time"]) }.each_with_index do |detail, index_|
+                        li class = "#{(index.zero? && index_.zero?) ? 'done' : nil}"
+                          .time = DateTime.parse(detail["checkpoint_time"]).strftime("%I:%M%p")
+                          .position = detail["location"].presence || @fulfillment.tracking_company
+                          .status = detail["message"]
+
+          .cl.md-4
+            .side-bar
+              .customer-information.side-block
+                .title Customer Information
+                dl.information
+                  dt Shipping Address
+                  dd
+                    .name = [@order.first_name, @order.last_name].join(" ")
+                    .address
+                      = @order.ship_address1
+                      br
+                      = @order.ship_city
+                      br
+                      = @order.ship_state
+                      br
+                      = @order.ship_country
+                      br
+                      = @order.ship_phone
+                  dt Shipping Method
+                  dd = @fulfillment&.tracking_informations.last&.courier_name.to_s.gsub("-", " ").humanize.presence || "MISKRE"
+              .order-number.side-block
+                .title = "Order ##{@order.id}"
+                ul.orders
+                  -if @products.present?
+                    - @products.each do |item|
+                      li
+                        .image
+                          - unless item[:image].nil?
+                            img src="#{item[:image].file_url}"
+                          - else
+                            = image_tag "default.jpg"
+                        .info
+                          .rw
+                            .cl.md-9.name = item[:item_name]
+                            .cl.md-3.amount = item[:quantity]
+              - if @orders_history.present?
+                .order-number.side-block
+                  .title Orders history
+                  - @orders_history.includes(:line_items).each do |order|
+                    - products = order.products_in_order
+                    - trackable = order&.fulfillments&.first&.tracking_number.present?
+                    .tracking-link
+                      a class=(trackable ? '' : 'untrackable') href="#{order_tracking_path(order&.shopify_id)}?token=#{order.encode_token}" View Tracking
+                    ul.orders.orders_history
+                      - if products.present?
+                        div.order-info
+                          .title = "Order ##{order.id}"
+                        - products.each do |item|
+                          li
+                            .image
+                              - unless item[:image].nil?
+                                img src="#{item[:image].file_url}"
+                              - else
+                                = image_tag "default.jpg"
+                            .info
+                              .rw
+                                .cl.md-9.name href="#" target="_blank" = item[:item_name]
+                                .cl.md-3.amount = item[:quantity]
+                    hr.hr_black
+    - else
+      .top-bar
+        .ctn
+          .rw
+            .cl
+              | Sorry, not found!
+
