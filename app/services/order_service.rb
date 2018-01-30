@@ -313,6 +313,10 @@ class OrderService
     out_file.path
   end
 
+  def calculate_in_stock
+
+  end
+
   def self.product_info order
     info = ""
     order.line_items.each do |item|

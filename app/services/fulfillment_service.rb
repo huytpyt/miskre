@@ -14,13 +14,13 @@ class FulfillmentService
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, tracking_number: tracking_number, tracking_url: tracking_url, tracking_company: TRACKING_COMPANY)
       if new_fulfilllment.save
         order.fulfillments.create(
-          shopify_order_id: order.shopify_id, 
-          fulfillment_id: new_fulfilllment.id, 
-          status: "success", 
-          service: "manual", 
-          tracking_company: TRACKING_COMPANY, 
+          shopify_order_id: order.shopify_id,
+          fulfillment_id: new_fulfilllment.id,
+          status: "success",
+          service: "manual",
+          tracking_company: TRACKING_COMPANY,
           tracking_number: tracking_number,
-          tracking_url: tracking_url, 
+          tracking_url: tracking_url,
           items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
         )
         order.update(fulfillment_status: "fulfilled")
@@ -116,8 +116,8 @@ class FulfillmentService
       shopify_fulfillment.tracking_company = get_params[:tracking_company]
       shopify_fulfillment.save
       return "Update succesfully"
-    rescue Exception => e  
-      return e.message  
+    rescue Exception => e
+      return e.message
     end
   end
 end

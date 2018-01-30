@@ -20,12 +20,12 @@ class Api::V1::InventoriesController < Api::V1::BaseController
   end
 
   def update
-    result, errors, inventory = InventoryService.update(params[:id], inventory_params)
+    result, errors, inventory = InventoryService.update(params[:id], inventory_params, inventory_variant_params)
     render json: { result: result, errors: errors, inventory: inventory }, status: 200
   end
 
   def create
-    result, errors, inventory = InventoryService.create(inventory_params)
+    result, errors, inventory = InventoryService.create(inventory_params, inventory_variant_params)
     render json: { result: result, errors: errors, inventory: inventory }, status: 200
   end
 
@@ -37,5 +37,9 @@ class Api::V1::InventoriesController < Api::V1::BaseController
   private
     def inventory_params
       params.permit(:id, :product_id, :quantity, :cost)
+    end
+
+    def inventory_variant_params
+      params.permit(:variants)
     end
 end

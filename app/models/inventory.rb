@@ -8,10 +8,12 @@
 #  cost       :decimal(, )
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  in_stock   :integer
 #
 
 class Inventory < ApplicationRecord
   belongs_to :product
+  has_many :inventory_variants, dependent: :destroy
 
   scope :in_stock, ->{ where("quantity > 0").order("cost DESC") }
 
