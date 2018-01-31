@@ -41,11 +41,11 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
-  enumerize :role, in: [:admin, :manager, :partner, :user, :supplier],
+  enumerize :role, in: [:admin, :manager, :partner, :user, :is_supplier],
     default: :user, predicates: true
 
   has_one :balance
-  has_one :supplier, -> { includes(:user).where(users: {role: 'supplier'}) }
+  has_one :supplier, -> { includes(:user).where(users: {role: 'is_supplier'}) }
   has_many :shops
   has_many :products
   has_many :shippings

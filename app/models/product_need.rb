@@ -13,4 +13,5 @@
 
 class ProductNeed < ApplicationRecord
   has_many :bid_transactions
+  enum status: [:suspend, :running, :finish]
 end

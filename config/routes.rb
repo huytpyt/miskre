@@ -272,6 +272,7 @@ Rails.application.routes.draw do
         end
       end
       resources :categories, only: [:index]
+      resources :bid_transactions, only: [:create, :update, :destroy, :show, :index]
     end
   end
 
