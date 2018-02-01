@@ -256,43 +256,62 @@ class OrderService
 
   def self.check_order_available order_list
     order_list_id = order_list.pluck(:id)
-    product_info_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity, orders.id AS order_id
+    product_info_sql = "SELECT products.sku, line_items.sku as variant_sku, line_items.quantity as variant_quantity, SUM(line_items.quantity) AS total_quantity, orders.id AS order_id
       FROM
       (((shops JOIN orders ON shops.id = orders.shop_id)
       JOIN line_items ON orders.id = line_items.order_id)
       JOIN products ON products.id = line_items.product_id)
       WHERE orders.id IN #{order_list_id.to_s.gsub("[", "(").gsub("]", ")")}
-      GROUP BY products.sku, orders.id
+      GROUP BY products.sku, orders.id, variant_sku, variant_quantity
       ORDER BY total_quantity desc"
 
     product_info_result = Product.find_by_sql(product_info_sql)
 
     product_sku_array = product_info_result.pluck(:sku)
 
-    inventory_by_product_sql = "SELECT products.sku, SUM(inventories.quantity) as total_quantity
-      FROM (products JOIN inventories ON products.id = inventories.product_id)
+    inventory_by_product_sql = "SELECT products.sku, variants.sku as variant_sku, SUM(inventories.in_stock) as inventory_quantity, sum(inventory_variants.in_stock) as variant_quantity
+      FROM (products JOIN inventories ON products.id = inventories.product_id
+      LEFT JOIN (inventory_variants JOIN variants ON variants.id = inventory_variants.variant_id) ON inventory_variants.inventory_id = inventories.id)
       WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
-      GROUP BY products.sku"
+      GROUP BY products.sku, variant_sku"
 
 
     inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
 
     orders_available_id = []
     orders_unavailabe_id = []
-    product_info_result.each do |product|
-      product_in_inventory = inventory_by_product_result.select{|a| a.sku == product.sku}.first
-      if product_in_inventory.present? && product.total_quantity < product_in_inventory.try(:total_quantity).to_i
-        orders_available_id << product.order_id
-        product_in_inventory.total_quantity - product.total_quantity
-      else
-        orders_unavailabe_id << product.order_id
+    pickup_info = []
+
+    product_info_result.group_by{|info| info["order_id"] }.each do |order_id, line_items|
+      alert = []
+      line_items.each do |item|
+        is_have_variant = item["sku"] != item["variant_sku"]
+        item_sku = is_have_variant ? item["variant_sku"] : item["sku"]
+
+        product_in_inventory = is_have_variant ? inventory_by_product_result.select{|a| a.variant_sku == item.variant_sku}.first : inventory_by_product_result.select{|a| a.sku == item.sku}.first
+        in_stock = is_have_variant ? product_in_inventory.try(:variant_quantity) : product_in_inventory.try(:inventory_quantity)
+        order_quantity = is_have_variant ? item.variant_quantity : item.total_quantity
+        @valid_order = true
+
+        if product_in_inventory.present? && order_quantity <= in_stock.to_i
+          is_have_variant ? product_in_inventory.variant_quantity - item.variant_quantity : product_in_inventory.inventory_quantity - item.total_quantity
+        else
+          @valid_order = false
+          alert << "Request #{order_quantity} #{item_sku} but in stock is #{in_stock.to_i}"
+        end
       end
+      order = Order.find order_id
+      order.stock_warning = alert.presence
+      order.save
+
+      @valid_order ? orders_available_id << order_id : orders_unavailabe_id << order_id
     end
 
-    orders_available_id = orders_available_id.uniq - orders_unavailabe_id.uniq
+    orders_available_id = orders_available_id.uniq - orders_unavailabe_id
     orders_available = Order.where(id: orders_available_id)
-    orders_unavailabe_id = Order.where(id: orders_unavailabe_id.uniq)
-    [orders_available, orders_unavailabe_id]
+    orders_unavailable = Order.where(id: orders_unavailabe_id)
+
+    [orders_available, orders_unavailable]
   end
 
   def self.download_orders order_list_id
@@ -310,10 +329,26 @@ class OrderService
     out_file = File.new(File.join(Dir.pwd, "/excel_file/Orders_#{Time.zone.now}.xlsx"), "w")
     out_file.write(excel.to_stream.read)
     out_file.close
+
+    pickup_sheet = PickupProductSheet.create(
+      file_name: "Orders_#{Time.zone.now}.xlsx",
+      status: PickupProductSheet::statuses["picking"]
+      )
+    pickup_sheet.orders = orders
+    pickup_sheet.save
     out_file.path
   end
 
-  def calculate_in_stock
+  def roll_back_pickup_sheet pickup_sheet_id
+    pickup_sheet = PickupProductSheet.find pickup_sheet_id
+    pickup_sheet.orders.each do |order|
+      order.line_items.each do |line_items|
+
+      end
+    end
+  end
+
+  def calculate_in_stock_inventory order_list_id
 
   end
 

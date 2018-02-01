@@ -77,7 +77,8 @@ class OrdersQuery < BaseQuery
       order_name: order.order_name,
       product_info: OrdersQuery.product_info_by_order(order),
       total_cost: OrderService.new.sum_money_from_order(order, false).to_f,
-      products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)}
+      products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)},
+      stock_warning: order.stock_warning
     }
   end
 

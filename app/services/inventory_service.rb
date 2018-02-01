@@ -21,7 +21,8 @@ class InventoryService
                 inventory_id: inventory.id,
                 variant_id:item[:variant_id],
                 cost: item[:cost],
-                quantity: item[:quantity]
+                quantity: item[:quantity],
+                in_stock: item[:quantity]
                 )
             end
           end
@@ -35,6 +36,10 @@ class InventoryService
     def update inventory_id, inventory_params, inventory_variant_params
       inventory = Inventory.where(id: inventory_id).first
       if inventory
+        if inventory.persisted? && inventory_params[:quantity]
+          quantity_increase = inventory_params[:quantity].to_i - inventory.quantity
+          inventory.in_stock += quantity_increase
+        end
         inventory.assign_attributes(inventory_params)
         if inventory.valid?
           ActiveRecord::Base.transaction do
@@ -43,6 +48,12 @@ class InventoryService
               variants = eval(inventory_variant_params[:variants])
               variants.each do |item|
                 inventory_variant = InventoryVariant.find_or_initialize_by(inventory_id: item[:inventory_id], variant_id: item[:variant_id])
+                if inventory_variant.persisted? && item[:quantity]
+                  quantity_increase = item[:quantity].to_i - inventory_variant.quantity
+                  inventory_variant.in_stock += quantity_increase
+                else
+                  inventory_variant.in_stock = item[:quantity].to_i
+                end
                 inventory_variant.assign_attributes(item)
                 inventory_variant.save
               end
