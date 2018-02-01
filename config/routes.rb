@@ -185,6 +185,11 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :product_needs do
+        collection do
+          post "toggle_status", to: "product_needs#toggle_status"
+        end
+      end
       resources :tracking_informations, only: [] do
         collection do
           get :fetch_new_tracking_info
@@ -272,7 +277,11 @@ Rails.application.routes.draw do
         end
       end
       resources :categories, only: [:index]
-      resources :bid_transactions, only: [:create, :update, :destroy, :show, :index]
+      resources :bid_transactions, only: [:create, :update, :destroy, :show, :index] do
+        collection do
+          post "toggle_status", to: "bid_transactions#toggle_status"
+        end
+      end
     end
   end
 
