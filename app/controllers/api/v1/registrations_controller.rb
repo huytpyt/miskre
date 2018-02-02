@@ -4,11 +4,13 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
   def create
     resource = User.new(sign_up_params_new)
     if params[:registration_type] == "supplier"
-      resource.role = "supplier"
-      resource.save
-      supplier = Supplier.new(supplier_params)
-      supplier.user_id = resource.id
-      supplier.save
+      ActiveRecord::Base.transaction do
+        resource.role = "is_supplier"
+        resource.save
+        supplier = Supplier.new(supplier_params)
+        supplier.user_id = resource.id
+        supplier.save
+      end
     else
       parent_ref_code = sign_up_params_new[:reference_code]
       ref_code = UserService.new.generate_ref_code

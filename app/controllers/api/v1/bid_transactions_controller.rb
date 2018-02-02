@@ -2,7 +2,8 @@ class Api::V1::BidTransactionsController < Api::V1::BaseController
 	before_action :supplier_authentication
 	before_action :set_transaction, only: [:update, :destroy, :show]
   def create
-  	unless params[:time].is_a? Integer
+    params[:time] = params[:time].to_i
+  	unless params[:time].to_i.is_a? Integer
   		render json: {bid_transaction: nil, errors: "Time must be integer"}, status: 200
   		return
   	end
@@ -16,6 +17,7 @@ class Api::V1::BidTransactionsController < Api::V1::BaseController
   end
 
   def update
+    params[:time] = params[:time].to_i
   	unless params[:time].is_a? Integer
   		render json: {bid_transaction: nil, errors: "Time must be integer"}, status: 200
   		return

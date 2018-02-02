@@ -6,9 +6,10 @@ module BuildQuery
     data = json_data.each do |key, value|
              json_data["#{key}"] = record.send(key)
            end
-
-    has_association.each do |association|
-      data.merge!({"#{association}": record.send(association).map{|object| build_single_query(association.singularize.camelize.constantize, object, nil)}})
+    if has_association
+      has_association.each do |association|
+        data.merge!({"#{association}": record.send(association).map{|object| build_single_query(association.singularize.camelize.constantize, object, nil)}})
+      end
     end
     data
   end
