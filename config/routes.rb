@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/orderNo=:id', to: 'tracking_informations#show'
+  get '/orderNo=:id', to: 'tracking_informations#show', as: "order_tracking"
 
   resources :nations do
     collection do
@@ -185,9 +185,14 @@ Rails.application.routes.draw do
           end
         end
       end
+
       resources :product_needs do
         collection do
           post "toggle_status", to: "product_needs#toggle_status"
+      end
+      resources :customers do
+        collection do
+          get :customers_statistic
         end
       end
       resources :tracking_informations, only: [] do

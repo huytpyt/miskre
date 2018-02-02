@@ -6,6 +6,7 @@ class ShopifyCommunicator
       ShopifyAPI::Base.activate_session(@session)
     rescue
       p "UnauthorizedAccess"
+      return
     end
   end
 
@@ -83,7 +84,7 @@ class ShopifyCommunicator
     end
   end
 
-  def sync_orders(start_date=10.day.ago, end_date=DateTime.now)
+  def sync_orders(start_date = 5.day.ago, end_date = DateTime.now)
     params = {
       status: 'any',
       created_at_min: start_date.strftime("%FT%T%:z"),
@@ -104,6 +105,7 @@ class ShopifyCommunicator
           fetched_pages += 1
 
           orders.each do |o|
+            sync_customers(o)
             unless Order.exists?(shopify_id: o.id)
               select_items = o.line_items.select do |o_item|
                 o_item if Product.exists?(sku: o_item.sku.first(3))
@@ -116,7 +118,7 @@ class ShopifyCommunicator
                     add_line_items(new_order, select_items)
                     # New system no need
                     if new_order.financial_status == "paid"
-                      FulfillmentService.delay_for(5.day).fulfill_for_order(new_order, @shop)
+                      FulfillmentService.delay_for(5.days).fulfill_for_order(new_order, @shop)
                     end
                   end
                 rescue NoMethodError => e
@@ -143,7 +145,7 @@ class ShopifyCommunicator
                 unless order.fulfillment_status == "fulfilled"
                   if order.financial_status == "paid" && order.tracking_number_real.nil?
                     begin
-                      FulfillmentService.delay_for(5.day).fulfill_for_order(order, @shop)
+                      FulfillmentService.delay_for(5.days).fulfill_for_order(order, @shop)
                     rescue
                       p "#{order.id} Can't fulfill"
                     end
@@ -268,6 +270,51 @@ class ShopifyCommunicator
           shopify_img.save
         end
       end
+    end
+  end
+
+  def sync_customers(data)
+    customer_attributes = data.attributes['customer']
+    unless customer_attributes&.email&.present?
+      return
+    end
+    shipping_method = data.attributes['shipping_lines'].inject([]){|shipping_method, line| shipping_method << line.code }.join(",")
+
+    customer_params = {
+      email: customer_attributes.email,
+      fullname: customer_attributes.default_address.name,
+      ship_address1: customer_attributes.default_address.address1,
+      ship_address2: customer_attributes.default_address.address2,
+      ship_city: customer_attributes.default_address.city,
+      ship_state: customer_attributes.default_address.province,
+      ship_zip: customer_attributes.default_address.zip,
+      ship_country: customer_attributes.default_address.country,
+      ship_phone: customer_attributes.default_address.phone,
+      shipping_method: shipping_method,
+      country_code: customer_attributes.default_address.country_code
+    }
+
+    @customer = Customer.find_or_initialize_by(email: customer_params[:email])
+    if @customer.new_record?
+      @customer.generate_token
+      @customer.save
+    end
+    @customer.update_attributes(customer_params)
+
+    data.attributes["line_items"].each do |item|
+      cus_line_item_params = {
+        customer_id: @customer.present? ? @customer.id : Customer.find_by_email(customer_attributes.email).id,
+        sku: item.sku,
+        quantity: item.quantity,
+        price: item.price,
+        title: item.title,
+        shopify_line_item_id: item.id,
+        name: item.name,
+        on_system: Product.exists?(sku: item.sku.first(3)),
+        shop_id: @shop.id
+        }
+      cus_line_item = CusLineItem.find_or_initialize_by(shopify_line_item_id: item.id)
+      cus_line_item.update_attributes(cus_line_item_params)
     end
   end
 

@@ -1,7 +1,6 @@
 class FulfillmentService
   # New system no need fulfill_for_order
   def self.fulfill_for_order(order, shop)
-    order.update(fulfillment_status: "fulfilled")
     begin
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
       ShopifyAPI::Base.activate_session(session)
@@ -9,8 +8,9 @@ class FulfillmentService
       while Fulfillment.exists?(tracking_number: tracking_number)
         tracking_number = generate_tracking_number(order&.country_code || "HK")
       end
+      uniq_token = Customer.find_by_email(order.email)
       tracking_url = Settings.tracking_url + "orderNo=" + order.shopify_id
-
+      tracking_url += ("?token=" + order.encode_token) if uniq_token
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, tracking_number: tracking_number, tracking_url: tracking_url, tracking_company: TRACKING_COMPANY)
       if new_fulfilllment.save
         order.fulfillments.create(
@@ -23,8 +23,11 @@ class FulfillmentService
           tracking_url: tracking_url, 
           items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
         )
+        order.update(fulfillment_status: "fulfilled")
       end
+      p "Fulilled success"
     rescue
+      order.update(fulfillment_status: "error")
       p "Something went wrong!"
     end
   end

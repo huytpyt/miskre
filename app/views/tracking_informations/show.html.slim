@@ -40,11 +40,10 @@ html
                       li.date = infomation.first.strftime("%a, %d %b %Y")
                       - data = infomation.count
                       - infomation.reverse().take(data - 1).flatten.sort{ |a,b|  DateTime.parse(b["checkpoint_time"]) <=> DateTime.parse(a["checkpoint_time"]) }.each_with_index do |detail, index_|
-                        - if DateTime.parse(detail["checkpoint_time"]) <= DateTime.now
-                          li class = "#{(index.zero? && index_.zero?) ? 'done' : nil}"
-                            .time = DateTime.parse(detail["checkpoint_time"]).strftime("%I:%M%p")
-                            .position = detail["location"].presence || @fulfillment.tracking_company
-                            .status = detail["message"]
+                        li class = "#{(index.zero? && index_.zero?) ? 'done' : nil}"
+                          .time = DateTime.parse(detail["checkpoint_time"]).strftime("%I:%M%p")
+                          .position = detail["location"].presence || @fulfillment.tracking_company
+                          .status = detail["message"]
 
           .cl.md-4
             .side-bar
@@ -78,8 +77,33 @@ html
                           - else
                             = image_tag "default.jpg"
                         .info
-                          a.name href="#" target="_blank" = item[:item_name]
-                          .amount = item[:quantity]
+                          .rw
+                            .cl.md-9.name = item[:item_name]
+                            .cl.md-3.amount = item[:quantity]
+              - if @orders_history.present?
+                .order-number.side-block
+                  .title Orders history
+                  - @orders_history.includes(:line_items).each do |order|
+                    - products = order.products_in_order
+                    - trackable = order&.fulfillments&.first&.tracking_number.present?
+                    .tracking-link
+                      a class=(trackable ? '' : 'untrackable') href="#{order_tracking_path(order&.shopify_id)}?token=#{order.encode_token}" View Tracking
+                    ul.orders.orders_history
+                      - if products.present?
+                        div.order-info
+                          .title = "Order ##{order.id}"
+                        - products.each do |item|
+                          li
+                            .image
+                              - unless item[:image].nil?
+                                img src="#{item[:image].file_url}"
+                              - else
+                                = image_tag "default.jpg"
+                            .info
+                              .rw
+                                .cl.md-9.name href="#" target="_blank" = item[:item_name]
+                                .cl.md-3.amount = item[:quantity]
+                    hr.hr_black
     - else
       .top-bar
         .ctn
