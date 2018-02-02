@@ -42,6 +42,11 @@ class Api::V1::BidTransactionsController < Api::V1::BaseController
     render json: BidTransactionsQuery.list(transaction_list, page, per_page, search), status: 200
   end
 
+  def toggle_status
+    response = BidTransactionService.toggle_status(params[:id])
+    render json: response, status: 200
+  end
+
   def destroy
   	@transaction.destroy
   	head :no_content

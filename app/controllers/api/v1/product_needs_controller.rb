@@ -32,7 +32,8 @@ class Api::V1::ProductNeedsController < Api::V1::BaseController
   end
 
   def toggle_status
-    product_need = ProductNeed.find
+    response = ProductNeedService.toggle_status(params[:id])
+    render json: response, status: 200
   end
 
   private
