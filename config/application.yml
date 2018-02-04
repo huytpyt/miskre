@@ -1,5 +1,6 @@
 STRIPE_PUBLISHABLE_KEY: pk_test_XqlMO2iFmCyghF1uad3vSAyP
 STRIPE_SECRET_KEY: "sk_test_d8NIKX61NmkbEn7W7JMUGiPs"
+AFTER_SHIP_KEY: "2a7a844d-b973-4e9b-a1bb-ab23972069c8"
 
 USER_MAIL_SERVER: "orgtree.dev@gmail.com"
 PASSWORD_MAIL_SERVER: "tranphuhuy"

@@ -59,6 +59,10 @@ class OrderService
           request_charge.approved!
           order_list.update_all(paid_for_miskre: true)
           generate_invoice_for_orders(user, -amount_must_paid, order_list, "", new_user_balance)
+          # eval(tracking_number_array).each do |tracking_info|
+          #   result, error = create_fulfillment_for_order(tracking_info[:order_id].to_i, tracking_info[:tracking_number].to_s)
+          #   raise ActiveRecord::Rollback if error.present?
+          # end
         else
           @error << "This account does not have enough balance"
         end
@@ -80,9 +84,53 @@ class OrderService
     if request_charge.approved?
       return { result: "Failed", errors: "This order is approved." }
     else
+      request_charge.orders.update(request_charge_id: nil)
       request_charge.rejected!
       return { result: "Success", errors: nil }
     end
+  end
+
+  def create_fulfillment_for_order order_id, tracking_number
+    order = Order.find order_id
+    if order.present?
+      ShopifyCommunicator.new(order.shop.id)
+      items_name_array = []
+      items_id_array = []
+      order.line_items.each do |line_item|
+        items_name_array.push({name: line_item.name, quantity: line_item.fulfillable_quantity})
+        items_id_array.push({id: line_item.line_item_id, quantity: line_item.fulfillable_quantity})
+      end
+      get_courier = AfterShip::V4::Courier.detect({ tracking_number: tracking_number })
+      courier = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "name") || "MISKRE"
+      courier_url = get_courier.try(:[], "data").try(:[], "couriers").first.try(:[], "web_url") || "http://www.17track.net/en/track?nums=#{tracking_number}"
+
+      fulfillment = ShopifyAPI::Fulfillment.new(
+        order_id: order.shopify_id,
+        tracking_number: tracking_number,
+        tracking_company: courier,
+        tracking_url: courier_url,
+        line_items: items_id_array)
+
+      if fulfillment.save
+        order.fulfillments.create(
+          fulfillment_id: fulfillment.id,
+          status: "fulfilled",
+          service: fulfillment.service,
+          tracking_company: fulfillment.tracking_company,
+          shipment_status: fulfillment.shipment_status,
+          tracking_number: fulfillment.tracking_number,
+          tracking_url: fulfillment.tracking_url,
+          shopify_order_id: order.shopify_id,
+          items: items_name_array)
+
+        order.update(fulfillment_status: "fulfilled")
+        fulfillment_service.update_line_items order
+        return { result: "Success", error: nil}
+      else
+        return { result: "Failed", error: "Fulfilled"}
+      end
+    end
+    return { result: "Failed", error: "Can not find order with id #{order_id}"}
   end
 
   def order_statistics duration
@@ -97,7 +145,6 @@ class OrderService
       LIMIT 20"
 
     top_20_product = Shop.find_by_sql(raw_sql)
-
 
     ["Success", nil, top_20_product, duration]
   end
@@ -190,5 +237,9 @@ class OrderService
 
     def orders_paid? order_list
       order_list.pluck(:paid_for_miskre).include?(true)
+    end
+
+    def fulfillment_service
+      @fulfillment_service ||= FulfillmentService.new
     end
 end
