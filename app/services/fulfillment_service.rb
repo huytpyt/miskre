@@ -1,6 +1,12 @@
 class FulfillmentService
   # New system no need fulfill_for_order
   def self.fulfill_for_order(order, shop)
+    unless order.present?
+      return
+    end
+    if order.fulfillments.present?
+      return
+    end
     begin
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
       ShopifyAPI::Base.activate_session(session)
@@ -24,8 +30,8 @@ class FulfillmentService
           items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
         )
         order.update(fulfillment_status: "fulfilled")
+        p "Fulilled success"
       end
-      p "Fulilled success"
     rescue
       order.update(fulfillment_status: "error")
       p "Something went wrong!"
