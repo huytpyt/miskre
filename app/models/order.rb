@@ -44,7 +44,7 @@
 #
 # Foreign Keys
 #
-#  orders_shop_id_fkey  (shop_id => shops.id)
+#  fk_rails_...  (shop_id => shops.id)
 #
 
 class Order < ApplicationRecord

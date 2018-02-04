@@ -36,15 +36,15 @@ class UserQuery < BaseQuery
     }
   end
 
-  def self.list(page = 1, per_page = 12, sort, order_by, search)
-    users = User.all
+  def self.list(page = 1, per_page = 12, type, sort, order_by, search)
+    users = type.present? ? User.where(role: type) : User.all
     sort_options = { "#{order_by}" => sort }
     if users.blank?
       {
         users: []
       }
     else
-      paginate = api_paginate(users.order(sort_options).search(search), page).per(per_page)
+      paginate = api_paginate(users.includes(:shops).includes(:supplier).order(sort_options).search(search), page).per(per_page)
       {
         paginator: {
           total_records: paginate.total_count,
@@ -62,7 +62,7 @@ class UserQuery < BaseQuery
   end
 
   def self.single user
-    {
+    user_info = {
       id: user.id,
       email: user.email,
       name: user.name,
@@ -76,6 +76,20 @@ class UserQuery < BaseQuery
       fb_link: user.fb_link,
       shops: user.shops.map{ |shop| shop_info(shop)}
     }
+    supplier_info = if user.supplier?
+                      supplier_info = {
+                       id: user.supplier.id,
+                       company_name: user.supplier.company_name,
+                       address: user.supplier.address,
+                       activate: user.supplier.activate,
+                       user_id: user.supplier.user_id,
+                       created_at: user.supplier.created_at,
+                       updated_at: user.supplier.updated_at
+                      }
+                    else
+                      {}
+                    end
+    user_info.merge!(supplier_info)
   end
 
   def self.shop_info shop

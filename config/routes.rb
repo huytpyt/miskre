@@ -170,6 +170,9 @@ Rails.application.routes.draw do
 
       devise_scope :user do
         post "sign_up", :to => 'registrations#create'
+        get 'forgetpass', :to => 'forget_password#new'
+        post 'forgetpass', :to => 'forget_password#create'
+        put 'forgetpass', :to => 'forget_password#update'
       end
       resources :users, defaults: {scope: :users}, only: [:index, :update] do
         scope module: 'resource', as: :users do
@@ -181,6 +184,11 @@ Rails.application.routes.draw do
             post :request_charge_orders
           end
         end
+      end
+
+      resources :product_needs do
+        collection do
+          post "toggle_status", to: "product_needs#toggle_status"
       end
       resources :customers do
         collection do
@@ -274,6 +282,11 @@ Rails.application.routes.draw do
         end
       end
       resources :categories, only: [:index]
+      resources :bid_transactions, only: [:create, :update, :destroy, :show, :index] do
+        collection do
+          post "toggle_status", to: "bid_transactions#toggle_status"
+        end
+      end
     end
   end
 

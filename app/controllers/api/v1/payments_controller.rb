@@ -1,7 +1,7 @@
 class Api::V1::PaymentsController < Api::V1::BaseController
   before_action :check_user
   before_action :get_customer, only: [:billing_information, :invoices, :create, :destroy, :edit, :update]
-  
+
   def billing_information
     credit_card = @customer.sources&.first
     if credit_card
@@ -39,7 +39,7 @@ class Api::V1::PaymentsController < Api::V1::BaseController
   end
 
   def update
-    credit_card = @customer.sources.first 
+    credit_card = @customer.sources.first
     credit_card.name = get_params["name"]
     credit_card.address_line1 = get_params["address_line1"]
     credit_card.address_line2 = get_params["address_line2"]
@@ -64,13 +64,13 @@ class Api::V1::PaymentsController < Api::V1::BaseController
   private
   def get_customer
     if current_user.customer_id.nil?
-      @customer = Stripe::Customer.create(email: current_user.email) 
+      @customer = Stripe::Customer.create(email: current_user.email)
       current_user.update(customer_id: @customer.id)
     else
       begin
         @customer = Stripe::Customer.retrieve(current_user.customer_id)
       rescue
-        @customer = Stripe::Customer.create(email: current_user.email) 
+        @customer = Stripe::Customer.create(email: current_user.email)
         current_user.update(customer_id: @customer.id)
       end
     end
