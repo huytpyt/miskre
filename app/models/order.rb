@@ -59,7 +59,6 @@ class Order < ApplicationRecord
   has_one :billing, through: :billings_orders
   belongs_to :invoices
   belongs_to :request_charge
-  belongs_to :pickup_product_sheet
 
   validates :shopify_id, uniqueness: true
 
