@@ -15,7 +15,11 @@ class InventoriesQuery < BaseQuery
   def self.list(page = 1, per_page = 12, sort, order_by, search, current_resource)
     sort_options = { "#{order_by}" => sort }
     inventories = Inventory.all
-    paginate = api_paginate(inventories.order(sort_options).search(search), page).per(per_page)
+    paginate = api_paginate(inventories.includes(product: :variants)
+                                      .includes(product: :options)
+                                      .includes(product: :images)
+                                      .includes(product: :resource_images)
+                                      .includes(:inventory_variants).order(sort_options).search(search), page).per(per_page)
     {
       paginator: {
         total_records: paginate.total_count,
