@@ -269,12 +269,16 @@ class OrderService
 
     product_sku_array = product_info_result.pluck(:sku)
 
-    inventory_by_product_sql = "SELECT products.sku, variants.sku as variant_sku, SUM(inventories.in_stock) as inventory_quantity, sum(inventory_variants.in_stock) as variant_quantity
+    inventory_by_product_sql = "SELECT inventories.id, inventory_variants.id as inventory_variant_id, products.sku, variants.sku as variant_sku, inventories.cost as inventory_cost, inventory_variants.cost as variant_cost, SUM(inventories.in_stock) as inventory_quantity, sum(inventory_variants.in_stock) as variant_quantity
       FROM (products JOIN inventories ON products.id = inventories.product_id
       LEFT JOIN (inventory_variants JOIN variants ON variants.id = inventory_variants.variant_id) ON inventory_variants.inventory_id = inventories.id)
       WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
-      GROUP BY products.sku, variant_sku"
-
+      GROUP BY products.sku, variant_sku, inventories.cost, inventory_variants.cost, inventories.id, inventory_variants.id
+      ORDER BY CASE WHEN variants.sku IS NOT NULL THEN
+                inventory_variants.cost
+                ELSE
+                inventories.cost
+                END DESC"
 
     inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
 
@@ -288,13 +292,37 @@ class OrderService
         is_have_variant = item["sku"] != item["variant_sku"]
         item_sku = is_have_variant ? item["variant_sku"] : item["sku"]
 
-        product_in_inventory = is_have_variant ? inventory_by_product_result.select{|a| a.variant_sku == item.variant_sku}.first : inventory_by_product_result.select{|a| a.sku == item.sku}.first
-        in_stock = is_have_variant ? product_in_inventory.try(:variant_quantity) : product_in_inventory.try(:inventory_quantity)
+        product_in_inventory = is_have_variant ? inventory_by_product_result.select{|a| a.variant_sku == item.variant_sku} : inventory_by_product_result.select{|a| a.sku == item.sku}
+        in_stock = is_have_variant ? product_in_inventory.inject(0){|sum, a| sum += a["variant_quantity"].to_i }
+          : product_in_inventory.inject(0){|sum, a| sum += a["inventory_quantity"].to_i }
+
         order_quantity = is_have_variant ? item.variant_quantity : item.total_quantity
         @valid_order = true
 
         if product_in_inventory.present? && order_quantity <= in_stock.to_i
-          is_have_variant ? product_in_inventory.variant_quantity - item.variant_quantity : product_in_inventory.inventory_quantity - item.total_quantity
+          product_in_inventory.each do |inventory|
+            if is_have_variant
+              if order_quantity >= inventory.variant_quantity
+                order_quantity -= inventory.variant_quantity
+                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.variant_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
+                inventory.variant_quantity = 0
+              else
+                inventory.variant_quantity -= order_quantity
+                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
+                order_quantity = 0
+              end
+            else
+              if order_quantity >= inventory.inventory_quantity
+                order_quantity -= inventory.inventory_quantity
+                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.inventory_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
+                inventory.inventory_quantity = 0
+              else
+                inventory.inventory_quantity -= order_quantity
+                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
+                order_quantity = 0
+              end
+            end if order_quantity > 0
+          end
         else
           @valid_order = false
           alert << "Request #{order_quantity} #{item_sku} but in stock is #{in_stock.to_i}"
@@ -310,57 +338,55 @@ class OrderService
     orders_available_id = orders_available_id.uniq - orders_unavailabe_id
     orders_available = Order.where(id: orders_available_id)
     orders_unavailable = Order.where(id: orders_unavailabe_id)
-
-    [orders_available, orders_unavailable]
+    [orders_available, orders_unavailable, pickup_info]
   end
 
   def self.download_orders order_list_id
     order_list_id = JSON.parse(order_list_id)
     orders = Order.where(id: order_list_id)
-    excel = Axlsx::Package.new do |p|
-              p.workbook.add_worksheet(name: "Orders") do |sheet|
-                sheet.add_row ["Order ID", "Products"]
-                orders.includes(:line_items).each do |order|
-                  info = product_info(order)
-                  sheet.add_row [order.id, info], height: 50
+    orders_available, orders_unavailable, pickup_info = OrderService.check_order_available(orders)
+
+    ActiveRecord::Base.transaction do
+      @excel = Axlsx::Package.new do |p|
+                p.workbook.add_worksheet(name: "Orders") do |sheet|
+                  sheet.add_row ["Order ID", "Products"]
+                  pickup_info.group_by{|data| data[:order_id] }.each do |order|
+                    order_detail = Order.find order[0]
+                    order_detail.pickup_info = order[1]
+                    order_detail.save
+
+                    info = product_info(order[1])
+                    sheet.add_row [order[0], info], height: 50
+                  end
                 end
               end
-            end
+      pickup_info.each do |line|
+        object = InventoryVariant.where(id: line[:variant_id]).first || Inventory.where(id: line[:inventory_id]).first
+        object.in_stock -= line[:quantity].to_i
+        object.save
+      end
+    end
     out_file = File.new(File.join(Dir.pwd, "/excel_file/Orders_#{Time.zone.now}.xlsx"), "w")
-    out_file.write(excel.to_stream.read)
+    out_file.write(@excel.to_stream.read)
     out_file.close
-
-    pickup_sheet = PickupProductSheet.create(
-      file_name: "Orders_#{Time.zone.now}.xlsx",
-      status: PickupProductSheet::statuses["picking"]
-      )
-    pickup_sheet.orders = orders
-    pickup_sheet.save
     out_file.path
   end
 
-  def roll_back_pickup_sheet pickup_sheet_id
-    pickup_sheet = PickupProductSheet.find pickup_sheet_id
-    pickup_sheet.orders.each do |order|
-      order.line_items.each do |line_items|
-
-      end
-    end
-  end
-
-  def calculate_in_stock_inventory order_list_id
-
-  end
-
-  def self.product_info order
+  def self.product_info data
     info = ""
-    order.line_items.each do |item|
-      product_sku = item.product.sku
-      line_item_sku = item.sku
-      quantity = item.quantity
-      product_name = item.product.name
-      info << "Product Name: #{product_name} SKU: #{product_sku} (#{line_item_sku}), Quantity: #{quantity}" + "\n"
+    data.each do |order|
+      object =  InventoryVariant.where(id: order[:variant_id]).first || Inventory.where(id: order[:inventory_id]).first
+      product_name = object.inventory.product.name || object.product.name
+      option1 = object.try(:variant).try(:option1)
+      option2 = object.try(:variant).try(:option2)
+      option3 = object.try(:variant).try(:option3)
+      product_sku = object.inventory.product.sku || object.product.sku
+      variant_sku = object.try(:variant).try(:sku)
+      quantity = order[:quantity]
+      cost = order[:cost]
+      info << "Product Name: #{product_name} - #{option1} #{option2} #{option3} SKU: #{product_sku} (#{variant_sku}), Quantity: #{quantity}, Cost: #{cost}" + "\n"
     end
+
     return info
   end
 

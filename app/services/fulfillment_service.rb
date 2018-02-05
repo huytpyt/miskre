@@ -25,6 +25,7 @@ class FulfillmentService
         )
         order.update(fulfillment_status: "fulfilled")
       end
+      calculate_inventory_after_fulfill(order)
       p "Fulilled success"
     rescue
       order.update(fulfillment_status: "error")
@@ -56,19 +57,16 @@ class FulfillmentService
     end
   end
 
-  def calculate_inventory_after_fulfill orders_list
-    orders_list.each do |order|
-      data = order.line_items.map{|o| {quantity: o.quantity, product_id: o.product_id}}
-      update_inventory_quantity(data)
-    end
+  def self.calculate_inventory_after_fulfill order
+    pickup_info = eval(order.pickup_info)
+    update_inventory_quantity(pickup_info)
   end
 
-  def update_inventory_quantity data_list
-    data_list.each do |data|
-      product = Product.find data[:product_id]
-      inventory = product.inventory
-      inventory.quantity -= data.quantity
-      inventory.save
+  def self.update_inventory_quantity pickup_info
+    pickup_info.each do |line|
+      object = InventoryVariant.where(id: line[:variant_id]).first || Inventory.where(id: line[:inventory_id]).first
+      object.quantity -= line[:quantity].to_i
+      object.save
     end
   end
 
