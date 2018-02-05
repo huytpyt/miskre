@@ -13,6 +13,7 @@
 
 class Inventory < ApplicationRecord
   belongs_to :product
+  belongs_to :vendor
   has_many :inventory_variants, dependent: :destroy
 
   scope :in_stock, ->{ where("quantity > 0").order("cost DESC") }

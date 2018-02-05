@@ -182,6 +182,7 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :vendors
       resources :inventories
       resources :customers do
         collection do
