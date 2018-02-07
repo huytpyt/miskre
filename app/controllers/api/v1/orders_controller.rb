@@ -16,13 +16,31 @@ class Api::V1::OrdersController < Api::V1::BaseController
     financial_status = params[:financial_status].to_s
     fulfillment_status = params[:fulfillment_status].to_s
     shop_id = params[:shop_id] || nil
+    option = params[:option] || nil
     render json: OrdersQuery.list(page, per_page, sort, order_by, search, key,
-      shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource), status: 200
+      shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option), status: 200
   end
 
   def show
     order = Order.find(params[:id])
     render json: OrdersQuery.single(order), status: 200
+  end
+
+  def find_shopify_order
+    shopify_id = params[:shopify_id]
+    order = Order.find_by_shopify_id shopify_id
+    if order
+      render json: OrdersQuery.single(order), status: 200
+    else
+      render json: { errors: "Can not find order with shopify_id: #{shopify_id}"}, status: 200
+    end
+  end
+
+  def fulfill_order
+    order_id = params[:order_id]
+    tracking_number = params[:tracking_number]
+    result, errors = OrderService.new.create_fulfillment_for_order(order_id, tracking_number)
+    render json: { result: result, errors: errors }, status: 200
   end
 
   def accept_charge_orders
@@ -56,6 +74,11 @@ class Api::V1::OrdersController < Api::V1::BaseController
     duration = params[:duration].to_i
     response = OrderService.new.shop_statistics(shop_id, current_user, duration)
     render json: OrdersQuery.shop_statistics(response), status: 200
+  end
+
+  def download_orders
+    response = OrderService.download_orders(params[:order_list_id])
+    render json: { result: "OK", file_path: response}, status: 200
   end
 
   private

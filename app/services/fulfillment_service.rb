@@ -20,18 +20,20 @@ class FulfillmentService
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: order.shopify_id, tracking_number: tracking_number, tracking_url: tracking_url, tracking_company: TRACKING_COMPANY)
       if new_fulfilllment.save
         order.fulfillments.create(
-          shopify_order_id: order.shopify_id, 
-          fulfillment_id: new_fulfilllment.id, 
-          status: "success", 
-          service: "manual", 
-          tracking_company: TRACKING_COMPANY, 
+          shopify_order_id: order.shopify_id,
+          fulfillment_id: new_fulfilllment.id,
+          status: "success",
+          service: "manual",
+          tracking_company: TRACKING_COMPANY,
           tracking_number: tracking_number,
-          tracking_url: tracking_url, 
+          tracking_url: tracking_url,
           items: order.line_items.collect {|order| {name: order.name, quantity: order.quantity}}
         )
         order.update(fulfillment_status: "fulfilled")
         p "Fulilled success"
       end
+      calculate_inventory_after_fulfill(order)
+      p "Fulilled success"
     rescue
       order.update(fulfillment_status: "error")
       p "Something went wrong!"
@@ -48,7 +50,7 @@ class FulfillmentService
     begin
       shop = Shop.find(shop_id)
       session = ShopifyAPI::Session.new(shop.shopify_domain, shop.shopify_token)
-      ShopifyAPI::Base.activate_session(session) 
+      ShopifyAPI::Base.activate_session(session)
       new_fulfilllment = ShopifyAPI::Fulfillment.new(order_id: fulfillment.shopify_order_id, tracking_number: fulfillment.tracking_number, tracking_url: fulfillment.tracking_url, tracking_company: fulfillment.tracking_company)
       if new_fulfilllment.save
         fulfillment.update(fulfillment_id: new_fulfilllment.id)
@@ -59,6 +61,19 @@ class FulfillmentService
       end
     rescue
       "This shop already removed!"
+    end
+  end
+
+  def self.calculate_inventory_after_fulfill order
+    pickup_info = eval(order.pickup_info)
+    update_inventory_quantity(pickup_info)
+  end
+
+  def self.update_inventory_quantity pickup_info
+    pickup_info.each do |line|
+      object = InventoryVariant.where(id: line[:variant_id]).first || Inventory.where(id: line[:inventory_id]).first
+      object.quantity -= line[:quantity].to_i
+      object.save
     end
   end
 
@@ -106,8 +121,8 @@ class FulfillmentService
       shopify_fulfillment.tracking_company = get_params[:tracking_company]
       shopify_fulfillment.save
       return "Update succesfully"
-    rescue Exception => e  
-      return e.message  
+    rescue Exception => e
+      return e.message
     end
   end
 end

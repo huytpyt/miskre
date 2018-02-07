@@ -36,6 +36,8 @@
 #  order_name           :string
 #  country_code         :string
 #  tracking_number_real :string
+#  stock_warning        :string
+#  pickup_info          :string
 #
 # Indexes
 #
