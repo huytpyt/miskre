@@ -16,6 +16,8 @@ class InventoryVariant < ApplicationRecord
   belongs_to :variant
   belongs_to :inventory
 
+  scope :asc, -> { order("created_at ASC") }
+
   after_commit do
     inventory.quantity = inventory.inventory_variants.inject(0){ |total_quantity, variant| total_quantity += variant.quantity}
     inventory.save

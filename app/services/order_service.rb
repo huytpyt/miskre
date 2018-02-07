@@ -256,79 +256,84 @@ class OrderService
 
   def self.check_order_available order_list
     order_list_id = order_list.pluck(:id)
-    product_info_sql = "SELECT products.sku, line_items.sku as variant_sku, line_items.quantity as variant_quantity, SUM(line_items.quantity) AS total_quantity, orders.id AS order_id
-      FROM
-      (((shops JOIN orders ON shops.id = orders.shop_id)
-      JOIN line_items ON orders.id = line_items.order_id)
-      JOIN products ON products.id = line_items.product_id)
-      WHERE orders.id IN #{order_list_id.to_s.gsub("[", "(").gsub("]", ")")}
-      GROUP BY products.sku, orders.id, variant_sku, variant_quantity
-      ORDER BY total_quantity desc"
-
-    product_info_result = Product.find_by_sql(product_info_sql)
-
-    product_sku_array = product_info_result.pluck(:sku)
-
-    inventory_by_product_sql = "SELECT inventories.id, inventory_variants.id as inventory_variant_id, products.sku, variants.sku as variant_sku, inventories.cost as inventory_cost, inventory_variants.cost as variant_cost, SUM(inventories.in_stock) as inventory_quantity, sum(inventory_variants.in_stock) as variant_quantity
-      FROM (products JOIN inventories ON products.id = inventories.product_id
-      LEFT JOIN (inventory_variants JOIN variants ON variants.id = inventory_variants.variant_id) ON inventory_variants.inventory_id = inventories.id)
-      WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
-      GROUP BY products.sku, variant_sku, inventories.cost, inventory_variants.cost, inventories.id, inventory_variants.id
-      ORDER BY inventories.created_at"
-
-    inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
-
     orders_available_id = []
     orders_unavailabe_id = []
     pickup_info = []
 
-    product_info_result.group_by{|info| info["order_id"] }.each do |order_id, line_items|
-      alert = []
-      line_items.each do |item|
-        is_have_variant = item["sku"] != item["variant_sku"]
-        item_sku = is_have_variant ? item["variant_sku"] : item["sku"]
+    if order_list_id.present?
+      product_info_sql = "SELECT products.sku, line_items.sku as variant_sku, line_items.quantity as variant_quantity, SUM(line_items.quantity) AS total_quantity, orders.id AS order_id
+        FROM
+        (((shops JOIN orders ON shops.id = orders.shop_id)
+        JOIN line_items ON orders.id = line_items.order_id)
+        JOIN products ON products.id = line_items.product_id)
+        WHERE orders.id IN #{order_list_id.to_s.gsub("[", "(").gsub("]", ")")}
+        GROUP BY products.sku, orders.id, variant_sku, variant_quantity
+        ORDER BY total_quantity desc"
 
-        product_in_inventory = is_have_variant ? inventory_by_product_result.select{|a| a.variant_sku == item.variant_sku} : inventory_by_product_result.select{|a| a.sku == item.sku}
-        in_stock = is_have_variant ? product_in_inventory.inject(0){|sum, a| sum += a["variant_quantity"].to_i }
-          : product_in_inventory.inject(0){|sum, a| sum += a["inventory_quantity"].to_i }
+      product_info_result = Product.find_by_sql(product_info_sql)
 
-        order_quantity = is_have_variant ? item.variant_quantity : item.total_quantity
-        @valid_order = true
+      product_sku_array = product_info_result.pluck(:sku)
 
-        if product_in_inventory.present? && order_quantity <= in_stock.to_i
-          product_in_inventory.each do |inventory|
-            if is_have_variant
-              if order_quantity >= inventory.variant_quantity
-                order_quantity -= inventory.variant_quantity
-                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.variant_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
-                inventory.variant_quantity = 0
+      inventory_by_product_sql = "SELECT inventories.id, inventory_variants.id as inventory_variant_id, products.sku, variants.sku as variant_sku, inventories.cost as inventory_cost, inventory_variants.cost as variant_cost, SUM(inventories.in_stock) as inventory_quantity, sum(inventory_variants.in_stock) as variant_quantity
+        FROM (products JOIN inventories ON products.id = inventories.product_id
+        LEFT JOIN (inventory_variants JOIN variants ON variants.id = inventory_variants.variant_id) ON inventory_variants.inventory_id = inventories.id)
+        WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
+        GROUP BY products.sku, variant_sku, inventories.cost, inventory_variants.cost, inventories.id, inventory_variants.id
+        ORDER BY inventories.created_at ASC"
+
+      inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
+
+
+
+      product_info_result.group_by{|info| info["order_id"] }.each do |order_id, line_items|
+        alert = []
+        line_items.each do |item|
+          is_have_variant = item["sku"] != item["variant_sku"]
+          item_sku = is_have_variant ? item["variant_sku"] : item["sku"]
+
+          product_in_inventory = is_have_variant ? inventory_by_product_result.select{|a| a.variant_sku == item.variant_sku} : inventory_by_product_result.select{|a| a.sku == item.sku}
+          in_stock = is_have_variant ? product_in_inventory.inject(0){|sum, a| sum += a["variant_quantity"].to_i }
+            : product_in_inventory.inject(0){|sum, a| sum += a["inventory_quantity"].to_i }
+
+          order_quantity = is_have_variant ? item.variant_quantity : item.total_quantity
+          @valid_order = true
+
+          if product_in_inventory.present? && order_quantity <= in_stock.to_i
+            product_in_inventory.each do |inventory|
+              if is_have_variant
+                if order_quantity >= inventory.variant_quantity
+                  order_quantity -= inventory.variant_quantity
+                  pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.variant_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
+                  inventory.variant_quantity = 0
+                else
+                  inventory.variant_quantity -= order_quantity
+                  pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
+                  order_quantity = 0
+                end
               else
-                inventory.variant_quantity -= order_quantity
-                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.variant_cost.to_f, order_id: order_id}
-                order_quantity = 0
-              end
-            else
-              if order_quantity >= inventory.inventory_quantity
-                order_quantity -= inventory.inventory_quantity
-                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.inventory_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
-                inventory.inventory_quantity = 0
-              else
-                inventory.inventory_quantity -= order_quantity
-                pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
-                order_quantity = 0
-              end
-            end if order_quantity > 0
+                if order_quantity >= inventory.inventory_quantity
+                  order_quantity -= inventory.inventory_quantity
+                  pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: inventory.inventory_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
+                  inventory.inventory_quantity = 0
+                else
+                  inventory.inventory_quantity -= order_quantity
+                  pickup_info << { inventory_id: inventory.try(:id), variant_id: inventory.try(:inventory_variant_id), quantity: order_quantity, cost: inventory.inventory_cost.to_f, order_id: order_id}
+                  order_quantity = 0
+                end
+              end if order_quantity > 0
+            end
+          else
+            @valid_order = false
+            alert << "Request #{order_quantity} #{item_sku} but total in stock is #{in_stock.to_i}"
           end
-        else
-          @valid_order = false
-          alert << "Request #{order_quantity} #{item_sku} but in stock is #{in_stock.to_i}"
         end
-      end
-      order = Order.find order_id
-      order.stock_warning = alert.presence
-      order.save
+        order = Order.find order_id
+        order.stock_warning = alert.presence
+        order.pickup_info = nil if order.stock_warning
+        order.save
 
-      @valid_order ? orders_available_id << order_id : orders_unavailabe_id << order_id
+        @valid_order ? orders_available_id << order_id : orders_unavailabe_id << order_id
+      end
     end
 
     orders_available_id = orders_available_id.uniq - orders_unavailabe_id
@@ -385,6 +390,37 @@ class OrderService
     end
 
     return info
+  end
+
+  def self.calculate_product_cost order_list_id
+    orders = Order.where(id: eval(order_list_id))
+    orders_available, orders_unavailable, pickup_info = OrderService.check_order_available(orders)
+
+    if pickup_info.present?
+      pickup_info.select{|a| a[:quantity] > 0}.group_by{|a| a[:order_id] }.each do |info|
+        order = Order.find info[0]
+        cost = 0
+        info[1].each do |inventory|
+          cost += (inventory[:quantity].to_f * inventory[:cost].to_f)
+        end
+        order.products_cost = cost
+        order.save
+      end
+    else
+      orders.each do |order|
+        @total_cost = 0
+        order.line_items.each do |item|
+          # The first is the older inventories
+          cost_per_unit = Variant.where(sku: item.sku)&.first&.inventory_variants&.asc&.first&.cost ||
+            Product.where(sku: item.sku)&.first&.inventories&.asc&.first&.cost
+
+          cost = item.quantity.to_f * cost_per_unit.to_f
+          @total_cost += cost
+        end
+        order.products_cost = @total_cost
+        order.save
+      end
+    end
   end
 
   private

@@ -113,3 +113,4 @@ gem 'config', '~> 1.4'
 gem 'iso_country_codes', '~> 0.7.5'
 #For coding stle, coding convetion
 gem 'rubocop', '~> 0.39.0'
+gem "pundit"

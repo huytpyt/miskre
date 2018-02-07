@@ -19,6 +19,7 @@ class Inventory < ApplicationRecord
   has_many :inventory_variants, dependent: :destroy
 
   scope :in_stock, ->{ where("quantity > 0").order("cost DESC") }
+  scope :asc, -> { order("created_at ASC") }
 
   def self.search search
     if search

@@ -77,6 +77,7 @@ class Api::V1::OrdersController < Api::V1::BaseController
   end
 
   def download_orders
+    authorize current_user
     response = OrderService.download_orders(params[:order_list_id])
     render json: { result: "OK", file_path: response}, status: 200
   end

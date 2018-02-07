@@ -157,14 +157,12 @@ class OrdersQuery < BaseQuery
 
     if option && current_resource.staff?
       if option == "available_fulfill_orders"
-        orders_list_to_check = Order.joins(:request_charge)
-          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses["approved"]})
+        orders_list_to_check = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).charged_product
 
         available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
         orders_list = available_orders
       elsif option == "unavailable_fulfill_orders"
-        orders_list_to_check = Order.joins(:request_charge)
-          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses["approved"]})
+        orders_list_to_check = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).charged_product
 
         available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
         orders_list = unvailable_orders
