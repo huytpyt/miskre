@@ -166,9 +166,6 @@ class OrdersQuery < BaseQuery
 
         available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
         orders_list = unvailable_orders
-      else
-        orders_list = Order.joins(:request_charge)
-          .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses[option.to_s]})
       end
     else
       orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )

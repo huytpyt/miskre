@@ -34,36 +34,38 @@ class OrderService
     return total_money
   end
 
-  def accept_charge_orders request_charge_id
+  def accept_charge_orders order_list_id
     reponse_result = []
-    request_charge = RequestCharge.find request_charge_id
+    order_list_id = eval(order_list_id)
+    # request_charge = RequestCharge.find request_charge_id
     ActiveRecord::Base.transaction do
       @error = []
-      user = request_charge.user
-      order_list_id = request_charge.orders.pluck(:id)
       order_list = Order.where(id: order_list_id)
 
-      user_balance = user.balance
-      user_balance.lock!
-      if user_balance.nil?
-        @error << "This user does not have any balance."
-        raise ActiveRecord::Rollback
-      end
-
-      amount_must_paid = request_charge.total_amount
-      if request_charge.pending? && !orders_paid?(order_list)
-        if amount_must_paid <= user_balance.total_amount
-          new_user_balance = user.balance.total_amount - amount_must_paid
-          user_balance.total_amount = new_user_balance
-          user_balance.save!
-          request_charge.approved!
-          order_list.update_all(paid_for_miskre: true)
-          generate_invoice_for_orders(user, -amount_must_paid, order_list, "", new_user_balance)
-        else
-          @error << "This account does not have enough balance"
+      order_list.each do |order|
+        user = order&.shop&.user
+        user_balance = order&.shop&.user&.balance
+        user_balance.lock!
+        if user_balance.nil?
+          @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have any balance."
+          raise ActiveRecord::Rollback
         end
-      else
-        @error << "Some of orders had paid or rejected"
+
+        amount_must_paid = order.products_cost.to_f
+        if order.requesting?
+          if amount_must_paid <= user_balance.total_amount
+            new_user_balance = user.balance.total_amount - amount_must_paid
+            user_balance.total_amount = new_user_balance
+            user_balance.save!
+            order.charged_product!
+            generate_invoice_for_orders(user, -amount_must_paid, order, "", new_user_balance)
+            FulfillmentService.fulfill_for_order(order, order.shop)
+          else
+            @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have enough balance"
+          end
+        else
+          @error << "Some of orders had paid or rejected"
+        end
       end
     end
     if @error.blank?
@@ -429,10 +431,11 @@ class OrderService
         user_id: user.id,
         money_amount: amount,
         memo: memo,
-        balance: balance
+        balance: balance,
+        success: true
       )
       invoice.orders << orders
-      invoice.order_pay!
+      invoice.product_cost!
     end
 
     def orders_paid? order_list

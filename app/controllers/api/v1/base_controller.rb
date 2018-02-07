@@ -71,7 +71,7 @@ class Api::V1::BaseController < Api::ApiController
     end
 
     def user_not_authorized
-      render json: { result: "Failed", messages: "Permission Denied"}, status: 200
+      render json: { result: "Failed", messages: "Permission Denied"}, status: 401
     end
 
 end

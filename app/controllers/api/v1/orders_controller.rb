@@ -44,13 +44,10 @@ class Api::V1::OrdersController < Api::V1::BaseController
   end
 
   def accept_charge_orders
-    if current_user.staff?
-      request_charge_id = params["request_charge_id"]
-      reponse = OrderService.new.accept_charge_orders(request_charge_id)
-      render json: OrdersQuery.accept_charge_orders(reponse), status: 200
-    else
-      render json: { errors: "Permission denied" }, status: 401
-    end
+    authorize current_user
+    order_list_id = params["order_list_id"]
+    reponse = OrderService.new.accept_charge_orders(order_list_id)
+    render json: OrdersQuery.accept_charge_orders(reponse), status: 200
   end
 
   def reject_charge_orders

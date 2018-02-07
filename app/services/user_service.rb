@@ -152,7 +152,7 @@ class UserService
     OrderService.calculate_product_cost(order_list_id)
 
     amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += order.products_cost }
-    binding.pry
+
     user_balance.lock!
     if amount_must_paid > user_balance.total_amount
       return { result: "Failed", errors: "Your account does not have enough balance" }
