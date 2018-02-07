@@ -274,11 +274,7 @@ class OrderService
       LEFT JOIN (inventory_variants JOIN variants ON variants.id = inventory_variants.variant_id) ON inventory_variants.inventory_id = inventories.id)
       WHERE products.sku IN #{product_sku_array.to_s.gsub("[", "(").gsub("]", ")").tr('"', "'")}
       GROUP BY products.sku, variant_sku, inventories.cost, inventory_variants.cost, inventories.id, inventory_variants.id
-      ORDER BY CASE WHEN variants.sku IS NOT NULL THEN
-                inventory_variants.cost
-                ELSE
-                inventories.cost
-                END DESC"
+      ORDER BY inventories.created_at"
 
     inventory_by_product_result = Product.find_by_sql(inventory_by_product_sql)
 
@@ -384,7 +380,8 @@ class OrderService
       variant_sku = object.try(:variant).try(:sku)
       quantity = order[:quantity]
       cost = order[:cost]
-      info << "Product Name: #{product_name} - #{option1} #{option2} #{option3} SKU: #{product_sku} (#{variant_sku}), Quantity: #{quantity}, Cost: #{cost}" + "\n"
+      position = object.try(:inventory).try(:position) || object.try(:position)
+      info << "Product Name: #{product_name} - #{option1} #{option2} #{option3} SKU: #{product_sku} (#{variant_sku}), Quantity: #{quantity}, Cost: #{cost} at #{position}" + "\n"
     end
 
     return info

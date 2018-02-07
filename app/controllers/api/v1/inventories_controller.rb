@@ -36,7 +36,7 @@ class Api::V1::InventoriesController < Api::V1::BaseController
 
   private
     def inventory_params
-      params.permit(:id, :product_id, :quantity, :cost, :vendor_id)
+      params.permit(:id, :product_id, :quantity, :cost, :vendor_id, :position)
     end
 
     def inventory_variant_params

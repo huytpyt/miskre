@@ -1,15 +1,9 @@
 class InventoryService
   class << self
     def create params, inventory_variant_params
-      product_id = params[:product_id].to_i
-      quantity = params[:quantity].to_i
-      cost = params[:cost].to_f
 
-      inventory = Inventory.new(
-        product_id: product_id,
-        quantity: quantity,
-        in_stock: quantity,
-        cost: cost)
+      inventory = Inventory.new(params)
+      inventory.in_stock = inventory.quantity
 
       if inventory.valid?
         ActiveRecord::Base.transaction do

@@ -7,6 +7,8 @@ class InventoriesQuery < BaseQuery
       quantity: inventory.quantity,
       cost: inventory.cost,
       in_stock: inventory.in_stock,
+      position: inventory.position,
+      vendor_id: inventory.vendor_id,
       product: ProductsQuery.single(inventory.product),
       inventory_variants: inventory.inventory_variants.map{ |variant| InventoryVariantQuery.single(variant)}
     }

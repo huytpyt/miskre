@@ -9,6 +9,8 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  in_stock   :integer
+#  vendor_id  :integer
+#  position   :string
 #
 
 class Inventory < ApplicationRecord

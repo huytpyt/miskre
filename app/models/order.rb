@@ -17,20 +17,16 @@
 #  skus                 :text
 #  unit_price           :text
 #  date                 :datetime
-#  remark               :string
 #  shipping_method      :string
 #  tracking_no          :string
 #  fulfill_fee          :float
 #  product_name         :text
-#  color                :string
-#  size                 :string
 #  shop_id              :integer
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  shopify_id           :string
 #  financial_status     :string
 #  fulfillment_status   :string
-#  paid_for_miskre      :boolean          default(FALSE)
 #  invoice_id           :integer
 #  request_charge_id    :integer
 #  order_name           :string
@@ -38,6 +34,8 @@
 #  tracking_number_real :string
 #  stock_warning        :string
 #  pickup_info          :string
+#  paid_for_miskre      :integer          default("none_paid")
+#  products_cost        :decimal(, )
 #
 # Indexes
 #
@@ -61,6 +59,8 @@ class Order < ApplicationRecord
   belongs_to :request_charge
 
   validates :shopify_id, uniqueness: true
+
+  enum paid_for_miskre: %w(none_paid requesting charged_product pending accepted)
 
   def fullname
     "#{self.first_name} #{self.last_name}"

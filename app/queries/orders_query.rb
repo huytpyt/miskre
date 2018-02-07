@@ -59,13 +59,10 @@ class OrdersQuery < BaseQuery
       skus: order.skus,
       unit_price: order.unit_price,
       date: order.date,
-      remark: order.remark,
       shipping_method: order.shipping_method,
       tracking_no: order.tracking_no,
       fulfill_fee: order.fulfill_fee,
       product_name: order.product_name,
-      color: order.color,
-      size: order.size,
       shop_id: order.shop_id,
       created_at: order.created_at,
       updated_at: order.updated_at,
@@ -157,10 +154,9 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
-    if option
-      if option == "not_requested"
-        orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day, request_charge_id: nil )
-      elsif option == "available_fulfill_orders"
+
+    if option && current_resource.staff?
+      if option == "available_fulfill_orders"
         orders_list_to_check = Order.joins(:request_charge)
           .where(orders: { date: start_date.beginning_of_day..end_date.end_of_day }, request_charges: { status: RequestCharge::statuses["approved"]})
 
@@ -179,6 +175,24 @@ class OrdersQuery < BaseQuery
     else
       orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
     end
+
+    order_status = case current_resource.role
+                  when "user"
+                    [Order::paid_for_miskres["none_paid"],
+                     Order::paid_for_miskres["requesting"],
+                     Order::paid_for_miskres["charged_product"],
+                     Order::paid_for_miskres["accepted"]]
+                  when "admin"
+                    [Order::paid_for_miskres["none_paid"],
+                     Order::paid_for_miskres["requesting"],
+                     Order::paid_for_miskres["charged_product"],
+                     Order::paid_for_miskres["pending"],
+                     Order::paid_for_miskres["accepted"]]
+                  when "manager"
+                    [Order::paid_for_miskres["charged_product"]]
+                  end
+
+    orders_list = orders_list.where(paid_for_miskre: order_status)
 
     @errors = nil
     if current_resource.staff?
