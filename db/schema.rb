@@ -193,7 +193,7 @@ ActiveRecord::Schema.define(version: 20180205083028) do
     t.decimal  "cost"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "in_stock"|
+    t.integer  "in_stock"
     t.integer  "vendor_id"
   end
 
