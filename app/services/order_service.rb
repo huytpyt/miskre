@@ -38,11 +38,10 @@ class OrderService
     reponse_result = []
     order_list_id = eval(order_list_id)
     total_cost = 0
+    order_list = Order.where(id: order_list_id)
     ActiveRecord::Base.transaction do
       @error = []
-      order_list = Order.where(id: order_list_id)
-
-      order_list.each do |order|
+      order_list.includes(:shop).each do |order|
         user = order&.shop&.user
         user_balance = order&.shop&.user&.balance
         user_balance.lock!
@@ -68,8 +67,8 @@ class OrderService
         end
       end
     end
+    generate_invoice_for_orders(-total_cost, order_list, "", "product_cost", @error)
     if @error.blank?
-      generate_invoice_for_orders(user, -total_cost, order, "", "product_cost")
       ["OK", total_cost, nil]
     else
       ["Failed", 0, @error]
@@ -430,10 +429,9 @@ class OrderService
     reponse_result = []
     order_list_id = eval(order_list_id)
     total_cost = 0
+    order_list = Order.where(id: order_list_id)
     ActiveRecord::Base.transaction do
       @error = []
-      order_list = Order.where(id: order_list_id)
-
       order_list.each do |order|
         user = order&.shop&.user
         user_balance = order&.shop&.user&.balance
@@ -459,8 +457,8 @@ class OrderService
         end
       end
     end
+    generate_invoice_for_orders(-total_cost, order_list, "", "shipping_fee", @error)
     if @error.blank?
-      generate_invoice_for_orders(user, -total_cost, order, "", "shipping_fee")
       ["OK", total_cost, nil]
     else
       ["Failed", 0, @error]
@@ -470,11 +468,10 @@ class OrderService
   end
 
   private
-    def generate_invoice_for_orders user, amount, orders, memo, type, errors
+    def generate_invoice_for_orders amount, orders, memo, type, errors
       success = errors.present?
 
       invoice = Invoice.create(
-        user_id: user.id,
         money_amount: amount,
         memo: memo,
         success: success
