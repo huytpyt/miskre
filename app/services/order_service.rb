@@ -399,30 +399,23 @@ class OrderService
     orders = Order.where(id: eval(order_list_id))
     orders_available, orders_unavailable, pickup_info = OrderService.check_order_available(orders)
 
-    if pickup_info.present?
-      pickup_info.select{|a| a[:quantity] > 0}.group_by{|a| a[:order_id] }.each do |info|
-        order = Order.find info[0]
-        cost = 0
-        info[1].each do |inventory|
+    orders.each do |order|
+      cost = 0
+      pickup_info_for_order = pickup_info.select{|a| a[:quantity] > 0 && a[:order_id] == order.id }
+      if pickup_info_for_order.present?
+        pickup_info_for_order.each do |inventory|
           cost += (inventory[:quantity].to_f * inventory[:cost].to_f)
         end
-        order.products_cost = cost
-        order.save
-      end
-    else
-      orders.each do |order|
-        @total_cost = 0
+      else
         order.line_items.each do |item|
           # The first is the older inventories
           cost_per_unit = Variant.where(sku: item.sku)&.first&.inventory_variants&.asc&.first&.cost ||
             Product.where(sku: item.sku)&.first&.inventories&.asc&.first&.cost
-
-          cost = item.quantity.to_f * cost_per_unit.to_f
-          @total_cost += cost
+          cost += item.quantity.to_f * cost_per_unit.to_f
         end
-        order.products_cost = @total_cost
-        order.save
       end
+      order.products_cost = cost
+      order.save
     end
   end
 

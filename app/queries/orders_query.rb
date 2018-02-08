@@ -166,6 +166,8 @@ class OrdersQuery < BaseQuery
 
         available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
         orders_list = unvailable_orders
+      else
+        orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
       end
     else
       orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
@@ -187,7 +189,11 @@ class OrdersQuery < BaseQuery
                     [Order::paid_for_miskres["charged_product"]]
                   end
 
-    orders_list = orders_list.where(paid_for_miskre: order_status)
+    if order_status.include?(Order::paid_for_miskres[option])
+      orders_list = orders_list.where(paid_for_miskre: Order::paid_for_miskres[option])
+    else
+      orders_list = orders_list.where(paid_for_miskre: order_status)
+    end
 
     @errors = nil
     if current_resource.staff?
