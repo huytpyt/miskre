@@ -18,6 +18,7 @@ class Invoice < ApplicationRecord
 
   belongs_to :user
   has_many :orders
+  has_many :detail_invoices
 
-  enum invoice_type: %w(deposit deposit_fee transaction_fee product_cost transfer order_pay refund)
+  enum invoice_type: %w(deposit deposit_fee transaction_fee product_cost shipping_fee transfer order_pay refund)
 end

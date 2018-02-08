@@ -34,10 +34,10 @@ class OrderService
     return total_money
   end
 
-  def accept_charge_orders order_list_id
+  def charge_product_cost order_list_id
     reponse_result = []
     order_list_id = eval(order_list_id)
-    # request_charge = RequestCharge.find request_charge_id
+    total_cost = 0
     ActiveRecord::Base.transaction do
       @error = []
       order_list = Order.where(id: order_list_id)
@@ -58,7 +58,7 @@ class OrderService
             user_balance.total_amount = new_user_balance
             user_balance.save!
             order.charged_product!
-            generate_invoice_for_orders(user, -amount_must_paid, order, "", new_user_balance)
+            total_cost += amount_must_paid
             FulfillmentService.fulfill_for_order(order, order.shop)
           else
             @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have enough balance"
@@ -69,7 +69,8 @@ class OrderService
       end
     end
     if @error.blank?
-      ["OK", request_charge.total_amount, nil]
+      generate_invoice_for_orders(user, -total_cost, order, "", "product_cost")
+      ["OK", total_cost, nil]
     else
       ["Failed", 0, @error]
     end
@@ -425,17 +426,78 @@ class OrderService
     end
   end
 
+  def self.add_shipping_fee params
+    data = model_update(Order, params[:order_id], params)
+    order = data[:order]
+    order.pending! if order.shipping_fee
+    model_read(Order, params[:order_id])
+  end
+
+  def charge_shipping_fee order_list_id
+    reponse_result = []
+    order_list_id = eval(order_list_id)
+    total_cost = 0
+    ActiveRecord::Base.transaction do
+      @error = []
+      order_list = Order.where(id: order_list_id)
+
+      order_list.each do |order|
+        user = order&.shop&.user
+        user_balance = order&.shop&.user&.balance
+        user_balance.lock!
+        if user_balance.nil?
+          @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have any balance."
+          raise ActiveRecord::Rollback
+        end
+
+        amount_must_paid = order.shipping_fee.to_f
+        if order.pending?
+          if amount_must_paid <= user_balance.total_amount
+            new_user_balance = user.balance.total_amount - amount_must_paid
+            user_balance.total_amount = new_user_balance
+            user_balance.save!
+            order.accepted!
+            total_cost += amount_must_paid
+          else
+            @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have enough balance"
+          end
+        else
+          @error << "Some of orders had paid shipping_fee or rejected"
+        end
+      end
+    end
+    if @error.blank?
+      generate_invoice_for_orders(user, -total_cost, order, "", "shipping_fee")
+      ["OK", total_cost, nil]
+    else
+      ["Failed", 0, @error]
+    end
+  rescue Exception => error
+    ["Failed", 0, error]
+  end
+
   private
-    def generate_invoice_for_orders user, amount, orders, memo, balance
+    def generate_invoice_for_orders user, amount, orders, memo, type, errors
+      success = errors.present?
+
       invoice = Invoice.create(
         user_id: user.id,
         money_amount: amount,
         memo: memo,
-        balance: balance,
-        success: true
+        success: success
       )
       invoice.orders << orders
-      invoice.product_cost!
+      invoice.send("#{type}!")
+
+      fee_column = type == "products_cost" ? "products_cost" : "shipping_fee"
+
+      orders.each do |order|
+        DetailInvoice.create(
+          invoice_id: invoice.id,
+          order_id: order.id,
+          amount: order.send(fee_column)
+        )
+      end
     end
 
     def orders_paid? order_list

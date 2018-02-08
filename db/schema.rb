@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180207091604) do
+ActiveRecord::Schema.define(version: 20180208074432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -125,6 +125,14 @@ ActiveRecord::Schema.define(version: 20180207091604) do
     t.integer  "total_quantity"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+  end
+
+  create_table "detail_invoices", force: :cascade do |t|
+    t.integer  "invoice_id"
+    t.integer  "order_id"
+    t.decimal  "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "detail_no_handlings", force: :cascade do |t|
@@ -292,6 +300,7 @@ ActiveRecord::Schema.define(version: 20180207091604) do
     t.string   "pickup_info"
     t.integer  "paid_for_miskre",                    default: 0
     t.decimal  "products_cost"
+    t.decimal  "shipping_fee"
     t.index ["shop_id"], name: "index_orders_on_shop_id", using: :btree
     t.index ["shopify_id"], name: "index_orders_on_shopify_id", using: :btree
   end

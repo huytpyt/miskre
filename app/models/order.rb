@@ -36,6 +36,7 @@
 #  pickup_info          :string
 #  paid_for_miskre      :integer          default("none_paid")
 #  products_cost        :decimal(, )
+#  shipping_fee         :decimal(, )
 #
 # Indexes
 #
@@ -53,12 +54,14 @@ class Order < ApplicationRecord
   has_many :line_items, dependent: :destroy
   has_many :products, through: :line_items
   has_many :fulfillments
+  has_many :detail_invoices
   has_one :billings_order
   has_one :billing, through: :billings_orders
   belongs_to :invoices
   belongs_to :request_charge
 
   validates :shopify_id, uniqueness: true
+  validates_numericality_of :shipping_fee, greater_than_or_equal_to: 0, if: -> { shipping_fee.present? }
 
   enum paid_for_miskre: %w(none_paid requesting charged_product pending accepted)
 

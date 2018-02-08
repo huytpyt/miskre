@@ -36,6 +36,7 @@
 #  pickup_info          :string
 #  paid_for_miskre      :integer          default("none_paid")
 #  products_cost        :decimal(, )
+#  shipping_fee         :decimal(, )
 #
 # Indexes
 #

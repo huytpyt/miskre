@@ -43,11 +43,11 @@ class Api::V1::OrdersController < Api::V1::BaseController
     render json: { result: result, errors: errors }, status: 200
   end
 
-  def accept_charge_orders
+  def charge_product_cost
     authorize current_user
     order_list_id = params["order_list_id"]
-    reponse = OrderService.new.accept_charge_orders(order_list_id)
-    render json: OrdersQuery.accept_charge_orders(reponse), status: 200
+    reponse = OrderService.new.charge_product_cost(order_list_id)
+    render json: OrdersQuery.charge_product(reponse), status: 200
   end
 
   def reject_charge_orders
@@ -77,6 +77,19 @@ class Api::V1::OrdersController < Api::V1::BaseController
     authorize current_user
     response = OrderService.download_orders(params[:order_list_id])
     render json: { result: "OK", file_path: response}, status: 200
+  end
+
+  def add_shipping_fee
+    authorize current_user
+    response = OrderService.add_shipping_fee(params)
+    render json: response, status: 200
+  end
+
+  def charge_shipping_fee
+    authorize current_user
+    order_list_id = params["order_list_id"]
+    reponse = OrderService.new.charge_shipping_fee(order_list_id)
+    render json: OrdersQuery.charge_product(reponse), status: 200
   end
 
   private

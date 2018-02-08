@@ -29,7 +29,7 @@ class OrdersQuery < BaseQuery
     end
   end
 
-  def self.accept_charge_orders reponse_result
+  def self.charge_product reponse_result
     result, total_paid, error = reponse_result
     {
       result: result,
