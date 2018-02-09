@@ -1,4 +1,6 @@
 class OrderService
+  extend CrudForApi
+
   def sum_money_from_order order, base_cost
     shop = order.shop
     skus_array = order.skus.split(",").map {|a| a.split("*")[0].strip}
@@ -419,10 +421,11 @@ class OrderService
   end
 
   def self.add_shipping_fee params
-    data = model_update(Order, params[:order_id], params)
+    params = params.permit(:id, :shipping_fee)
+    data = model_update(Order, params[:id].to_i, params)
     order = data[:order]
     order.pending! if order.shipping_fee
-    model_read(Order, params[:order_id])
+    model_read(Order, params[:id])
   end
 
   def charge_shipping_fee order_list_id
@@ -453,7 +456,7 @@ class OrderService
             @error << "This user #{order&.shop&.user&.email} at shop #{order&.shop&.name} does not have enough balance"
           end
         else
-          @error << "Some of orders had paid shipping_fee or rejected"
+          @error << "Some of orders had paid shipping fee or rejected"
         end
       end
     end

@@ -53,6 +53,8 @@ GEM
     annotate (2.7.2)
       activerecord (>= 3.2, < 6.0)
       rake (>= 10.4, < 13.0)
+    apipie-rails (0.5.6)
+      rails (>= 4.1)
     arel (7.1.4)
     ast (2.4.0)
     audited (4.6.0)
@@ -451,6 +453,7 @@ PLATFORMS
 DEPENDENCIES
   aftership (~> 4.3.1)
   annotate
+  apipie-rails
   audited (~> 4.2, >= 4.2.1)
   axlsx (= 2.1.0.pre)
   axlsx_rails

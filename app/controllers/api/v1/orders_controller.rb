@@ -1,4 +1,5 @@
 class Api::V1::OrdersController < Api::V1::BaseController
+  include OrderDoc
 
   def index
     page = params[:page].to_i || 1
