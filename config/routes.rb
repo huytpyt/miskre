@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  apipie
   resources 'shipping_setings', only: [:index] do
     collection do
       get "update_carrier_service/:shop_id", to: "shipping_setings#update_carrier_service", as: "update_carrier"
@@ -182,6 +183,8 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :vendors
+      resources :inventories
       resources :customers do
         collection do
           get :customers_statistic
@@ -224,10 +227,15 @@ Rails.application.routes.draw do
       end
       resources :orders do
         collection do
-          post :accept_charge_orders
+          post :charge_product_cost
           post :reject_charge_orders
           post :order_statistics
           post :shop_statistics
+          post :download_orders, format: 'xlsx'
+          post :fulfill_order
+          get :find_shopify_order
+          post :add_shipping_fee
+          post :charge_shipping_fee
         end
       end
       resources :request_charges

@@ -1,8 +1,8 @@
 class OrdersQuery < BaseQuery
 
   def self.list(page = 1, per_page = 12, sort, order_by, search, key,
-   shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
-    shop, orders, error = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+   shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
+    shop, orders, error = set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
     sort_options = { "#{order_by}" => sort }
     if orders.blank?
       {
@@ -10,7 +10,7 @@ class OrdersQuery < BaseQuery
         orders: []
       }
     else
-      paginate = api_paginate(orders.order(sort_options).search(search), page).per(per_page)
+      paginate = api_paginate(orders.includes(shop: :user).order(sort_options).search(search), page).per(per_page)
       {
         error: error,
         paginator: {
@@ -21,14 +21,15 @@ class OrdersQuery < BaseQuery
           next_page: paginate.next_page,
           prev_page: paginate.prev_page,
           first_page: 1,
-          last_page: paginate.total_pages
+          last_page: paginate.total_pages,
+          option: option
         },
-        orders: paginate.map{ |orders| single(orders) }
+        orders: paginate.map{ |order| single(order) }
       }
     end
   end
 
-  def self.accept_charge_orders reponse_result
+  def self.charge_product reponse_result
     result, total_paid, error = reponse_result
     {
       result: result,
@@ -58,13 +59,10 @@ class OrdersQuery < BaseQuery
       skus: order.skus,
       unit_price: order.unit_price,
       date: order.date,
-      remark: order.remark,
       shipping_method: order.shipping_method,
       tracking_no: order.tracking_no,
       fulfill_fee: order.fulfill_fee,
       product_name: order.product_name,
-      color: order.color,
-      size: order.size,
       shop_id: order.shop_id,
       created_at: order.created_at,
       updated_at: order.updated_at,
@@ -74,9 +72,30 @@ class OrdersQuery < BaseQuery
       paid_for_miskre: order.paid_for_miskre,
       shop_name: order.shop.name,
       order_name: order.order_name,
+      product_info: OrdersQuery.product_info_by_order(order),
       total_cost: OrderService.new.sum_money_from_order(order, false).to_f,
-      products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)}
+      products: Product.where(sku: order.line_items.pluck(:sku)).map{|product| ProductsQuery.single(product)},
+      stock_warning: order.stock_warning
     }
+  end
+
+  def self.product_info_by_order order
+    product_info = []
+    order_raw_sql = "SELECT products.sku AS sku, SUM(line_items.quantity) AS total_quantity
+                    FROM
+                    (orders JOIN line_items ON orders.id = line_items.order_id
+                    JOIN products ON products.id = line_items.product_id)
+                    WHERE orders.id = #{order.id}
+                    GROUP BY products.sku"
+    result = Order.find_by_sql(order_raw_sql)
+    result.each do |data|
+      json = {
+              product_sku: data.sku,
+              quantity: data.total_quantity
+            }
+      product_info << json
+    end
+    product_info
   end
 
   def self.order_statistics shop_data
@@ -127,7 +146,7 @@ class OrdersQuery < BaseQuery
     }
   end
 
-  def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource)
+  def self.set_querry(search, shop_id, start_date, end_date, financial_status, fulfillment_status, current_resource, option)
     query_params = {}
     if fulfillment_status == "null"
       query_params['fulfillment_status'] = nil
@@ -135,7 +154,46 @@ class OrdersQuery < BaseQuery
       query_params['fulfillment_status'] = fulfillment_status unless fulfillment_status.empty?
     end
     query_params['financial_status'] = financial_status unless financial_status.empty?
-    orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day)
+
+    if option && current_resource.staff?
+      if option == "available_fulfill_orders"
+        orders_list_to_check = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).charged_product
+
+        available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
+        orders_list = available_orders
+      elsif option == "unavailable_fulfill_orders"
+        orders_list_to_check = Order.where(date: start_date.beginning_of_day..end_date.end_of_day).charged_product
+
+        available_orders, unvailable_orders, pickup_info = OrderService.check_order_available(orders_list_to_check)
+        orders_list = unvailable_orders
+      else
+        orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
+      end
+    else
+      orders_list = Order.where(date: start_date.beginning_of_day..end_date.end_of_day )
+    end
+
+    order_status = case current_resource.role
+                  when "user"
+                    [Order::paid_for_miskres["none_paid"],
+                     Order::paid_for_miskres["requesting"],
+                     Order::paid_for_miskres["charged_product"],
+                     Order::paid_for_miskres["accepted"]]
+                  when "admin"
+                    [Order::paid_for_miskres["none_paid"],
+                     Order::paid_for_miskres["requesting"],
+                     Order::paid_for_miskres["charged_product"],
+                     Order::paid_for_miskres["pending"],
+                     Order::paid_for_miskres["accepted"]]
+                  when "manager"
+                    [Order::paid_for_miskres["charged_product"]]
+                  end
+
+    if order_status.include?(Order::paid_for_miskres[option])
+      orders_list = orders_list.where(paid_for_miskre: Order::paid_for_miskres[option])
+    else
+      orders_list = orders_list.where(paid_for_miskre: order_status)
+    end
 
     @errors = nil
     if current_resource.staff?
@@ -172,4 +230,7 @@ class OrdersQuery < BaseQuery
     end
     return [@current_shop, @orders, @errors]
   end
+
+
+
 end

@@ -31,6 +31,7 @@ class Variant < ApplicationRecord
   audited
   belongs_to :product
   has_many :images, as: :imageable, dependent: :destroy
+  has_many :inventory_variants
   serialize :product_ids
 
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}

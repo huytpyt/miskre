@@ -34,6 +34,7 @@ class Api::V1::UsersController < Api::V1::BaseController
   end
 
   def request_charge_orders
+    authorize @user
     order_list_id = params[:order_list_id]
     response_result = UserQuery.request_charge_orders(order_list_id, @user)
     render json: response_result, status: 200

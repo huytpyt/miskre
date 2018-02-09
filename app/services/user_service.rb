@@ -143,23 +143,30 @@ class UserService
       return { result: "Failed", errors: "You do not have any balance, please add." }
     end
 
-    amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += OrderService.new.sum_money_from_order(order, false).to_f }
+    if orders_list.where("paid_for_miskre >= :status", status: Order::paid_for_miskres[:charged_product]).present?
+      return { result: "Failed", errors: "Some of orders had paid" }
+    elsif orders_list.where.not(request_charge_id: nil).present?
+      return { result: "Failed", errors: "Some of orders had already requested" }
+    end
+
+    OrderService.calculate_product_cost(order_list_id)
+
+    amount_must_paid = orders_list.inject(0){ |sum_amount, order| sum_amount += order.products_cost }
+
     user_balance.lock!
     if amount_must_paid > user_balance.total_amount
       return { result: "Failed", errors: "Your account does not have enough balance" }
-    end
-
-    if orders_list.pluck(:paid_for_miskre).include?(true)
-      return { result: "Failed", errors: "Some of orders had paid" }
     end
 
     new_request_charge = RequestCharge.new(
       user_id: user.id,
       total_amount: amount_must_paid
     )
+
     new_request_charge.orders << orders_list
     if new_request_charge.save
       new_request_charge.pending!
+      orders_list.update_all(paid_for_miskre: Order::paid_for_miskres["requesting"])
       return { request_charge: "completed", errors: nil }
     elsif !new_request_charge.valid?
       return { request_charge: "error", errors: new_request_charge.errors }

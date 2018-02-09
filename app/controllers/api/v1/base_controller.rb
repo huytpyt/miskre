@@ -3,7 +3,9 @@ class Api::V1::BaseController < Api::ApiController
   include Api::AuthenticationController
   include Api::AuthorizationController
   include Api::RecordNotFoundController
+  include Pundit
 
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 	skip_before_action :site_http_basic_authenticate_with, raise: false
   skip_before_action :verify_authenticity_token
 	protect_from_forgery with: :null_session
@@ -24,7 +26,7 @@ class Api::V1::BaseController < Api::ApiController
   def add_allow_credentials_headers
     response.headers['Access-Control-Allow-Origin'] = request.headers['Origin'] || '*'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
-  end 
+  end
 
 	def headers
     request.env
@@ -67,4 +69,9 @@ class Api::V1::BaseController < Api::ApiController
     def skip_new_session
       !(controller_name.include?('session') && action_name == 'create')
     end
+
+    def user_not_authorized
+      render json: { result: "Failed", messages: "Permission Denied"}, status: 401
+    end
+
 end

@@ -10,6 +10,7 @@
 #  updated_at   :datetime         not null
 #  balance      :decimal(, )
 #  memo         :string
+#  success      :boolean          default(FALSE)
 #
 
 class Invoice < ApplicationRecord
@@ -17,6 +18,7 @@ class Invoice < ApplicationRecord
 
   belongs_to :user
   has_many :orders
+  has_many :detail_invoices
 
-  enum invoice_type: %w(deposit deposit_fee transfer order_pay refund)
+  enum invoice_type: %w(deposit deposit_fee transaction_fee product_cost shipping_fee transfer order_pay refund)
 end
