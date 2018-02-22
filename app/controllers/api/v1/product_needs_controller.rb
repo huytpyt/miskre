@@ -22,8 +22,6 @@ class Api::V1::ProductNeedsController < Api::V1::BaseController
     page = 1 if page.zero?
     per_page = params[:per_page].to_i || 20
     per_page = 20 if per_page.zero?
-    total_page = ProductNeed.count / per_page
-    total_page = total_page <= 0 ? 1 : total_page
     sort = params[:sort] || 'DESC'
     order_by = params[:order_by] || 'id'
     search = params[:q] || ""
@@ -31,8 +29,8 @@ class Api::V1::ProductNeedsController < Api::V1::BaseController
     render json: ProductNeedQuery.list(page, per_page, sort, order_by, search), status: 200
   end
 
-  def toggle_status
-    response = ProductNeedService.toggle_status(params[:id])
+  def change_status
+    response = ProductNeedService.change_status(params)
     render json: response, status: 200
   end
 
@@ -40,6 +38,12 @@ class Api::V1::ProductNeedsController < Api::V1::BaseController
 
   def product_need_params
     params.permit(:product_id, :variant_id, :quantity, :status, :id)
+  end
+
+  def staff_permission
+    unless current_resource.staff?
+      render json: {status: false, message: "Permission denied"}, status: 550
+    end
   end
 
 end

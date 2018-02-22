@@ -14,12 +14,17 @@ module BuildQuery
     data
   end
 
-  def build_list_query model, page, per_page, sort, order_by, search, has_association
+  def build_list_query model, page = DEFAULT_PAGE, per_page = LIMIT_RECORDS, sort = 'DESC', order_by = 'id', search = '', has_association = []
     sort_options = { "#{order_by}" => sort }
     has_association.each do |association|
       @relation = model.includes(association.to_sym)
     end
-    paginate = api_paginate(@relation.search(search).order(sort_options), page).per(per_page)
+    if search.present?
+      paginate = api_paginate(@relation.search(search).order(sort_options), page).per(per_page)
+    else
+      paginate = api_paginate(@relation.order(sort_options), page).per(per_page)
+    end
+
     {
       paginator: {
         total_records: paginate.total_count,

@@ -188,7 +188,8 @@ Rails.application.routes.draw do
 
       resources :product_needs do
         collection do
-          post "toggle_status", to: "product_needs#toggle_status"
+          post "change_status", to: "product_needs#change_status"
+        end
       end
       resources :customers do
         collection do

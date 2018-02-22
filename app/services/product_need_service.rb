@@ -18,15 +18,14 @@ class ProductNeedService
       data = model_read(ProductNeed, product_need_id)
     end
 
-    def toggle_status product_need_id
+    def change_status params
+      product_need_id = params[:id]
+      new_status = params[:status]
       data = model_read(ProductNeed, product_need_id)
       product_need = data[:product_need]
-      if product_need
-        if product_need.running?
-          product_need.suspend!
-        elsif product_need.suspend?
-          product_need.running!
-        end
+      product_need.status = new_status
+      if product_need.save
+        product_need.bid_transactions.where(status: "pending").update_all(status: "reject") if product_need.finish?
       end
       return model_read(ProductNeed, product_need_id)
     end
