@@ -91,7 +91,7 @@ class OrderService
     condition += " AND (orders.fulfillment_status = :fulfillment_status)" if params[:fulfillment_status].present?
     condition += " AND (orders.financial_status = :financial_status)" if params[:financial_status].present?
     condition += " AND (orders.tracking_number_real = :tracking_number_real)" if params[:tracking_number_real].present?
-    condition += " AND (shops.id IN (:shop_id))" unless params[:shop_id] == [""] && params[:shop_id].present?
+    condition += " AND (shops.id IN (:shop_id))" if params[:shop_id] != [""] && params[:shop_id].present?
     raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
       FROM
       (((shops JOIN orders ON shops.id = orders.shop_id)
