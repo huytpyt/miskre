@@ -14,7 +14,6 @@ class OrderService
       skus_array.each do |sku|
         product = Product.find_by_sku(sku.first(3))
         if product.present?
-          user = shop.user
           shipping_cost = CarrierService.cal_cost(shipping_type, product.weight)
           supply_cost = base_cost ? product.cost : product.cus_cost
           sum += (quantities[index].to_i * (supply_cost.to_f + shipping_cost.to_f))
@@ -85,18 +84,36 @@ class OrderService
     end
   end
 
+  def product_need_to_buy params
+    start_date = params[:start_date]&.to_date || Date.current - 7
+    end_date = params[:end_date]&.to_date || Date.current
+    condition = "(orders.date BETWEEN :start_date AND :end_date)"
+    condition += " AND (orders.fulfillment_status = :fulfillment_status)" if params[:fulfillment_status].present?
+    condition += " AND (orders.financial_status = :financial_status)" if params[:financial_status].present?
+    condition += " AND (orders.tracking_number_real = :tracking_number_real)" if params[:tracking_number_real].present?
+    condition += " AND (shops.id IN (:shop_id))" unless params[:shop_id] == [""] && params[:shop_id].present?
+    raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
+      FROM
+      (((shops JOIN orders ON shops.id = orders.shop_id)
+        JOIN line_items ON orders.id = line_items.order_id)
+        JOIN products ON products.id = line_items.product_id)
+      WHERE " + condition + 
+      " GROUP BY products.sku
+      ORDER BY total_quantity desc"
+    product_list = Product.find_by_sql([raw_sql, {start_date: start_date, end_date: end_date, fulfillment_status: params[:fulfillment_status], financial_status: params[:financial_status], tracking_number_real: params[:tracking_number_real], shop_id: params[:shop_id]}])
+  end
   def order_statistics duration
     raw_sql = "SELECT products.sku, SUM(line_items.quantity) AS total_quantity
       FROM
       (((shops JOIN orders ON shops.id = orders.shop_id)
         JOIN line_items ON orders.id = line_items.order_id)
         JOIN products ON products.id = line_items.product_id)
-      WHERE orders.created_at > '#{duration.days.ago.end_of_day}'
+      WHERE orders.created_at > :duration
       GROUP BY products.sku
       ORDER BY total_quantity desc
       LIMIT 20"
 
-    top_20_product = Shop.find_by_sql(raw_sql)
+    top_20_product = Shop.find_by_sql([raw_sql, duration: duration.days.ago.end_of_day])
 
 
     ["Success", nil, top_20_product, duration]

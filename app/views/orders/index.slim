@@ -4,41 +4,46 @@
 #orders-query
   = form_tag(orders_path, method: :get) do
     .row
-      .columns.large-2
+      .columns.large-12
         label
           | Shop
-          = select_tag :shop_id, options_for_select(available_shops, @current_shop&.id), include_blank: true
-      .columns.large-2
+          = select_tag "order[shop_id]", options_for_select(available_shops, @current_shop&.ids), multiple:true, prompt: "--Select All--"
+    .row
+      .columns.large-3
         label
           | Start Date
-          = date_field_tag :start_date, @start_date
-      .columns.large-2
+          = date_field_tag "order[start_date]", @start_date
+      .columns.large-3
         label
           | End Date
-          = date_field_tag :end_date, @end_date
+          = date_field_tag "order[end_date]", @end_date
       .columns.large-2
         label
           | Financial Status
-          = select_tag :financial_status,
+          = select_tag "order[financial_status]",
             options_for_select(financial_options, @financial_status),
             include_blank: true
       .columns.large-2
         label
           | Fulfillment Status
-          = select_tag :fulfillment_status,
+          = select_tag "order[fulfillment_status]",
             options_for_select(fulfillment_options, @fulfillment_status),
             include_blank: true
       - if current_user.staff?
         .columns.large-2
           label
             | Real Tracking Number
-            = select_tag :tracking_number_real,
+            = select_tag "order[tracking_number_real]",
               options_for_select(tracking_number_option, @tracking_number_real),
               include_blank: true
+    .row
       .columns.large-1
         input type="submit" value="View" name="view" class="button tiny"
       .columns.large-1
-        input type="submit" value="Download" name="download" class="button tiny success"
+        input type="submit" value="Download" name="download" class="button tiny"
+      .columns.large-2
+        = link_to "Product need to buy", need_to_buy_orders_path + "?" + params.fetch(:order, {})&.to_query, class: "button tiny", target: "_blank"
+      .columns.large-8
 
 #orders-data
   .row
@@ -49,3 +54,5 @@
     .row
       .columns.large-2
         = link_to "Fetch Orders", fetch_orders_orders_path, class: "button"
+javascript:
+  $("#order_shop_id").select2();

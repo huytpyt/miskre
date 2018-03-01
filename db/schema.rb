@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180127144948) do
+ActiveRecord::Schema.define(version: 20180228073318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,16 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.decimal  "total_amount"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+  end
+
+  create_table "bid_transactions", force: :cascade do |t|
+    t.integer  "supplier_id"
+    t.integer  "product_need_id"
+    t.decimal  "cost"
+    t.date     "time"
+    t.integer  "status"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "billings", force: :cascade do |t|
@@ -177,6 +187,14 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
   end
 
+  create_table "inventories", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "quantity"
+    t.decimal  "cost"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "invoices", force: :cascade do |t|
     t.integer  "invoice_type"
     t.string   "user_id"
@@ -264,6 +282,15 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.index ["shopify_id"], name: "index_orders_on_shopify_id", using: :btree
   end
 
+  create_table "product_needs", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "variant_id"
+    t.integer  "quantity"
+    t.integer  "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "weight",               default: 0
@@ -300,6 +327,7 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.text     "vendor_detail"
     t.string   "cost_per_quantity"
     t.boolean  "approved",             default: false
+    t.text     "perchase_link"
     t.index ["bundle_id"], name: "index_products_on_bundle_id", using: :btree
     t.index ["user_id"], name: "index_products_on_user_id", using: :btree
   end
@@ -385,6 +413,15 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.string   "plan_name"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true, using: :btree
     t.index ["user_id"], name: "index_shops_on_user_id", using: :btree
+  end
+
+  create_table "suppliers", force: :cascade do |t|
+    t.string   "company_name"
+    t.string   "address"
+    t.boolean  "activate"
+    t.integer  "user_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "supplies", force: :cascade do |t|
@@ -526,6 +563,8 @@ ActiveRecord::Schema.define(version: 20180127144948) do
     t.text     "name"
     t.text     "fb_link"
     t.boolean  "active",                 default: true
+    t.date     "birthday"
+    t.string   "phone"
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end

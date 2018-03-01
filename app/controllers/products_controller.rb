@@ -406,7 +406,7 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
                                       :height, :width, :sku, :desc, :quantity,
-                                      :price, :cost, :product_url, :suggest_price)
+                                      :price, :cost, :product_url, :suggest_price, :perchase_link)
     end
 
     def bundle_params
