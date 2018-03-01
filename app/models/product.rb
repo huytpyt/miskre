@@ -39,6 +39,7 @@
 #  cost_per_quantity    :string
 #  approved             :boolean          default(FALSE)
 #  perchase_link        :text
+#  china_name           :string
 #
 # Indexes
 #
@@ -79,6 +80,7 @@ class Product < ApplicationRecord
 
   validates :suggest_price, presence: true, numericality: {greater_than_or_equal_to: 0}
   validates :name, presence: true, uniqueness: true
+  validates :china_name, uniqueness: true
   validates :desc, presence: true
   validates :product_url, url: {allow_blank: true}
   validates :resource_url, url: {allow_blank: true}

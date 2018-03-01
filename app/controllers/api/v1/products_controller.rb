@@ -247,7 +247,8 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :sale_off,
         :resource_url,
         :vendor_detail,
-        :perchase_link
+        :perchase_link,
+        :china_name
       )
     end
 
