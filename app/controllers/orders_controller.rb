@@ -107,12 +107,11 @@ class OrdersController < ApplicationController
   end
 
   def need_to_buy
-    if params[:shop_id] && params[:shop_id] != [""]
+    if params[:shop_id].present? && params[:shop_id] != [""]
       @shops = Shop.where(id: params[:shop_id])
     else
       @shops = Shop.all
     end
-    @shops = Shop.where(id: params[:shop_id])
     @products = OrderService.new.product_need_to_buy params
   end
 
@@ -138,7 +137,7 @@ class OrdersController < ApplicationController
         query_params['tracking_number_real'] = @tracking_number_real
       end
     end
-    if new_params[:shop_id] && new_params[:shop_id] != [""]
+    if new_params[:shop_id].present? && new_params[:shop_id] != [""]
       begin
         @current_shop = Shop.where(id: new_params[:shop_id])
         @orders = Order.where(date: @start_date.beginning_of_day..@end_date.end_of_day, shop_id: @current_shop).where(query_params)
