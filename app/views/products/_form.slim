@@ -46,13 +46,17 @@
         = f.text_field :name
     .columns.medium-3
       .field
+        = f.label :china_name
+        = f.text_field :china_name
+    .columns.medium-2
+      .field
         = f.label :sku
         = f.text_field :sku, disabled: true
-    .columns.medium-3
+    .columns.medium-2
       .field
         = f.label :quantity
         = f.number_field :quantity
-    .columns.medium-3
+    .columns.medium-2
       .field
         = f.label :vendor
         = f.text_field :vendor, disabled: true

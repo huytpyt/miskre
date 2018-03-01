@@ -55,6 +55,7 @@ class ProductsQuery < BaseQuery
 		{
 			id: product.id,
 			name: product.name,
+			china_name: product.china_name,
 			weight: product.weight,
 			length: product.length,
 			height: product.height,
@@ -79,6 +80,7 @@ class ProductsQuery < BaseQuery
 		{
 			id: product.id,
 			name: product.name,
+			china_name: product.china_name,
 			weight: product.weight,
 			length: product.length,
 			height: product.height,
@@ -93,6 +95,7 @@ class ProductsQuery < BaseQuery
 			is_bundle: product.is_bundle,
 			product_ids: product.product_ids,
 			product_url: product.product_url,
+			perchase_link: product.perchase_link,
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,
 			suggest_price: product.suggest_price,
@@ -114,6 +117,7 @@ class ProductsQuery < BaseQuery
 		{
 			id: product.id,
 			name: product.name,
+			china_name: product.china_name,
 			weight: product.weight,
 			length: product.length,
 			height: product.height,
@@ -145,6 +149,7 @@ class ProductsQuery < BaseQuery
 		{
 			id: product.id,
 			name: product.name,
+			china_name: product.china_name,
 			weight: product.weight,
 			length: product.length,
 			height: product.height,
@@ -164,6 +169,7 @@ class ProductsQuery < BaseQuery
 			product_ids: product.product_ids,
 			user_id: product.user_id,
 			product_url: product.product_url,
+			perchase_link: product.perchase_link,
 			fulfillable_quantity: product.fulfillable_quantity,
 			cus_cost: product.cus_cost,
 			cus_epub: product.cus_epub,

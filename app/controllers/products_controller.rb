@@ -406,13 +406,13 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :weight, :length, :vendor, :is_bundle,
                                       :height, :width, :sku, :desc, :quantity,
-                                      :price, :cost, :product_url, :suggest_price, :perchase_link)
+                                      :price, :cost, :product_url, :suggest_price, :perchase_link, :china_name)
     end
 
     def bundle_params
       params.require(:product).permit(:name, :weight, :vendor, :is_bundle,
                                       :sku, :desc, :quantity,
-                                      :price, :cost, :product_url, :suggest_price, :sale_off)
+                                      :price, :cost, :product_url, :suggest_price, :sale_off, :china_name)
     end
 
     def check_is_staff
