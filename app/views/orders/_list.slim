@@ -28,7 +28,7 @@ table#order-table
         - @sum_cus_cost += cus_cost
         td
           input name="chk[]" onchange="" type="checkbox" class="#{order.id} hidden"
-        td = Shop.find(order.shop_id).name
+        td = order.shop.name
         td = order.shopify_id
         td = "#{order.first_name} #{order.last_name}"
         td = order.email

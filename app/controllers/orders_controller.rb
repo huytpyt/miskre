@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  before_action :set_query
+  before_action :set_query, only: [:index]
 
   def index
     if params[:download].present?
@@ -106,13 +106,24 @@ class OrdersController < ApplicationController
     redirect_to orders_path
   end
 
+  def need_to_buy
+    if params[:shop_id] && params[:shop_id] != [""]
+      @shops = Shop.where(id: params[:shop_id])
+    else
+      @shops = Shop.all
+    end
+    @shops = Shop.where(id: params[:shop_id])
+    @products = OrderService.new.product_need_to_buy params
+  end
+
   private
   def set_query
-    @start_date = params[:start_date]&.to_date || Date.current - 7
-    @end_date = params[:end_date]&.to_date || Date.current
-    @financial_status = params[:financial_status].to_s
-    @fulfillment_status = params[:fulfillment_status].to_s
-    @tracking_number_real = params[:tracking_number_real].to_s
+    new_params = params.fetch(:order, {})
+    @start_date = new_params[:start_date]&.to_date || Date.current - 7
+    @end_date = new_params[:end_date]&.to_date || Date.current
+    @financial_status = new_params[:financial_status].to_s
+    @fulfillment_status = new_params[:fulfillment_status].to_s
+    @tracking_number_real = new_params[:tracking_number_real].to_s
     query_params = {}
     if @fulfillment_status == "null"
       query_params['fulfillment_status'] = nil
@@ -127,10 +138,10 @@ class OrdersController < ApplicationController
         query_params['tracking_number_real'] = @tracking_number_real
       end
     end
-    if params[:shop_id] && params[:shop_id] != ""
+    if new_params[:shop_id] && new_params[:shop_id] != [""]
       begin
-        @current_shop = Shop.find(params[:shop_id])
-        @orders = @current_shop.orders.where(date: @start_date.beginning_of_day..@end_date.end_of_day).where(query_params)
+        @current_shop = Shop.where(id: new_params[:shop_id])
+        @orders = Order.where(date: @start_date.beginning_of_day..@end_date.end_of_day, shop_id: @current_shop).where(query_params)
       rescue ActiveRecord::RecordNotFound
         @current_shop = nil
         @orders = []

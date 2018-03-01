@@ -21,6 +21,7 @@
 //= require axios
 //= require dropzone
 //= require foundation
+//= require select2.min
 //= require ckeditor/init
 //= require canvasjs.min
 //= require chosen-jquery

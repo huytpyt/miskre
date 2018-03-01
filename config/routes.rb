@@ -123,6 +123,7 @@ Rails.application.routes.draw do
     get 'fetch', on: :collection
     collection do
       get 'fetch_orders', to: "orders#fetch_orders", as: "fetch_orders"
+      get "need_to_buy", to: "orders#need_to_buy", as: "need_to_buy"
     end
   end
 

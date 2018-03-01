@@ -246,7 +246,8 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :suggest_price,
         :sale_off,
         :resource_url,
-        :vendor_detail
+        :vendor_detail,
+        :perchase_link
       )
     end
 
