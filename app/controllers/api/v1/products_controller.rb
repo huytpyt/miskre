@@ -249,7 +249,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :vendor_detail,
         :purchase_link,
         :china_name
-      ).delete_if {|key, value| value.blank? }
+      )
     end
 
     def partner_product_params
@@ -261,6 +261,6 @@ class Api::V1::ProductsController < Api::V1::BaseController
         :desc,
         :link,
         :vendor_detail
-      ).delete_if {|key, value| value.blank? }
+      )
     end
 end
