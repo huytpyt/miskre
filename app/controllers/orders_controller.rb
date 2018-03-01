@@ -107,12 +107,17 @@ class OrdersController < ApplicationController
   end
 
   def need_to_buy
+    unless current_user.staff?
+      redirect_to root_path
+    end
     if params[:shop_id].present? && params[:shop_id] != [""]
       @shops = Shop.where(id: params[:shop_id])
     else
       @shops = Shop.all
     end
-    @products = OrderService.new.product_need_to_buy params
+    @start_date = params[:start_date]&.to_date || Date.current - 7
+    @end_date = params[:end_date]&.to_date || Date.current
+    @products = OrderService.new.product_need_to_buy params, @start_date, @end_date
   end
 
   private

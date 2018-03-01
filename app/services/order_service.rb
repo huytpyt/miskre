@@ -84,9 +84,7 @@ class OrderService
     end
   end
 
-  def product_need_to_buy params
-    start_date = params[:start_date]&.to_date || Date.current - 7
-    end_date = params[:end_date]&.to_date || Date.current
+  def product_need_to_buy params, start_date, end_date
     condition = "(orders.date BETWEEN :start_date AND :end_date)"
     condition += " AND (orders.fulfillment_status = :fulfillment_status)" if params[:fulfillment_status].present?
     condition += " AND (orders.financial_status = :financial_status)" if params[:financial_status].present?

@@ -38,8 +38,8 @@
 #  vendor_detail        :text
 #  cost_per_quantity    :string
 #  approved             :boolean          default(FALSE)
-#  perchase_link        :text
 #  china_name           :string
+#  purchase_link        :string
 #
 # Indexes
 #
@@ -85,7 +85,7 @@ class Product < ApplicationRecord
   validates :product_url, url: {allow_blank: true}
   validates :resource_url, url: {allow_blank: true}
   validates :link, url: {allow_blank: true}
-  validates :perchase_link, url: {allow_blank: true}
+  validates :purchase_link, url: {allow_blank: true}
   validates :sku, presence: true, uniqueness: true
   validates :quantity, numericality: { only_integer: true}
   validates :cost, numericality: {greater_than_or_equal_to: 0.1}
