@@ -76,7 +76,7 @@ class OrdersController < ApplicationController
             order.quantity, 
             order.fullname, 
             order.full_address, 
-            "", 
+            order.ship_phone, 
             order.ship_zip, 
             order.ship_state, 
             order.ship_city, 
