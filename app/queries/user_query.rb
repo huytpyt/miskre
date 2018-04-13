@@ -89,7 +89,7 @@ class UserQuery < BaseQuery
     {
       current_user: _user(user),
       parent: _user(user.parent_user),
-      childs: user.child_users.map{ |user| _user(user) }
+      childs: user.childs.map{ |user| _user(user) }
     }
   end
 
