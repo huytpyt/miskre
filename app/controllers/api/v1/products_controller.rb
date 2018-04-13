@@ -79,6 +79,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
   end
 
   def update
+    @price_change = false
     ActiveRecord::Base.transaction do
       if params[:product]
         if params[:product].empty?
@@ -91,6 +92,7 @@ class Api::V1::ProductsController < Api::V1::BaseController
           @product.assign_attributes(current_resource.partner? ? partner_product_params : product_params)
           unless current_resource.partner?
             if @product.suggest_price_changed?
+              @price_change = true
               random = rand(2.25 .. 2.75)
               new_compare_at_price = (@product.suggest_price * random/ 5).round(0) * 5
               @product.variants.each do | variant|
@@ -154,29 +156,30 @@ class Api::V1::ProductsController < Api::V1::BaseController
                   else
                     render json: {status: false, error: "`options` must an array"}, status: 500
                   end
-
-                  if params[:product][:variants].present?
-                    if params[:product][:variants].is_a?(Array)
-                      vts = []
-                      params[:product][:variants].each do |variant|
-                        variant_id = variant[:id]
-                        if variant_id
-                          vt = Variant.find(variant_id)
-                          if vt
-                            vt.quantity = variant[:quantity]
-                            vt.price = variant[:price]
-                            if variant[:image].present?
-                              exists_ids = Image.exists?(variant[:image][:id]) ? [variant[:image][:id]] : []
-                              vt.image_ids = exists_ids
+                  unless @price_change
+                    if params[:product][:variants].present?
+                      if params[:product][:variants].is_a?(Array)
+                        vts = []
+                        params[:product][:variants].each do |variant|
+                          variant_id = variant[:id]
+                          if variant_id
+                            vt = Variant.find(variant_id)
+                            if vt
+                              vt.quantity = variant[:quantity]
+                              vt.price = variant[:price]
+                              if variant[:image].present?
+                                exists_ids = Image.exists?(variant[:image][:id]) ? [variant[:image][:id]] : []
+                                vt.image_ids = exists_ids
+                              end
+                              vt.save
+                              vts << vt.id
                             end
-                            vt.save
-                            vts << vt.id
                           end
                         end
+                        @product.variants.where.not(id: vts).destroy_all
+                      else
+                        render json: {status: false, error: "`variants` must an array"}, status: 500
                       end
-                      @product.variants.where.not(id: vts).destroy_all
-                    else
-                      render json: {status: false, error: "`variants` must an array"}, status: 500
                     end
                   end
                 else
