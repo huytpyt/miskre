@@ -68,7 +68,7 @@ class UserProductsController < ApplicationController
 			end
 		end
 
-		def create_suppy(product, shop_id, user_id, shopify_product_id)
+		def create_supply(product, shop_id, user_id, shopify_product_id)
 			supply = Supply.new(
 				product_id: product.id, 
 				shop_id: shop_id, 

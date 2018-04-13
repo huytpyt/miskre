@@ -88,7 +88,15 @@ class Api::V1::ProductsController < Api::V1::BaseController
             @product.cost_per_quantity = params[:product][:cost_per_quantity]
             @product.save
           end
-          if @product.update(current_resource.partner? ? partner_product_params : product_params)
+          @product.assign_attributes(current_resource.partner? ? partner_product_params : product_params)
+          unless current_resource.partner?
+            if @product.price_changed?
+              @product.variants.each do | variant|
+                variant.update(price: @product.price, compare_at_price: @product.compare_at_price)
+              end
+            end
+          end
+          if @product.save
             if params[:product][:images].present?
               if params[:product][:images].is_a?(Array)
                 exists_ids = []
