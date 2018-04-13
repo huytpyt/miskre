@@ -90,9 +90,11 @@ class Api::V1::ProductsController < Api::V1::BaseController
           end
           @product.assign_attributes(current_resource.partner? ? partner_product_params : product_params)
           unless current_resource.partner?
-            if @product.price_changed?
+            if @product.suggest_price_changed?
+              random = rand(2.25 .. 2.75)
+              new_compare_at_price = (@product.suggest_price * random/ 5).round(0) * 5
               @product.variants.each do | variant|
-                variant.update(price: @product.price, compare_at_price: @product.compare_at_price)
+                variant.update(price: @product.suggest_price, compare_at_price: new_compare_at_price)
               end
             end
           end
