@@ -35,11 +35,11 @@ class Shop < ActiveRecord::Base
 
   belongs_to :user
 
-  has_many :supplies
+  has_many :supplies, dependent: :destroy
   has_many :products, through: :supplies
   has_many :products
-  has_many :orders
-  has_many :user_products
+  has_many :orders, dependent: :destroy
+  has_many :user_products, dependent: :destroy
 
   validates :name, uniqueness: true
 

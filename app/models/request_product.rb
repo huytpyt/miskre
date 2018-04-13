@@ -17,5 +17,5 @@
 
 class RequestProduct < ApplicationRecord
   belongs_to :user
-  has_many :image_requests
+  has_many :image_requests, dependent: :destroy
 end

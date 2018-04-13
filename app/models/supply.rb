@@ -42,7 +42,7 @@ class Supply < ApplicationRecord
   belongs_to :product
 
   has_many :images, as: :imageable, dependent: :destroy
-  has_many :supply_variants
+  has_many :supply_variants, dependent: :destroy
 
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0}
   validates :compare_at_price, presence: true, numericality: { greater_than_or_equal_to: 0}

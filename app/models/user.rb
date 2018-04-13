@@ -43,12 +43,12 @@ class User < ApplicationRecord
     default: :user, predicates: true
 
   has_one :balance
-  has_many :shops
+  has_many :shops, dependent: :destroy
   has_many :products
   has_many :shippings
   has_many :childs, class_name: "User", foreign_key: "parent_id"
-  has_many :request_products
-  has_many :user_products
+  has_many :request_products, dependent: :destroy
+  has_many :user_products, dependent: :destroy
   has_many :request_charges, dependent: :destroy
   belongs_to :parent_user, class_name: "User", foreign_key: "parent_id"
   after_create :create_customer
