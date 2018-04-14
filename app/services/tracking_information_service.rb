@@ -4,6 +4,7 @@ class TrackingInformationService
 
     def fetch_tracking_information tracking_information
       tracking_label = tracking_information&.fulfillment&.order&.tracking_number_real
+      time_fulfilled = tracking_information&.fulfillment&.created_at
       if tracking_label
         get_courier = AfterShip::V4::Courier.detect({ tracking_number: tracking_label })
         courier = get_courier.try(:[], "data").try(:[], "couriers")&.first&.try(:[], "slug")
@@ -24,10 +25,10 @@ class TrackingInformationService
         end
         if tracking_information.tracking_history.nil? && !tracking_checkpoint["data"].present?
           tracking_information.tracking_history = [
-            { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc - 9.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 2.days + 15.minutes).to_s},
-            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 3.days).to_s},
-            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (Time.now.utc + 5.days + 11.minutes).to_s}
+            { "tag" => "Submitted", "message" => "Electronic Notification Received , Order Processed", "location" => "Merchant", "checkpoint_time" => (time_fulfilled - 9.minutes).to_s},
+            { "tag" => "Submitted", "message" => "Order Submitted", "location" => "Merchant", "checkpoint_time" => (time_fulfilled + 2.days + 15.minutes).to_s},
+            { "tag" => "Submitted", "message" => "Order Processed", "location" => "Merchant", "checkpoint_time" => (time_fulfilled + 3.days).to_s},
+            { "tag" => "Submitted", "message" => "Order Shipped", "location" => "Merchant", "checkpoint_time" => (time_fulfilled + 5.days + 11.minutes).to_s}
           ]
           tracking_information.Submited!
         elsif tracking_checkpoint["data"].present?
