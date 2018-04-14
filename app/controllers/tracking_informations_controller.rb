@@ -9,7 +9,7 @@ class TrackingInformationsController < ActionController::Base
         @tracking_information = @fulfillment.tracking_informations
         if @order.tracking_number_real.present?
           unless @order.tracking_number_real == "none"
-            TrackingInformationService.delay.fetch_tracking_information @tracking_information.first
+            TrackingInformationService.fetch_tracking_information @tracking_information.first
             # TrackingInformationService.delay.fetch_additional_tracking_information @tracking_information.first
           end
         end
