@@ -4,6 +4,10 @@
 #billings
   .row
     .column
+      | Upload to Aftership first
+      br
+      |CSV Format: [tracking_number, order_id]
+      br
       = form_tag import_billings_path, multipart: true 
         = file_field_tag :file
         = submit_tag "Import"
