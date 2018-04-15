@@ -10,7 +10,7 @@ class FetchTrackingInfo
           unless tracking_real == "none"
             p "start fetch"
             TrackingInformationService.fetch_tracking_information(fulfillment.tracking_informations.first)
-            TrackingInformationService.fetch_additional_tracking_information(fulfillment.tracking_informations.first)
+            # TrackingInformationService.fetch_additional_tracking_information(fulfillment.tracking_informations.first)
           end
         end
       end
