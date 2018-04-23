@@ -192,7 +192,8 @@ class ShopifyCommunicator
     if @shop.present?
       ActiveRecord::Base.transaction do
         supply = Supply.new(shop_id: @shop.id,
-                      product_id: product.id)
+                      product_id: product.id,
+                      user_id: @shop.user_id)
         supply.copy_product_attr_add_product
         if supply.save
           ProductService.delay.sync_images(product, supply)

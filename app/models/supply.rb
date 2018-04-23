@@ -12,7 +12,6 @@
 #  price                :float
 #  name                 :string
 #  original             :boolean          default(TRUE)
-#  user_id              :integer
 #  fulfillable_quantity :integer
 #  epub                 :float
 #  dhl                  :float
@@ -22,16 +21,12 @@
 #  cost                 :float
 #  keep_custom          :boolean          default(FALSE)
 #  is_deleted           :boolean          default(FALSE)
+#  user_id              :integer
 #
 # Indexes
 #
 #  index_supplies_on_product_id  (product_id)
 #  index_supplies_on_shop_id     (shop_id)
-#  index_supplies_on_user_id     (user_id)
-#
-# Foreign Keys
-#
-#  supplies_user_id_fkey  (user_id => users.id)
 #
 
 class Supply < ApplicationRecord

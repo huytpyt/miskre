@@ -25,6 +25,8 @@
 #  name                   :text
 #  fb_link                :text
 #  active                 :boolean          default(TRUE)
+#  birthday               :date
+#  phone                  :string
 #
 # Indexes
 #

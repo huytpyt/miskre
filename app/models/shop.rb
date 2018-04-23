@@ -26,7 +26,7 @@
 #
 # Foreign Keys
 #
-#  shops_user_id_fkey  (user_id => users.id)
+#  fk_rails_...  (user_id => users.id)
 #
 
 class Shop < ActiveRecord::Base
